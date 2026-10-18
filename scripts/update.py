@@ -296,6 +296,9 @@ def yt_watch(video_id):
         out['titulo'] = json.loads('"' + tt.group(1) + '"')
     if au:
         out['canal'] = json.loads('"' + au.group(1) + '"')
+    ci = re.search(r'"videoDetails":\{.*?"channelId":"(UC[\w-]{22})"', html, re.S)
+    if ci:
+        out['canal_id'] = ci.group(1)
     if pd:
         out['publicado'] = pd.group(1)
     # insignia en directo de YouTube (España): «N.º 29 en el top de vídeos musicales» / «#29 en tendencias para música»
@@ -345,7 +348,7 @@ def yt_api(key, video_ids):
         for it in j.get('items', []):
             st, sn = it.get('statistics', {}), it.get('snippet', {})
             out[it['id']] = {'vistas': to_int(st.get('viewCount')), 'likes': to_int(st.get('likeCount')), 'comentarios': to_int(st.get('commentCount')),
-                             'publicado': (sn.get('publishedAt') or '')[:10] or None, 'canal': sn.get('channelTitle'), 'titulo': sn.get('title')}
+                             'publicado': (sn.get('publishedAt') or '')[:10] or None, 'canal': sn.get('channelTitle'), 'canal_id': sn.get('channelId'), 'titulo': sn.get('title')}
     return out
 
 
@@ -364,7 +367,8 @@ def yt_channel_api(key):
 
 def yt_search_api(key, query):
     j = get('https://www.googleapis.com/youtube/v3/search', as_json=True, params={'part': 'snippet', 'q': query, 'type': 'video', 'maxResults': 10, 'key': key})
-    return [{'video_id': x['id']['videoId'], 'titulo': x['snippet']['title'], 'canal': x['snippet']['channelTitle'], 'publicado': x['snippet']['publishedAt'][:10]} for x in j.get('items', [])]
+    return [{'video_id': x['id']['videoId'], 'titulo': x['snippet']['title'], 'canal': x['snippet']['channelTitle'], 'canal_id': x['snippet'].get('channelId'),
+             'verificado': None, 'publicado': x['snippet']['publishedAt'][:10]} for x in j.get('items', [])]
 
 
 def yt_rss():
@@ -574,8 +578,12 @@ def yt_search_scrape(query):
         out = []
         for vr in walk(yt_initial(html), 'videoRenderer'):
             try:
+                own = (vr.get('ownerText') or {}).get('runs', [])
+                badges = json.dumps(vr.get('ownerBadges') or [])
                 out.append({'video_id': vr['videoId'], 'titulo': ''.join(r.get('text', '') for r in vr['title']['runs']),
-                            'canal': ''.join(r.get('text', '') for r in (vr.get('ownerText') or {}).get('runs', [])),
+                            'canal': ''.join(r.get('text', '') for r in own),
+                            'canal_id': next((r['navigationEndpoint']['browseEndpoint'].get('browseId') for r in own if (r.get('navigationEndpoint') or {}).get('browseEndpoint')), None),
+                            'verificado': 'VERIFIED' in badges,
                             'hace': (vr.get('publishedTimeText') or {}).get('simpleText', ''), 'vistas_txt': (vr.get('viewCountText') or {}).get('simpleText', '')})
             except (KeyError, TypeError):
                 continue
@@ -588,6 +596,7 @@ def yt_search_scrape(query):
         try:
             j = get(url, as_json=True, tries=1)
             out = [{'video_id': (it.get('url') or '').split('v=')[-1], 'titulo': it.get('title') or '', 'canal': it.get('uploaderName') or '',
+                    'canal_id': (it.get('uploaderUrl') or '').split('/channel/')[-1] or None, 'verificado': bool(it.get('uploaderVerified')),
                     'vistas': it.get('views'), 'hace': it.get('uploadedDate') or '', 'vistas_txt': str(it.get('views') or '')} for it in (j.get('items') or []) if 'watch?v=' in (it.get('url') or '')]
             if out:
                 return out
@@ -596,7 +605,7 @@ def yt_search_scrape(query):
     for host in ('https://inv.nadeko.net', 'https://invidious.nerdvpn.de', 'https://yewtu.be'):
         try:
             j = get(f'{host}/api/v1/search', as_json=True, params={'q': query, 'type': 'video'}, tries=1)
-            out = [{'video_id': it['videoId'], 'titulo': it.get('title') or '', 'canal': it.get('author') or '', 'vistas': it.get('viewCount'),
+            out = [{'video_id': it['videoId'], 'titulo': it.get('title') or '', 'canal': it.get('author') or '', 'canal_id': it.get('authorId'), 'verificado': bool(it.get('authorVerified')), 'vistas': it.get('viewCount'),
                     'hace': it.get('publishedText') or '', 'vistas_txt': str(it.get('viewCount') or '')}
                    for it in (j or []) if it.get('videoId')]
             if out:
@@ -609,24 +618,50 @@ def yt_search_scrape(query):
 NO_OFICIAL = re.compile(r'lyric|letra|audio|visualizer|reaccion|reacción|reaction|cover|karaoke|slowed|speed|8d|instrumental|en vivo|live|preview|extended|clean|nightcore|tiktok', re.I)
 
 
-def yt_pick(song_title, res):
-    """El videoclip oficial entre los resultados: título con la canción + el artista, «Official Video/Video Oficial» primero,
-    luego canales oficiales; audios «- Topic», letras y subidas de fans al final."""
+def _f(t):
     import unicodedata
+    return re.sub(r'\s+', ' ', re.sub(r'[^a-z0-9 ]', ' ', unicodedata.normalize('NFD', str(t or '').lower()).encode('ascii', 'ignore').decode())).strip()
 
-    def f(t):
-        return re.sub(r'[^a-z0-9 ]', '', unicodedata.normalize('NFD', str(t or '').lower()).encode('ascii', 'ignore').decode())
-    t_ = f(base(song_title))
+
+def creditos(song):
+    """Artistas acreditados en la canción (para aceptar el canal oficial de un colaborador)."""
+    txt = ' , '.join([str(song.get('artistas') or ''), ' '.join(re.findall(r'\((?:with|feat\.?|ft\.?|con)\s+([^)]*)\)', song.get('titulo') or '', re.I))])
+    gruesas = re.split(r'\s*(?:,|\bfeat\.?|\bft\.?|\bwith\b)\s*', txt, flags=re.I)  # «Zion & Lennox» entero
+    finas = re.split(r'\s*(?:,|&|\+|\bfeat\.?|\bft\.?|\bwith\b|\bx\b|\by\b)\s*', txt, flags=re.I)
+    return {_f(p) for p in gruesas + finas if len(_f(p)) >= 2}
+
+
+def canal_oficial(r, song):
+    """¿Es un canal oficial? El de Anuel (por su ID), uno VEVO, o el canal del artista acreditado (verificado o con su nombre exacto).
+    Descarta canales de fans aunque se llamen «Anuel AA …»."""
+    cid, can = r.get('canal_id'), r.get('canal') or ''
+    ofi_ids = {YT_CHANNEL} | set((CFG.get('canales_oficiales') or {}).values() if isinstance(CFG.get('canales_oficiales'), dict) else (CFG.get('canales_oficiales') or []))
+    if cid and cid in ofi_ids:
+        return True
+    limpio = _f(re.sub(r'\s*-\s*topic$|vevo$|\bofficial\b|\boficial\b|\bmusic\b|\btv\b', '', can, flags=re.I))
+    if NAME_RE.search(can) or re.match(r'anuel', can, re.I):  # dice «Anuel»: solo vale el canal oficial (ID) o su VEVO / Topic verificados
+        return bool(re.search(r'vevo$|\s-\s*topic$', can, re.I))
+    if limpio and limpio in creditos(song):
+        return r.get('verificado') is not False or bool(re.search(r'vevo$|- topic$', can, re.I))
+    if re.search(r'vevo$', can, re.I):  # los VEVO son siempre oficiales: vale si es de Anuel o de un acreditado
+        base_v = _f(re.sub(r'vevo$', '', can, flags=re.I)).replace(' ', '')
+        return bool(base_v) and (base_v.startswith('anuel') or any(c.replace(' ', '') == base_v or c.replace(' ', '').startswith(base_v) for c in creditos(song)))
+    return False
+
+
+def yt_pick(song, res):
+    """El videoclip oficial entre los resultados (solo canales oficiales). «Official Video/Video Oficial» primero; audios «- Topic» y letras al final."""
+    t_ = _f(base(song['titulo']))
     if len(t_) < 2:
         return None
-    cand = [r for r in res[:15] if t_ in f(r['titulo']) and NAME_RE.search(r['titulo'] + ' ' + r['canal'])]
+    cand = [r for r in res[:15] if t_ in _f(r['titulo']) and canal_oficial(r, song)]
     if not cand:
         return None
 
     def rank(r):
         tit, can = r['titulo'], r['canal'] or ''
         oficial = bool(re.search(r'official\s*(music\s*)?video|video\s*oficial|videoclip', tit, re.I))
-        return (bool(NO_OFICIAL.search(tit)), can.endswith('- Topic'), not oficial, not re.search(r'vevo|official|oficial', can, re.I))
+        return (bool(NO_OFICIAL.search(tit)), can.endswith('- Topic'), not oficial, r.get('canal_id') != YT_CHANNEL)
     cand.sort(key=rank)
     return cand[0]
 
@@ -1295,11 +1330,25 @@ def main():
         HECHO.append(f'kworb YouTube ({len(kw_vids)} vídeos)')
     except Exception as e:  # noqa: BLE001
         fallo('kworb YouTube artista', e)
+    quitados = 0
+    for s in songs:
+        y = s.get('youtube') or {}
+        if not y or y.get('fijo') or y.get('origen') in ('kworb', 'rss') or not y.get('canal'):
+            continue
+        if y.get('origen') is None and (y.get('canal') == ARTISTA or y.get('canal_id') == YT_CHANNEL):  # antiguos del canal oficial
+            continue
+        if not canal_oficial({'canal': y.get('canal'), 'canal_id': y.get('canal_id'), 'verificado': None}, s):
+            log(f'  - vídeo no oficial quitado de {s["titulo"]}: {y.get("canal")}')
+            s.pop('youtube', None)
+            s.pop('yt_buscado', None)
+            quitados += 1
+    if quitados:
+        HECHO.append(f'vídeos de canales no oficiales quitados ({quitados})')
     manual = {norm(k): re.sub(r'^.*(?:v=|youtu\.be/|shorts/)([\w-]{11}).*$', r'\1', str(v).strip()) for k, v in (CFG.get('videos') or {}).items()}
     for s in songs:
         vid_ = manual.get(norm(s['titulo']))
         if vid_ and re.fullmatch(r'[\w-]{11}', vid_) and (s.get('youtube') or {}).get('video_id') != vid_:
-            s['youtube'] = {'video_id': vid_, 'titulo': s['titulo'], 'canal': None, 'vistas': None, 'likes': None, 'publicado': None, 'fecha': HOY, 'fuente': 'videoclip fijado (config.json)', 'fijo': True}
+            s['youtube'] = {'video_id': vid_, 'titulo': s['titulo'], 'canal': None, 'vistas': None, 'likes': None, 'publicado': None, 'fecha': HOY, 'fuente': 'videoclip fijado (config.json)', 'fijo': True, 'origen': 'fijo'}
             log(f'  = vídeo fijado para {s["titulo"]}: {vid_}')
         if vid_ and (s.get('youtube') or {}).get('fijo') and not s['youtube'].get('canal'):
             try:
@@ -1335,7 +1384,7 @@ def main():
             if best and best[0][0] >= 2:
                 v = best[1]
                 s['youtube'] = {'video_id': v['video_id'], 'titulo': v['titulo'], 'canal': ARTISTA, 'vistas': v.get('vistas'), 'ayer': v.get('ayer'), 'likes': None,
-                                'publicado': v.get('publicado'), 'fecha': HOY, 'fuente': 'kworb.net (YouTube)'}
+                                'publicado': v.get('publicado'), 'fecha': HOY, 'fuente': 'kworb.net (YouTube)', 'origen': 'kworb'}
     for v in channel_vids:  # asigna videos nuevos a canciones sin video
         tv = norm(re.sub(r'\[.*?\]|\(.*?(video|visualizer|audio|lyric).*?\)', '', v['titulo'], flags=re.I))
         for s in songs:
@@ -1344,7 +1393,7 @@ def main():
             b = base(s['titulo'])
             if len(b) >= 3 and re.search(r'(^|[\s\-"“])' + re.escape(b) + r'($|[\s\-"”(])', tv):
                 s['youtube'] = {'video_id': v['video_id'], 'titulo': v['titulo'], 'canal': ARTISTA, 'vistas': v.get('vistas'), 'likes': None,
-                                'publicado': v.get('publicado'), 'fecha': HOY, 'fuente': 'YouTube RSS'}
+                                'publicado': v.get('publicado'), 'fecha': HOY, 'fuente': 'YouTube RSS', 'origen': 'rss', 'canal_id': YT_CHANNEL}
                 log(f'  + video para {s["titulo"]}: {v["video_id"]}')
     if not yt_key:  # sin clave: busca en YouTube el videoclip de los temas que aún no tienen (poco a poco)
         hace7 = (NOW - dt.timedelta(days=7)).strftime('%Y-%m-%d')
@@ -1362,7 +1411,7 @@ def main():
             r = None
             for q_ in (f"{base(x['titulo'])} {BUSCAR} video oficial", f"{base(x['titulo'])} {BUSCAR}"):
                 try:
-                    r = yt_pick(x['titulo'], yt_search_scrape(q_))
+                    r = yt_pick(x, yt_search_scrape(q_))
                 except Exception:  # noqa: BLE001
                     errores += 1
                     r = None
@@ -1370,8 +1419,8 @@ def main():
                     break
                 time.sleep(0.4)
             if r and (not x.get('youtube') or es_oficial(r)) and r['video_id'] != (x.get('youtube') or {}).get('video_id'):
-                x['youtube'] = {'video_id': r['video_id'], 'titulo': r['titulo'], 'canal': r['canal'], 'vistas': r.get('vistas') if isinstance(r.get('vistas'), int) else None,
-                                'likes': None, 'publicado': None, 'fecha': HOY, 'fuente': 'YouTube (búsqueda)'}
+                x['youtube'] = {'video_id': r['video_id'], 'titulo': r['titulo'], 'canal': r['canal'], 'canal_id': r.get('canal_id'), 'vistas': r.get('vistas') if isinstance(r.get('vistas'), int) else None,
+                                'likes': None, 'publicado': None, 'fecha': HOY, 'fuente': 'YouTube (búsqueda)', 'origen': 'busqueda'}
                 hallados += 1
                 log(f'  + videoclip para {x["titulo"]}: {r["video_id"]} ({r["canal"]})')
             time.sleep(0.6)
@@ -1387,9 +1436,9 @@ def main():
             s['yt_buscado'] = HOY
             try:
                 res = yt_search_api(yt_key, f"{base(s['titulo'])} {BUSCAR}")
-                hit = yt_pick(s['titulo'], res)
+                hit = yt_pick(s, res)
                 if hit and (not s.get('youtube') or es_oficial(hit)) and hit['video_id'] != (s.get('youtube') or {}).get('video_id'):
-                    s['youtube'] = dict(hit, vistas=None, likes=None, fecha=HOY, fuente='YouTube Data API')
+                    s['youtube'] = dict(hit, vistas=None, likes=None, fecha=HOY, fuente='YouTube Data API', origen='busqueda')
             except Exception as e:  # noqa: BLE001
                 fallo(f'búsqueda YouTube {s["titulo"]}', e)
     vids = [s['youtube']['video_id'] for s in songs if s.get('youtube') and s['youtube'].get('video_id')]
