@@ -1530,9 +1530,12 @@ def main():
                         return any(p1 == p2 or (len(p1) >= 4 and (p1 in p2 or p2 in p1)) for p1 in a_ for p2 in b_)
                     def _nucleo(t):
                         return _f(re.sub(r'\s+-\s+(?:.*\b(?:remix|rmx|version|versión|live|en vivo|edit|mix|acoustic|acústico|sped|slowed)\b.*|single|ep)$', '', re.sub(r'\s*[\(\[].*?[\)\]]', '', str(t or '')), flags=re.I))
+                    def _laxo(t):  # sin nada tras « - » («Familia - Spider-Man: …» = «Familia»)
+                        return _f(re.sub(r'\s+-\s+.*$', '', re.sub(r'\s*[\(\[].*?[\)\]]', '', str(t or ''))))
                     falsa = bool(FALSA_VERSION.search(' '.join(str(r.get(k) or '') for k in ('trackName', 'artistName', 'collectionName')))) \
                         or not (NAME_RE.search(r.get('artistName') or '') or NAME_RE.search(r.get('trackName') or '')) \
-                        or (_nucleo(r.get('trackName')) and _nucleo(x['titulo']) and _nucleo(r.get('trackName')) != _nucleo(x['titulo']))
+                        or (_nucleo(r.get('trackName')) and _nucleo(x['titulo']) and _nucleo(r.get('trackName')) != _nucleo(x['titulo'])
+                            and _laxo(r.get('trackName')) != _laxo(x['titulo']))
                     if falsa or (otros_sp and otros_ap and not _solapa(otros_sp, otros_ap)):
                         # el enlace de Apple era otra canción con el mismo nombre: se quita (y lo que vino de ella)
                         log(f'  - Apple desenlazado de {x["titulo"]}: era «{r.get("trackName")}» de {r.get("artistName")}')
@@ -1943,7 +1946,9 @@ def main():
             ft = _fold(t0)
             def _nuc(t):
                 return _f(re.sub(r'\s+-\s+(?:.*\b(?:remix|rmx|version|versión|live|en vivo|edit|mix|acoustic|acústico|sped|slowed)\b.*|single|ep)$', '', re.sub(r'\s*[\(\[].*?[\)\]]', '', str(t or '')), flags=re.I))
-            hits = [r for r in j.get('results', []) if _nuc(r.get('trackName')) == _nuc(x['titulo'])
+            def _lax(t):
+                return _f(re.sub(r'\s+-\s+.*$', '', re.sub(r'\s*[\(\[].*?[\)\]]', '', str(t or ''))))
+            hits = [r for r in j.get('results', []) if (_nuc(r.get('trackName')) == _nuc(x['titulo']) or _lax(r.get('trackName')) == _lax(x['titulo']))
                     and (NAME_RE.search(r.get('artistName') or '') or NAME_RE.search(r.get('trackName') or ''))
                     and not FALSA_VERSION.search(' '.join(str(r.get(k) or '') for k in ('trackName', 'artistName', 'collectionName')))]
             otros_sp = {_f(n) for n in (x.get('creditos_sp') or []) if not NAME_RE.search(n)}
@@ -2348,7 +2353,16 @@ def main():
         fallo('Logros', e)
     nov.sort(key=lambda n: (n.get('fecha') or '', n.get('detectado') or ''), reverse=True)
     keep = [n for n in nov if n.get('tipo') == 'logro'][:150]
-    rest_ = [n for n in nov if n.get('tipo') != 'logro'][:300]
+    # tope por tipo: las listas (muchas al día) no pueden tapar estrenos, Instagram, TikTok, vídeos o noticias
+    TOPE_T = {'listas': 120, 'mencion': 60, 'noticia': 60}
+    cuenta_t, rest_ = {}, []
+    for n in nov:
+        t_ = n.get('tipo')
+        if t_ == 'logro':
+            continue
+        cuenta_t[t_] = cuenta_t.get(t_, 0) + 1
+        if cuenta_t[t_] <= TOPE_T.get(t_, 80):
+            rest_.append(n)
     data['novedades'] = sorted(keep + rest_, key=lambda n: (n.get('fecha') or '', n.get('detectado') or ''), reverse=True)
     first_run = not data.get('config', {}).get('alertas_iniciadas')
     cfg['alertas_iniciadas'] = True
