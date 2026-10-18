@@ -969,6 +969,10 @@
   function songPostKit(s) {
     const box = h('div', { class: 'lg-kit' });
     box.append(h('h3', { class: 'lg-sh', text: 'Para tu post' }));
+    if (s.hoy.length || songPlaylists(s.id).length) box.append(h('button', { class: 'yc-btn lg-panbtn', type: 'button', onclick: () => {
+      const R = songPanels(s.id, ['spotify', 'apple', 'youtube', 'shazam'].filter(k => s.hoy.some(c => c.plataforma === { spotify: 'Spotify', apple: 'Apple Music', youtube: 'YouTube', shazam: 'Shazam' }[k])).concat(songPlaylists(s.id).length ? ['playlists'] : []).slice(0, 4), 6);
+      if (R) { closeSheet(); setTimeout(() => toStudio(Object.assign({ plantilla: 'paneles', panTema: s.id }, R)), 250); }
+    } }, icon('chart'), 'Post con sus listas por plataforma'));
     const ideas = postIdeas(s);
     if (ideas.length) box.append(h('div', { class: 'yc-card lg-ideas' }, h('span', { class: 'lg-lab', text: 'Ideas con sus cifras de hoy' }), ideas.map(it => ideaRow(it))));
     const bp = bestPositions(s);
@@ -992,6 +996,48 @@
     box.append(capBox);
     return box;
   }
+  // ---------- paneles por plataforma para el Estudio ----------
+  function studioSongs() {
+    return SONGS.slice().sort((a, b) => (b.hoy.length - a.hoy.length) || ((b.sp.diarios || 0) - (a.sp.diarios || 0))).slice(0, 150)
+      .map(x => ({ id: x.id, label: `${x.titulo}${x.hoy.length ? ` · en ${x.hoy.length} ${x.hoy.length === 1 ? 'lista' : 'listas'}` : ''}` }));
+  }
+  function songPanels(id, kinds, max) {
+    const s = songById(id); if (!s) return null;
+    max = max || 6;
+    const P = [], vacios = [], names = [];
+    const dd = (d) => d ? dfmt(d, { year: undefined }).toUpperCase() : '';
+    const cc2 = (c) => { const k = ccOf(c.pais, c.codigo); return k && k.length === 2 && k !== 'WW' ? k.toUpperCase() : 'GL'; };
+    const DEF = {
+      spotify: ['Spotify Top 200', 'Spotify', 'SPOTIFY TOP 200'], apple: ['Apple Music Top 200', 'Apple Music', 'APPLE MUSIC'],
+      youtube: ['YouTube', 'YouTube', 'YOUTUBE'], shazam: ['Shazam Top 200', 'Shazam', 'SHAZAM']
+    };
+    for (const k of kinds) {
+      if (DEF[k]) {
+        const [title, plat, short_] = DEF[k];
+        const seen = new Set();
+        const L = s.hoy.filter(c => c.plataforma === plat).sort((a, b) => a.posicion - b.posicion).filter(c => { if (seen.has(c.pais)) return false; seen.add(c.pais); return true; });
+        if (!L.length) { vacios.push(title); continue; }
+        const f = modeDate(L.map(c => c.fecha_lista || c.consultado));
+        const t2 = k === 'youtube' ? (L.every(c => String(c.lista).startsWith('Top')) ? 'YouTube Charts' : 'YouTube Tendencias') : title;
+        P.push(`## ${t2} | ${k} | ${(plat === 'Apple Music' || plat === 'Shazam') ? 'CONSULTADO ' : ''}${dd(f)}\n` + L.slice(0, max).map(c => `${cc2(c)} ${c.pais} | #${c.posicion}`).join('\n'));
+        names.push(short_);
+      } else if (k === 'mejores') {
+        const L = bestPositions(s).filter(x => x.plat === 'Spotify');
+        if (!L.length) { vacios.push('Mejores puestos'); continue; }
+        P.push(`## Mejores puestos | mejores | SPOTIFY TOP 200\n` + L.slice(0, max).map(x => `${x.cc && x.cc.length === 2 && x.cc !== 'WW' ? x.cc.toUpperCase() : 'GL'} ${x.pais} | #${x.p}`).join('\n'));
+        names.push('RÉCORDS');
+      } else if (k === 'playlists') {
+        const L = songPlaylists(s.id);
+        if (!L.length) { vacios.push('Playlists'); continue; }
+        P.push(`## Playlists oficiales | playlists | ${dd(modeDate(L.map(x => x.p.consultado)) || DATA.generado)}\n` + L.slice(0, max).map(({ p, t }) => `${p.plataforma === 'Apple Music' ? 'AM' : p.plataforma === 'Deezer' ? 'DZ' : 'SP'} ${plName(p).replace(/ on Apple Music$/, '')} | #${t.pos}`).join('\n'));
+        names.push('PLAYLISTS');
+      }
+    }
+    if (!P.length) return null;
+    const tt = s.titulo.replace(/\s*\((with|feat\.)[^)]*\)/i, '');
+    return { paneles: P.join('\n'), titular: `${tt.toUpperCase()} EN LOS *CHARTS*`, etiqueta: names.join(' & '), imagen: bigCover(s) || coverOf(s), vacios };
+  }
+
   // ---------- ideas para publicar hoy (todas las canciones) ----------
   function todayIdeas() {
     const out = [];
@@ -1963,7 +2009,7 @@
     el.append(holder);
     loadStudio().then(() => { holder.replaceChildren(); window.YCStudio.mount(holder, { toast, copy, store, events: studioEvents, pre: studioPending,
       defaults: { marca: MK(), titular: `${AN().toUpperCase()} LA ROMPE EN *SPOTIFY*`, autor: '@' + AU(), imagen: hd(DATA.artista.imagen, 1400) },
-      datos: studioDatos, carousel: studioCarousel,
+      datos: studioDatos, carousel: studioCarousel, songs: studioSongs, songPanels,
       top5: () => { const L = SONGS.filter(x => isNum(x.sp.diarios)).sort((a, b) => b.sp.diarios - a.sp.diarios).slice(0, 5); return L.length ? { titulo: 'LO MÁS ESCUCHADO HOY', lista: L.map(x => `${x.titulo} | ${short(x.sp.diarios)}`).join('\n') } : null; } }); studioPending = null; glideSoon(); })
       .catch(() => holder.replaceChildren(h('p', { class: 'yc-empty', text: 'No se pudo cargar el editor. Revisa la conexión.' })));
     const capH = section('Caption de logros de una canción', ''); capH.id = 'cap-song'; el.append(capH, captionBlock());

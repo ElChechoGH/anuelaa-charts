@@ -4,7 +4,7 @@
 window.YCStudio = (() => {
   'use strict';
   const FORMATS = { post: [1080, 1350, 'Post 4:5'], cuadrado: [1080, 1080, 'Cuadrado'], historia: [1080, 1920, 'Historia'] };
-  const TPL = { titular: 'Titular', charts: 'Charts', hito: 'Récord', top5: 'Top 5', datos: 'En números', meta: 'Próximo hito', portada: 'Estreno', versus: 'Versus', cita: 'Cita', noticia: 'Noticia' };
+  const TPL = { titular: 'Titular', paneles: 'Paneles', charts: 'Charts', hito: 'Récord', top5: 'Top 5', datos: 'En números', meta: 'Próximo hito', portada: 'Estreno', versus: 'Versus', cita: 'Cita', noticia: 'Noticia' };
   const LOGOS = { cuernos: 'Cuernos', corona: 'Corona', estrella: 'Estrella', rayo: 'Rayo', nada: 'Sin icono', imagen: 'Tu logo' };
   const SWATCHES = ['#ffffff', '#ff2b3d', '#ff3b30', '#ff9f0a', '#ffd60a', '#30d158', '#64d2ff', '#0a84ff', '#bf5af2', '#ff6ec7', '#c9a227', '#b4b4bc', '#111111'];
   const PARTS = { colTit: ['Titular', '#ffffff'], acento: ['Resaltado', '#ff2b3d'], colNum: ['Número', ''], colPeq: ['Textos pequeños', '#ffffff'], colMarca: ['Marca', '#ffffff'], neonColor: ['Neón', ''] };
@@ -76,6 +76,7 @@ window.YCStudio = (() => {
     numero: '#1', numeroTxt: 'TOP 50 · PUERTO RICO', acento: '#ff2b3d', zoom: 1, px: 0, py: 0, progreso: 75,
     listaTitulo: 'LO MÁS ESCUCHADO HOY', lista: 'Canción 1 | cifra\nCanción 2 | cifra\nCanción 3 | cifra\nCanción 4 | cifra\nCanción 5 | cifra',
     datos: 'Oyentes | cifra\nStreams hoy | cifra\nVistas YouTube | cifra\nPaíses en listas | cifra',
+    paneles: '## Spotify Top 200 | spotify | fecha\nPAÍS | #1\nPAÍS | #2\n## Apple Music Top 200 | apple | fecha\nPAÍS | #1\nPAÍS | #2', panFilas: 6, panTema: '',
     vsA: 'SPOTIFY', vsANum: 'CIFRA', vsB: 'YOUTUBE', vsBNum: 'CIFRA',
     cita: 'Real hasta la muerte.', autor: '@anuel',
     fondo: 'foto', fondo1: '#0b0b0f', fondo2: '#5a0a14',
@@ -85,7 +86,7 @@ window.YCStudio = (() => {
     typo: null, elT: 'tit', imgUrl: ''
   };
   // lo que cambia en cada slide del carrusel; el resto (estilo, marca, fuentes) es común a todas
-  const SLIDE_KEYS = ['plantilla', 'etiqueta', 'titular', 'sub', 'cuerpo', 'numero', 'numeroTxt', 'progreso', 'listaTitulo', 'lista', 'datos', 'vsA', 'vsANum', 'vsB', 'vsBNum', 'cita', 'autor', 'wordColors',
+  const SLIDE_KEYS = ['plantilla', 'etiqueta', 'titular', 'sub', 'cuerpo', 'numero', 'numeroTxt', 'progreso', 'listaTitulo', 'lista', 'datos', 'paneles', 'panTema', 'vsA', 'vsANum', 'vsB', 'vsBNum', 'cita', 'autor', 'wordColors',
     'zoom', 'px', 'py', 'brillo', 'contraste', 'saturacion', 'calidez', 'imgUrl'];
   const STYLE_KEYS = ['marca', 'logo', 'logoImg', 'marcaPos', 'typo', 'efectoTit', 'efectoNum', 'acento', 'colTit', 'colNum', 'colPeq', 'colMarca', 'neon', 'neonColor', 'neonFuerza', 'neonTit', 'neonNum', 'neonPeq', 'neonMarca',
     'fondo', 'fondo1', 'fondo2', 'vineta', 'grano', 'sombra', 'puntos', 'firma', 'mayus'];
@@ -585,6 +586,20 @@ window.YCStudio = (() => {
     g.fillStyle = `rgba(255,255,255,${a || 0.08})`; g.fill(); g.lineWidth = 2; g.strokeStyle = 'rgba(255,255,255,.14)'; g.stroke(); g.restore();
   }
 
+  // ---------- paneles por plataforma ----------
+  // formato del texto: «## Título | tipo | fecha» y debajo una fila por línea «CC País | #puesto»
+  const PANEL_COL = { spotify: '#1ed760', apple: '#fa2d48', youtube: '#ff3040', shazam: '#2b8cff', mejores: '#ffd60a', playlists: '#bf5af2', deezer: '#a238ff', otro: '' };
+  function parsePanels(txt) {
+    const out = []; let cur = null;
+    for (const raw of String(txt || '').split('\n')) {
+      const l = raw.trim(); if (!l) continue;
+      if (l.startsWith('##')) { const [t, tipo, fecha] = l.replace(/^##\s*/, '').split('|').map(x => x.trim()); cur = { titulo: t || 'Lista', tipo: (tipo || 'otro').toLowerCase(), fecha: fecha || '', filas: [] }; out.push(cur); continue; }
+      if (!cur) { cur = { titulo: 'Lista', tipo: 'otro', fecha: '', filas: [] }; out.push(cur); }
+      cur.filas.push(l.split('|').map(x => x.trim()));
+    }
+    return out.slice(0, 4);
+  }
+
   // ---------- plantillas ----------
   const TEMPLATES = {
     titular(g, W, H, img) {
@@ -663,6 +678,61 @@ window.YCStudio = (() => {
         bigNum(g, up(row[1] || '—'), cxp + W * 0.035, cyp + ch * 0.45, Math.min(W * 0.085, ch * 0.36), S.colNum || '#ffffff', 'left', null, cw - W * 0.07);
       });
       if (rows.length) hit('datos', mx, y, W - mx * 2, n * (ch + gap), 'num');
+      dots(g, W, H - W * 0.04); firma(g, W, H);
+    },
+    paneles(g, W, H, img) {
+      drawBg(g, W, H, img, true); veil(g, W, H, 0.66); finish(g, W, H);
+      brand(g, W, W * 0.1, W * 0.045);
+      const panels = parsePanels(S.paneles);
+      let y = W * 0.17;
+      if (S.etiqueta) { y += small(g, up(S.etiqueta), W * 0.07, y, W * 0.024, S.acento, 'left', 'top', 'etiqueta', W * 0.86) + W * 0.025; }
+      const r = headline(g, S.titular, W * 0.075, W * 0.04, W * 0.86, 2);
+      y = drawBlock(g, r, W * 0.07, y, col('colTit'), 'left', S.wordColors, 'titular', S.efectoTit) + W * 0.045;
+      const n = Math.max(1, panels.length), story = S.formato === 'historia';
+      const cols = n === 1 ? 1 : story && n <= 2 ? 1 : 2, rowsN = Math.ceil(n / cols);
+      const mx = W * 0.07, gap = W * 0.03, bottom = H - (S.puntos ? W * 0.09 : W * 0.06);
+      const pw = (W - mx * 2 - gap * (cols - 1)) / cols;
+      const maxRows = Math.max(1, Math.min(12, Number(S.panFilas) || 6));
+      // cada panel mide lo que su contenido (no se estiran vacíos) y el bloque se centra en el hueco libre
+      const hsB = Math.min(W * 0.03, pw * 0.07), padB = W * 0.032;
+      const headH = (P) => padB + hsB * 1.7 + (P.fecha ? hsB * 1.12 : 0);
+      const gridRows = Array.from({ length: rowsN }, (_, r) => panels.slice(r * cols, r * cols + cols));
+      const avail = bottom - y - gap * (rowsN - 1);
+      let rhB = W * 0.064;
+      const need = (rh) => gridRows.reduce((t, R) => t + Math.max(...R.map(P => headH(P) + Math.min(P.filas.length, maxRows) * rh + padB)), 0);
+      if (need(rhB) > avail) rhB = Math.max(W * 0.03, rhB * (avail - gridRows.reduce((t, R) => t + Math.max(...R.map(P => headH(P) + padB)), 0)) / Math.max(1, need(rhB) - gridRows.reduce((t, R) => t + Math.max(...R.map(P => headH(P) + padB)), 0)));
+      const rowH = gridRows.map(R => Math.max(...R.map(P => headH(P) + Math.min(P.filas.length, maxRows) * rhB + padB)));
+      const total = rowH.reduce((a, b) => a + b, 0) + gap * (rowsN - 1);
+      y += Math.max(0, Math.min((avail + gap * (rowsN - 1) - total) / 2, W * 0.08));
+      const rowY = rowH.map((_, r) => y + rowH.slice(0, r).reduce((a, b) => a + b, 0) + gap * r);
+      panels.forEach((P, i) => {
+        const r = Math.floor(i / cols), ph = rowH[r];
+        const px = mx + (i % cols) * (pw + gap), py = rowY[r], pad = padB;
+        g.save(); g.beginPath(); g.roundRect ? g.roundRect(px, py, pw, ph, W * 0.035) : g.rect(px, py, pw, ph);
+        const gr = g.createLinearGradient(0, py, 0, py + ph); gr.addColorStop(0, 'rgba(255,255,255,.12)'); gr.addColorStop(1, 'rgba(255,255,255,.05)');
+        g.fillStyle = gr; g.fill(); g.lineWidth = Math.max(2, W * 0.0022); g.strokeStyle = 'rgba(255,255,255,.16)'; g.stroke(); g.restore();
+        const pc = PANEL_COL[P.tipo] || S.acento;
+        // cabecera: punto de color de la plataforma + nombre + fecha
+        const hy = py + pad, hs = Math.min(W * 0.03, pw * 0.07);
+        g.save(); g.fillStyle = pc; g.beginPath(); g.arc(px + pw - pad - hs * 0.5, hy + hs * 0.55, hs * 0.5, 0, Math.PI * 2); g.fill(); g.restore();
+        const hc = line(g, 'peq', P.titulo, px + pad, hy, hs, col('colTit'), 'left', 'top', 'paneles', pw - pad * 2 - hs * 1.5);
+        let ry = hy + hc + hs * 0.55;
+        if (P.fecha) ry += line(g, 'peq', up(P.fecha), px + pad, ry, hs * 0.62, 'rgba(255,255,255,.6)', 'left', 'top', 'paneles', pw - pad * 2) + hs * 0.5;
+        else ry += hs * 0.25;
+        const rows = P.filas.slice(0, maxRows), rh = rhB;
+        rows.forEach((row, j) => {
+          const cy = ry + j * rh + rh / 2, fs = Math.min(rh * 0.42, W * 0.03);
+          if (j > 0) { g.save(); g.strokeStyle = 'rgba(255,255,255,.1)'; g.lineWidth = Math.max(1.5, W * 0.0015); g.beginPath(); g.moveTo(px + pad, ry + j * rh); g.lineTo(px + pw - pad, ry + j * rh); g.stroke(); g.restore(); }
+          const m = /^([A-Z]{2})\s+(.+)$/.exec(row[0]);
+          let x = px + pad;
+          if (m) { g.save(); g.font = `800 ${fs * 0.72}px Inter, system-ui, sans-serif`; g.fillStyle = 'rgba(255,255,255,.55)'; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillText(m[1], x, cy); x += g.measureText('WW').width + fs * 0.45; g.restore(); }
+          const posTxt = row[1] || '';
+          g.save(); g.font = fontOf('num', fs * 1.15 * kOf('num')); const pwid = posTxt ? g.measureText(posTxt).width : 0; g.restore();
+          small(g, m ? m[2] : row[0], x, cy, fs, col('colPeq'), 'left', 'middle', null, px + pw - pad - x - pwid - fs);
+          if (posTxt) line(g, 'num', posTxt, px + pw - pad, cy, fs * 1.15, S.colNum || pc, 'right', 'middle', null, null, S.efectoNum);
+        });
+      });
+      if (panels.length) hit('paneles', mx, y, W - mx * 2, total, 'peq');
       dots(g, W, H - W * 0.04); firma(g, W, H);
     },
     meta(g, W, H, img) {
@@ -966,8 +1036,8 @@ window.YCStudio = (() => {
   }
 
   // ---------- interfaz ----------
-  const KEYLAB = { titular: 'Titular', listaTitulo: 'Título de la lista', cita: 'Frase', etiqueta: 'Etiqueta', sub: 'Subtítulo', numero: 'Número grande', numeroTxt: 'Texto del número', cuerpo: 'Texto de la noticia', lista: 'Filas del Top 5', datos: 'Datos', vsA: 'Izquierda', vsANum: 'Cifra izquierda', vsB: 'Derecha', vsBNum: 'Cifra derecha', autor: 'Autor', marca: 'Tu marca', progreso: 'Progreso' };
-  const MULTI = new Set(['titular', 'listaTitulo', 'cita', 'cuerpo', 'lista', 'datos']);
+  const KEYLAB = { titular: 'Titular', listaTitulo: 'Título de la lista', cita: 'Frase', etiqueta: 'Etiqueta', sub: 'Subtítulo', numero: 'Número grande', numeroTxt: 'Texto del número', cuerpo: 'Texto de la noticia', lista: 'Filas del Top 5', datos: 'Datos', vsA: 'Izquierda', vsANum: 'Cifra izquierda', vsB: 'Derecha', vsBNum: 'Cifra derecha', autor: 'Autor', marca: 'Tu marca', progreso: 'Progreso', paneles: 'Paneles' };
+  const MULTI = new Set(['titular', 'listaTitulo', 'cita', 'cuerpo', 'lista', 'datos', 'paneles']);
   const KEYEL = { titular: 'tit', listaTitulo: 'tit', cita: 'tit', numero: 'num', vsANum: 'num', vsBNum: 'num', progreso: 'num', datos: 'num', marca: 'marca', cuerpo: 'cuerpo' };
   const KEYPART = { titular: 'colTit', listaTitulo: 'colTit', cita: 'colTit', numero: 'colNum', vsANum: 'colNum', vsBNum: 'colNum', progreso: 'colNum', datos: 'colNum', marca: 'colMarca', etiqueta: 'acento' };
   const inputs = {};
@@ -1188,7 +1258,7 @@ window.YCStudio = (() => {
     const el = KEYEL[key] || b.el || 'peq', part = KEYPART[key] || 'colPeq';
     if (quickInput) inputs[quickInput.dataset.k] = (inputs[quickInput.dataset.k] || []).filter(x => x !== quickInput);
     if (key === 'progreso') quickInput = h('input', { type: 'range', min: 0, max: 100, class: 'sx-range' });
-    else if (key === 'datos' || key === 'lista') quickInput = h('textarea', { class: 'sx-in', rows: 4, spellcheck: 'false' });
+    else if (key === 'datos' || key === 'lista' || key === 'paneles') quickInput = h('textarea', { class: 'sx-in', rows: key === 'paneles' ? 8 : 4, spellcheck: 'false' });
     else if (MULTI.has(key)) quickInput = h('textarea', { class: 'sx-in', rows: 2, spellcheck: 'false' });
     else quickInput = h('input', { class: 'sx-in', type: 'text', autocomplete: 'off', spellcheck: 'false' });
     quickInput.dataset.k = key; quickInput.value = S[key] == null ? '' : S[key];
@@ -1196,7 +1266,7 @@ window.YCStudio = (() => {
     quickInput.addEventListener('input', () => { autosize(quickInput); set(key, key === 'progreso' ? Number(quickInput.value) : quickInput.value); });
     quick.replaceChildren(
       h('div', { class: 'sx-quick-h' }, h('b', { text: KEYLAB[key] || 'Texto' }),
-        key === 'lista' || key === 'datos' ? h('small', { text: 'Una por línea: Nombre | cifra' }) : MULTI.has(key) && key !== 'cuerpo' ? h('small', { text: '*asteriscos* = color resaltado' }) : null,
+        key === 'paneles' ? h('small', { text: '## Título | tipo | fecha · luego: CC País | #puesto' }) : key === 'lista' || key === 'datos' ? h('small', { text: 'Una por línea: Nombre | cifra' }) : MULTI.has(key) && key !== 'cuerpo' ? h('small', { text: '*asteriscos* = color resaltado' }) : null,
         h('button', { type: 'button', class: 'sx-btn sm pri', text: 'Listo', onclick: closeQuick })),
       quickInput,
       h('div', { class: 'sx-quick-tools' },
@@ -1270,9 +1340,24 @@ window.YCStudio = (() => {
       hint('Toca cualquier texto de la imagen para editarlo · arrastra la foto para encuadrarla · pellizca o usa la rueda para el zoom'),
       file, logoFile);
 
-    const evs = (api.events && api.events()) || [];
-    const evSel = h('select', { class: 'sx-in sx-select', onchange: (e) => { const ev = evs[Number(e.target.value)]; if (ev) load(ev); e.target.value = ''; } },
-      h('option', { value: '', text: 'Rellenar con una novedad o cifra…' }), evs.map((ev, i) => h('option', { value: i, text: String(ev.titular).slice(0, 80) })));
+    // datos de una canción: elige el tema y qué listas mostrar
+    const songsL = (api.songs && api.songs()) || [];
+    const KINDS = { spotify: 'Spotify Top 200', apple: 'Apple Music', youtube: 'YouTube', shazam: 'Shazam', mejores: 'Mejores puestos', playlists: 'Playlists' };
+    let kinds = LS.get('aa.studio.kinds', ['spotify', 'apple']);
+    const songSel = h('select', { class: 'sx-in sx-select' }, h('option', { value: '', text: 'Elige una canción…' }), songsL.map(x => h('option', { value: x.id, text: x.label })));
+    if (S.panTema) songSel.value = S.panTema;
+    const kindBox = h('div', { class: 'sx-chips sx-kinds' });
+    const drawKinds = () => kindBox.replaceChildren(...Object.entries(KINDS).map(([k, l]) => h('button', { type: 'button', class: 'sx-chip', 'aria-pressed': String(kinds.includes(k)), onclick: () => { kinds = kinds.includes(k) ? kinds.filter(x => x !== k) : [...kinds, k].slice(-4); LS.set('aa.studio.kinds', kinds); drawKinds(); }, text: l })));
+    drawKinds();
+    const fillSong = () => {
+      const id = songSel.value; if (!id) { toast('Elige una canción'); return; }
+      const R = api.songPanels && api.songPanels(id, kinds, Number(S.panFilas) || 6);
+      if (!R) { toast('Esa canción no tiene datos de listas ahora'); return; }
+      S.plantilla = 'paneles'; S.panTema = id; Object.assign(S, { paneles: R.paneles, titular: R.titular, etiqueta: R.etiqueta, wordColors: {} });
+      selWords.clear(); commit(true); syncInputs(); schedule(); drawWords(); drawThumbs();
+      if (R.imagen) loadUrl(R.imagen);
+      if (R.vacios && R.vacios.length) toast(`Sin datos hoy en: ${R.vacios.join(', ')}`);
+    };
     wordsBox = h('div', { class: 'sx-words' });
     const stylesBox = h('div', { class: 'sx-styles' });
     const getStyles = () => LS.get('aa.studio.styles', []);
@@ -1289,9 +1374,12 @@ window.YCStudio = (() => {
       h('div', { class: 'sx-sec', 'data-sec': 'plantilla' },
         group('Plantilla', h('div', { class: 'sx-tpls' }, Object.entries(TPL).map(([k, l]) => h('button', { type: 'button', class: 'sx-tpl', 'data-seg': 'plantilla', 'data-v': k, onclick: () => set('plantilla', k) }, h('i', { class: 'sx-tpl-ic ' + k }), h('span', { text: l }))))),
         group('Formato', seg('formato', Object.fromEntries(Object.entries(FORMATS).map(([k, v]) => [k, v[2]])))),
-        group('Contenido con datos reales', evSel,
+        group('Datos de una canción', hint('Elige el tema y qué listas quieres (hasta 4). Se crea un post con un panel por plataforma, con sus puestos de hoy y la fecha de cada lista.'), songSel, kindBox,
+          field('Filas por panel', 'panFilas', 'range', { min: 3, max: 12 }),
+          h('button', { class: 'sx-btn pri', type: 'button', onclick: fillSong, text: 'Crear post de paneles' })),
+        h('div', { 'data-tpl': 'top5 datos' }, group('Rellenar con cifras',
           h('div', { 'data-tpl': 'top5' }, fill('Rellenar con lo más escuchado hoy', () => { const L = api.top5 && api.top5(); if (L) { S.lista = L.lista; S.listaTitulo = L.titulo; commit(); syncInputs(); schedule(); drawWords(); drawThumbs(); } else toast('Aún no hay datos'); })),
-          h('div', { 'data-tpl': 'datos' }, fill('Rellenar con las cifras de hoy', () => { const D = api.datos && api.datos(); if (D) { S.datos = D.datos; if (D.titulo) S.titular = D.titulo; commit(); syncInputs(); schedule(); drawThumbs(); } else toast('Aún no hay datos'); }))),
+          h('div', { 'data-tpl': 'datos' }, fill('Rellenar con las cifras de hoy', () => { const D = api.datos && api.datos(); if (D) { S.datos = D.datos; if (D.titulo) S.titular = D.titulo; commit(); syncInputs(); schedule(); drawThumbs(); } else toast('Aún no hay datos'); })))),
         group('Carrusel automático', hint('Crea varias slides seguidas con las cifras de hoy (titular, top 5, números y récord). Luego puedes editarlas una a una.'), fill('Crear carrusel con los datos de hoy', autoCarousel))),
       h('div', { class: 'sx-sec', 'data-sec': 'textos', hidden: true },
         group('Textos',
@@ -1299,6 +1387,7 @@ window.YCStudio = (() => {
           h('div', { class: 'sx-not', 'data-tpl': 'top5 cita' }, field('Titular · *asteriscos* = color resaltado', 'titular', 'textarea', { rows: 2 })),
           h('div', { 'data-tpl': 'top5' }, field('Título de la lista', 'listaTitulo', 'text', { max: 60 }), field('Filas (una por línea: Canción | cifra)', 'lista', 'textarea', { rows: 5 })),
           h('div', { 'data-tpl': 'datos' }, field('Datos (una por línea: Nombre | cifra, hasta 6)', 'datos', 'textarea', { rows: 4 })),
+          h('div', { 'data-tpl': 'paneles' }, field('Paneles (## Título | tipo | fecha · luego CC País | #puesto)', 'paneles', 'textarea', { rows: 10 }), hint('Tipos con color: spotify, apple, youtube, shazam, mejores, playlists. Máximo 4 paneles.')),
           h('div', { 'data-tpl': 'cita' }, field('Frase', 'cita', 'textarea', { rows: 3 }), field('Autor', 'autor', 'text', { max: 40 })),
           h('div', { 'data-tpl': 'titular portada versus' }, field('Subtítulo', 'sub', 'text', { max: 70 })),
           h('div', { 'data-tpl': 'noticia' }, field('Texto de la noticia', 'cuerpo', 'textarea', { rows: 5 })),
@@ -1425,6 +1514,8 @@ window.YCStudio = (() => {
     if (pre.subtitulo != null) o.sub = pre.subtitulo;
     if (pre.lista) { o.lista = pre.lista; if (pre.listaTitulo) o.listaTitulo = pre.listaTitulo; }
     if (pre.datos) o.datos = pre.datos;
+    if (pre.paneles) { o.paneles = pre.paneles; o.plantilla = pre.plantilla || 'paneles'; }
+    if (pre.panTema) o.panTema = pre.panTema;
     if (pre.progreso != null) o.progreso = Math.max(0, Math.min(100, Math.round(pre.progreso)));
     ['vsA', 'vsANum', 'vsB', 'vsBNum', 'cita', 'autor'].forEach(k => { if (pre[k] != null) o[k] = pre[k]; });
     return o;

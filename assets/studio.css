@@ -251,3 +251,6 @@ textarea.sx-in { min-height: 48px; overflow: hidden; }
   padding: 7px 12px; border-radius: 999px; background: rgba(0,0,0,.55); color: rgba(255,255,255,.85); font: 650 12px/1 var(--font, Inter, system-ui); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 @media (max-width: 959px) { .sx-canvas-wrap.nophoto::after { bottom: 12px; font-size: 11px; } }
 .sx-wrap.compact .sx-canvas-wrap.nophoto::after, .typing .sx-canvas-wrap.nophoto::after { display: none; }
+.sx-tpl-ic.paneles::before { left: 10%; right: 10%; top: 12%; height: 8%; background: #fff; }
+.sx-tpl-ic.paneles::after { left: 10%; right: 10%; top: 30%; bottom: 12%; border-radius: 6px; background: linear-gradient(90deg, #1ed760 0 46%, transparent 46% 54%, #fa2d48 54%) top / 100% 3px no-repeat, linear-gradient(90deg, rgba(255,255,255,.16) 0 46%, transparent 46% 54%, rgba(255,255,255,.16) 54%); }
+.sx-kinds { flex-wrap: wrap; }
