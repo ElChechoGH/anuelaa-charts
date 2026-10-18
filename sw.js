@@ -1,5 +1,5 @@
 /* App instalable: siempre intenta la versión más nueva; sin conexión usa la última guardada. */
-const VERSION = 'aa-v7';
+const VERSION = 'aa-v8';
 const SHELL = ['./', 'index.html', 'assets/app.css', 'assets/glass.css', 'assets/app.js', 'assets/studio.js', 'assets/studio.css', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {

@@ -1443,8 +1443,8 @@
     const row = (p) => {
       const k = PL_K[p.plataforma] || 'spotify', n = (p.temas || []).length;
       return h('div', { class: 'yc-row', onclick: () => openPlaylist(p) }, pico(k),
-        h('div', { class: 'yc-row-main' }, h('b', { text: plName(p) }), h('small', { text: n ? `${n} tema${n > 1 ? 's' : ''} suyo${n > 1 ? 's' : ''} · ${p.temas.map(t => t.titulo).slice(0, 3).join(', ')}` : `${p.plataforma} · ahora sin temas suyos` })),
-        h('div', { class: 'yc-row-meta' }, n ? h('b', { style: 'color:var(--up)', text: '#' + p.temas[0].pos }) : h('b', { style: 'color:var(--text3)', text: '—' }), h('small', { text: p.total ? `de ${p.total}` : '' })), icon('chev', 'yc-chev'));
+        h('div', { class: 'yc-row-main' }, h('b', { text: plName(p) }), h('small', { text: n ? `${n} tema${n > 1 ? 's' : ''} suyo${n > 1 ? 's' : ''} · ${p.temas.slice().sort((a, b) => a.pos - b.pos).map(t => `#${t.pos} ${t.titulo}`).slice(0, 4).join(' · ')}` : `${p.plataforma} · ahora sin temas suyos` })),
+        h('div', { class: 'yc-row-meta' }, n ? h('b', { style: 'color:var(--up)', text: '#' + Math.min(...p.temas.map(t => t.pos)) }) : h('b', { style: 'color:var(--text3)', text: '—' }), h('small', { text: n ? `su mejor tema${p.total ? ` · de ${p.total}` : ''}` : (p.total ? `de ${p.total}` : '') })), icon('chev', 'yc-chev'));
     };
     if (withHim.length) el.append(h('div', { class: 'yc-list' }, withHim.map(row)));
     if (without.length) { el.append(h('div', { class: 'yc-group-h', text: 'Sin temas suyos ahora' })); el.append(h('div', { class: 'yc-list' }, without.map(row))); }
