@@ -648,38 +648,44 @@ def creditos(song):
     return {_f(p) for p in gruesas + finas if len(_f(p)) >= 2}
 
 
+def _compacto(t):
+    return re.sub(r'(?:tv|music|musica|oficial|official|records|vevo|topic)+$', '', _f(t).replace(' ', ''))
+
+
 def canal_oficial(r, song):
-    """¿Es el videoclip oficial? True / False / None (no se sabe).
-    Vale: el canal de Anuel (ID), un VEVO o «- Topic» de Anuel o de un acreditado, un vídeo compartido «X and Anuel AA»,
-    el canal de un artista acreditado (verificado o no, p. ej. un emergente), o un canal de ARTISTA verificado (♪) cuyo título nombra a Anuel.
-    No vale: canales de fans («Anuel AA Fans», «ANUEL AA OFICIAL»…), canales de música/reacciones aunque estén verificados,
-    ni vídeos de otros artistas que solo coinciden en el nombre de la canción."""
+    """¿Es el videoclip oficial? True / False.
+    Vale: el canal de Anuel (ID) o uno de config.json («canales_oficiales»), un VEVO o «- Topic» de Anuel o de un acreditado,
+    un vídeo publicado a la vez en varios canales («ROA and Anuel AA», «Chris Jedi y 2 más»), el canal de un artista
+    acreditado en la canción (verificado o no, p. ej. un emergente) o un canal de ARTISTA (♪) cuyo título nombra a Anuel.
+    No vale: canales de fans, de música/reacciones/sellos ajenos, ni otra canción que solo se llama igual."""
     cid, can = r.get('canal_id'), (r.get('canal') or '').strip()
     tit = r.get('titulo') or ''
     ofi = CFG.get('canales_oficiales') or []
-    ofi_ids = {YT_CHANNEL} | set(ofi.values() if isinstance(ofi, dict) else ofi)
-    cred = creditos(song)
-    cred_otros = {c for c in cred if not NAME_RE.search(c)}
+    ofi = list(ofi.values()) if isinstance(ofi, dict) else list(ofi)
+    ofi_ids = {YT_CHANNEL} | {x for x in ofi if str(x).startswith('UC')}
+    ofi_nombres = {_compacto(x) for x in ofi if not str(x).startswith('UC')}
+    cred_otros = {_compacto(c) for c in creditos(song) if not NAME_RE.search(c)} - {''}
     nombra_anuel = bool(NAME_RE.search(tit))
-    if cid and cid in ofi_ids:
+    comp = _compacto(re.sub(r'\s*-\s*topic$', '', can, flags=re.I))
+    if (cid and cid in ofi_ids) or (comp and comp in ofi_nombres):
         return True
+    if re.search(r'\b(?:y|and)\s+\d+\s+(?:m[aá]s|more)\b', can, re.I):
+        return nombra_anuel or any(_compacto(p) in cred_otros for p in re.split(r'\s+(?:y|and)\s+\d+', can))
     partes = [p.strip() for p in re.split(r'\s+(?:and|y)\s+|\s*&\s*|\s*,\s*', can) if p.strip()]
-    if len(partes) >= 2 and any(p.casefold() == ARTISTA.casefold() for p in partes):
-        return True  # publicado a la vez en el canal de Anuel y en otro («ROA and Anuel AA»)
-    limpio = _f(re.sub(r'\s*-\s*topic$|vevo$|\bofficial\b|\boficial\b|\bmusic\b|\btv\b', '', can, flags=re.I))
-    compacto = limpio.replace(' ', '')
+    if len(partes) >= 2 and (any(p.casefold() == ARTISTA.casefold() for p in partes) or any(_compacto(p) in cred_otros for p in partes)):
+        return True
     if re.search(r'vevo$|\s-\s*topic$', can, re.I):
-        if compacto.startswith('anuel'):
-            return True
-        return any(c.replace(' ', '') == compacto for c in cred_otros) or nombra_anuel
+        return comp.startswith('anuel') or comp in cred_otros or nombra_anuel
     if NAME_RE.search(can) or re.match(r'anuel', can, re.I):
         return False  # se llama «Anuel …» pero no es su canal: fan
-    if limpio and (limpio in cred_otros or any(p and _f(p) in cred_otros for p in partes)):
-        return True  # canal del artista acreditado (aunque no esté verificado)
+    if comp and (comp in cred_otros or any(_compacto(p) in cred_otros for p in partes)):
+        return True
+    # canal con el nombre del artista + coletilla («ConepMusicPR» = Conep, «KendoKaponiTV» = Kendo Kaponi), pero no de fans/letras
+    if comp and not re.search(r'fan|letra|lyric|edit|reac|clip|remix|slowed|karaoke|cover|sped|8d', comp) \
+            and any(len(c) >= 4 and (comp.startswith(c) or c.startswith(comp) and len(comp) >= 5) for c in cred_otros):
+        return True
     if r.get('verificado') == 'artista':
         return nombra_anuel
-    if r.get('verificado') is None and nombra_anuel:
-        return None  # se comprueba la insignia
     return False
 
 
@@ -698,19 +704,7 @@ def yt_pick(song, res):
     t_ = _f(base(song['titulo']))
     if len(t_) < 2:
         return None
-    cand = []
-    for r in res[:15]:
-        if t_ not in _f(r['titulo']):
-            continue
-        ok = canal_oficial(r, song)
-        if ok is None and not NO_OFICIAL.search(r['titulo']):  # no se sabe: se mira la insignia del canal
-            try:
-                r['verificado'] = yt_owner_verified(r['video_id'])
-                ok = canal_oficial(r, song)
-            except Exception:  # noqa: BLE001
-                ok = False
-        if ok:
-            cand.append(r)
+    cand = [r for r in res[:15] if t_ in _f(r['titulo']) and canal_oficial(r, song)]
     if not cand:
         return None
 
@@ -1410,21 +1404,6 @@ def main():
     except Exception as e:  # noqa: BLE001
         fallo('créditos de artistas', e)
     quitados = 0
-    # vídeos dudosos (no se sabe si el canal es oficial): se mira la insignia del canal en su página
-    dudosos = [x for x in songs if (x.get('youtube') or {}).get('video_id') and not x['youtube'].get('fijo') and x['youtube'].get('origen') not in ('kworb', 'rss')
-               and not (x['youtube'].get('origen') is None and (x['youtube'].get('canal') == ARTISTA or x['youtube'].get('canal_id') == YT_CHANNEL))
-               and x['youtube'].get('verificado') is None and x['youtube'].get('canal')
-               and canal_oficial({'canal': x['youtube'].get('canal'), 'canal_id': x['youtube'].get('canal_id'), 'verificado': None, 'titulo': x['youtube'].get('titulo')}, x) is not True]
-
-    def _ver(x):
-        try:
-            return x, yt_owner_verified(x['youtube']['video_id'])
-        except Exception:  # noqa: BLE001
-            return x, None
-    with cf.ThreadPoolExecutor(6) as ex:
-        for x, v in ex.map(_ver, dudosos[:(15 if RAPIDO else 120)]):
-            if v is not None:
-                x['youtube']['verificado'] = v
     for s in songs:
         y = s.get('youtube') or {}
         if not y or y.get('fijo') or y.get('origen') in ('kworb', 'rss') or not y.get('canal'):
@@ -1621,12 +1600,18 @@ def main():
             except Exception:  # noqa: BLE001
                 return x, cc, None, False
         res_b, leidos = {}, 0
+        hechos_b = 0
         if pares:
             with cf.ThreadPoolExecutor(8) as ex:
-                for x, cc, pos, ok_ in ex.map(_bd, pares):
-                    if ok_:
-                        leidos += 1
-                        res_b.setdefault(x['id'], (x, {}))[1][cc] = pos
+                for i in range(0, len(pares), 16):
+                    lote = pares[i:i + 16]
+                    hechos_b += len(lote)
+                    for x, cc, pos, ok_ in ex.map(_bd, lote):
+                        if ok_:
+                            leidos += 1
+                            res_b.setdefault(x['id'], (x, {}))[1][cc] = pos
+                    if leidos == 0:  # YouTube está bloqueando: no insistir
+                        break
         for x, paises in res_b.values():
             dentro = {cc: p for cc, p in paises.items() if p}
             # si YouTube devolviera el mismo puesto en todos los países, no es por país: se queda solo España
@@ -1637,7 +1622,7 @@ def main():
         if pares:
             HECHO.append(f'tendencias YouTube en directo ({len(res_b)} vídeos, {leidos}/{len(pares)} páginas)')
             if leidos < len(pares) * 0.5:
-                fallo('tendencias YouTube en directo', f'YouTube bloqueó {len(pares) - leidos} de {len(pares)} consultas (se usan las de kworb)')
+                fallo('tendencias YouTube en directo', f'YouTube bloqueó {hechos_b - leidos} de {hechos_b} consultas (se usan las de kworb)')
     except Exception as e:  # noqa: BLE001
         fallo('tendencias YouTube en directo', e)
 
