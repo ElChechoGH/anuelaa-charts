@@ -192,6 +192,19 @@ def col(heads, *names):
 
 
 # ---------------------------------------------------------------- Spotify (kworb)
+def kworb_creditos(track_id):
+    """Artistas acreditados de un tema (cabecera «Artists:» de su página en kworb)."""
+    html = get(f'https://kworb.net/spotify/track/{track_id}.html', tries=2)
+    names = []
+    for m in re.finditer(r'<a[^>]+href="[^"]*spotify/artist/[\w]+\.html"[^>]*>([^<]+)</a>', html[:8000]):
+        n = htmlmod.unescape(m.group(1)).strip()
+        if n and n not in names:
+            names.append(n)
+    if not names:
+        raise ValueError('sin artistas')
+    return names
+
+
 def kworb_songs(artist_id):
     html = get(f'https://kworb.net/spotify/artist/{artist_id}_songs.html')
     tbs, soup = tables(html)
@@ -628,7 +641,7 @@ def _f(t):
 
 def creditos(song):
     """Artistas acreditados en la canción (para aceptar el canal oficial de un colaborador)."""
-    txt = ' , '.join([str(song.get('artistas') or ''), ' '.join(re.findall(r'\((?:with|feat\.?|ft\.?|con)\s+([^)]*)\)', song.get('titulo') or '', re.I))])
+    txt = ' , '.join([str(song.get('artistas') or ''), ', '.join(song.get('creditos') or []), ' '.join(re.findall(r'\((?:with|feat\.?|ft\.?|con)\s+([^)]*)\)', song.get('titulo') or '', re.I))])
     gruesas = re.split(r'\s*(?:,|\bfeat\.?|\bft\.?|\bwith\b)\s*', txt, flags=re.I)  # «Zion & Lennox» entero
     finas = re.split(r'\s*(?:,|&|\+|\bfeat\.?|\bft\.?|\bwith\b|\bx\b|\by\b)\s*', txt, flags=re.I)
     return {_f(p) for p in gruesas + finas if len(_f(p)) >= 2}
@@ -1361,6 +1374,29 @@ def main():
         HECHO.append(f'kworb YouTube ({len(kw_vids)} vídeos)')
     except Exception as e:  # noqa: BLE001
         fallo('kworb YouTube artista', e)
+    # créditos reales de cada tema (quién colabora), para reconocer el canal oficial de cualquier artista, verificado o no
+    try:
+        lim_c = (NOW - dt.timedelta(days=60)).strftime('%Y-%m-%d')
+        sin_c = [x for x in songs if (x.get('spotify') or {}).get('id') and not x.get('creditos') and (not RAPIDO or (x.get('lanzamiento') or '') >= lim_c)]
+        sin_c = sorted(sin_c, key=lambda x: (bool(x.get('youtube')), x.get('lanzamiento') or ''), reverse=False)[:(10 if RAPIDO else 250)]
+
+        def _cr(x):
+            try:
+                return x, kworb_creditos(x['spotify']['id'])
+            except Exception:  # noqa: BLE001
+                return x, None
+        n_c = 0
+        with cf.ThreadPoolExecutor(6) as ex:
+            for x, names in ex.map(_cr, sin_c):
+                if names:
+                    x['creditos'] = names
+                    if len(names) > 1 and (not x.get('artistas') or x.get('artistas') == ARTISTA):
+                        x['artistas'] = ', '.join(names)
+                    n_c += 1
+        if sin_c:
+            HECHO.append(f'créditos de artistas ({n_c}/{len(sin_c)})')
+    except Exception as e:  # noqa: BLE001
+        fallo('créditos de artistas', e)
     quitados = 0
     for s in songs:
         y = s.get('youtube') or {}
