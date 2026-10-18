@@ -1,0 +1,54 @@
+{
+ "artista": {
+  "nombre": "Anuel AA",
+  "origen": "Carolina, Puerto Rico",
+  "lema": "Real Hasta La Muerte",
+  "hashtag": "AnuelAA",
+  "instagram": "anuel",
+  "tiktok": "anuel",
+  "links": {
+   "spotify": "https://open.spotify.com/artist/2R21vXR83lH98kGeO99Y66",
+   "youtube": "https://www.youtube.com/@anuelaa",
+   "apple_music": "https://music.apple.com/us/artist/996166916",
+   "instagram": "https://www.instagram.com/anuel/",
+   "tiktok": "https://www.tiktok.com/@anuel",
+   "deezer": "https://www.deezer.com/artist/7961888",
+   "x": "https://x.com/Anuel"
+  }
+ },
+ "sitio": {
+  "nombre": "Anuel AA Charts",
+  "corto": "AA Charts",
+  "marca": "lvcifercharts",
+  "acento": "#ff2b3d"
+ },
+ "perfil": {
+  "spotify": {},
+  "youtube": {},
+  "instagram": {},
+  "tiktok": {},
+  "shazam": {},
+  "deezer": {},
+  "audiomack": {},
+  "apple_music": {},
+  "x": {},
+  "facebook": {}
+ },
+ "canciones": [],
+ "albumes": [],
+ "charts": [],
+ "novedades": [],
+ "historial": [],
+ "yt_diario": [],
+ "avisos": [],
+ "config": {},
+ "logros_estado": {},
+ "generado": null,
+ "completa": null,
+ "estado": {
+  "hecho": [],
+  "fallos": [],
+  "en": null,
+  "modo": "pendiente"
+ }
+}
