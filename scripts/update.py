@@ -1462,7 +1462,7 @@ def main():
                 s['youtube'] = {'video_id': v['video_id'], 'titulo': v['titulo'], 'canal': ARTISTA, 'vistas': v.get('vistas'), 'likes': None,
                                 'publicado': v.get('publicado'), 'fecha': HOY, 'fuente': 'YouTube RSS', 'origen': 'rss', 'canal_id': YT_CHANNEL}
                 log(f'  + video para {s["titulo"]}: {v["video_id"]}')
-    if not yt_key:  # sin clave: busca en YouTube el videoclip de los temas que aún no tienen (poco a poco)
+    if True:  # búsqueda gratis (sin gastar cupo de la API): siempre primero
         hace7 = (NOW - dt.timedelta(days=7)).strftime('%Y-%m-%d')
         hace1 = (NOW - dt.timedelta(days=1)).strftime('%Y-%m-%d')
         lim120 = (NOW - dt.timedelta(days=120)).strftime('%Y-%m-%d')
@@ -1476,11 +1476,13 @@ def main():
         for x in cola:
             x['yt_buscado'] = HOY
             r = None
+            x['_bloq'] = False
             for q_ in (f"{base(x['titulo'])} {BUSCAR} video oficial", f"{base(x['titulo'])} {BUSCAR}"):
                 try:
                     r = yt_pick(x, yt_search_scrape(q_))
                 except Exception:  # noqa: BLE001
                     errores += 1
+                    x['_bloq'] = True
                     r = None
                 if r and es_oficial(r):
                     break
@@ -1493,21 +1495,30 @@ def main():
             time.sleep(0.6)
         if cola:
             HECHO.append(f'videoclips encontrados en YouTube ({hallados}/{len(cola)}' + (f', {errores} búsquedas bloqueadas' if errores else '') + ')')
-    if yt_key:  # busca video de temas nuevos sin video
-        _hace7 = (NOW - dt.timedelta(days=7)).strftime('%Y-%m-%d')
+    if yt_key:  # la API (100 unidades por búsqueda) solo para lo que la búsqueda gratis no pudo mirar, con tope diario
+        cuota = data.get('yt_cuota') or {}
+        if cuota.get('d') != HOY:
+            cuota = {'d': HOY, 'busquedas': 0}
+        TOPE = 40  # 40 búsquedas = 4.000 unidades/día como máximo (el límite gratis es 10.000)
         _lim = (NOW - dt.timedelta(days=120)).strftime('%Y-%m-%d')
-        _sin = sorted([x for x in songs if (not x.get('youtube') or (not x['youtube'].get('fijo') and not es_oficial(x['youtube'])))
-                       and ((x.get('yt_buscado') or '') < _hace7 or (not x.get('youtube') and (x.get('lanzamiento') or '') >= _lim))],
-                      key=lambda x: ((x.get('lanzamiento') or '') < (NOW - dt.timedelta(days=60)).strftime('%Y-%m-%d'), -((x.get('spotify') or {}).get('total') or 0)))
-        for s in (_sin[:15] if not RAPIDO else [x for x in _sin if not x.get('youtube') and (x.get('lanzamiento') or '') >= _lim][:5]):
-            s['yt_buscado'] = HOY
+        _sin = [x for x in songs if (x.get('_bloq') or (x.get('_bloq') is False and not x.get('youtube') and (x.get('lanzamiento') or '') >= _lim))
+                and (x.get('yt_api_buscado') or '') != HOY
+                and (not x.get('youtube') or (not x['youtube'].get('fijo') and not es_oficial(x['youtube'])))]
+        _sin.sort(key=lambda x: ((x.get('lanzamiento') or '') < _lim, bool(x.get('youtube')), -((x.get('spotify') or {}).get('total') or 0)))
+        for s in _sin[:max(0, min(4 if RAPIDO else 12, TOPE - cuota['busquedas']))]:
+            s['yt_api_buscado'] = HOY
+            cuota['busquedas'] += 1
             try:
                 res = yt_search_api(yt_key, f"{base(s['titulo'])} {BUSCAR}")
                 hit = yt_pick(s, res)
                 if hit and (not s.get('youtube') or es_oficial(hit)) and hit['video_id'] != (s.get('youtube') or {}).get('video_id'):
                     s['youtube'] = dict(hit, vistas=None, likes=None, fecha=HOY, fuente='YouTube Data API', origen='busqueda')
+                    log(f'  + videoclip (API) para {s["titulo"]}: {hit["video_id"]} ({hit["canal"]})')
             except Exception as e:  # noqa: BLE001
                 fallo(f'búsqueda YouTube {s["titulo"]}', e)
+        data['yt_cuota'] = cuota
+    for x in songs:
+        x.pop('_bloq', None)
     vids = [s['youtube']['video_id'] for s in songs if s.get('youtube') and s['youtube'].get('video_id')]
     got = {}
     if yt_key:
