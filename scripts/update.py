@@ -207,6 +207,15 @@ def kworb_creditos(track_id):
     return names
 
 
+def spotify_creditos(track_id):
+    """Artistas del tema según su página pública de Spotify (título «… - song and lyrics by A, B | Spotify»)."""
+    html = get(f'https://open.spotify.com/track/{track_id}', tries=2, headers={'Accept-Language': 'en'})
+    m = re.search(r'<title>[^<]*?by ([^<|]+?)\s*\|\s*Spotify</title>', html) or re.search(r'<meta[^>]+(?:og:description|description)"\s+content="([^"·]+?)\s*·\s*(?:Song|Canción)', html)
+    if not m:
+        raise ValueError('sin artistas')
+    return [htmlmod.unescape(n).strip() for n in m.group(1).split(',') if n.strip()]
+
+
 def kworb_songs(artist_id):
     html = get(f'https://kworb.net/spotify/artist/{artist_id}_songs.html')
     tbs, soup = tables(html)
@@ -667,6 +676,7 @@ def yt_search_scrape(query):
     raise RuntimeError('YouTube y los espejos no devolvieron resultados')
 
 
+FALSA_VERSION = re.compile(r'karaoke|originally performed|in the style of|made famous|tribute|tributo|instrumental version|backing track|cover version|as made famous|\\bcover\\b|lullaby|8-bit|piano version', re.I)
 NO_OFICIAL = re.compile(r'lyric|letra|audio|visualizer|reaccion|reacción|reaction|cover|karaoke|slowed|speed|8d|instrumental|en vivo|live|preview|extended|clean|nightcore|tiktok', re.I)
 
 
@@ -687,6 +697,15 @@ def _compacto(t):
     return re.sub(r'(?:tv|music|musica|oficial|official|records|vevo|topic)+$', '', _f(t).replace(' ', ''))
 
 
+CANAL_VEVO_ANUEL = 'AnuelVEVO'
+
+
+def es_canal_anuel(canal, cid):
+    ofi = CFG.get('canales_oficiales') or []
+    ofi = list(ofi.values()) if isinstance(ofi, dict) else list(ofi)
+    return (cid and (cid == YT_CHANNEL or cid in ofi)) or (canal or '').strip() == CANAL_VEVO_ANUEL
+
+
 def canal_oficial(r, song):
     """¿Es el videoclip oficial? True / False.
     Vale: el canal de Anuel (ID) o uno de config.json («canales_oficiales»), un VEVO o «- Topic» de Anuel o de un acreditado,
@@ -702,7 +721,7 @@ def canal_oficial(r, song):
     cred_otros = {_compacto(c) for c in creditos(song) if not NAME_RE.search(c)} - {''}
     nombra_anuel = bool(NAME_RE.search(tit))
     comp = _compacto(re.sub(r'\s*-\s*topic$', '', can, flags=re.I))
-    if cid and cid in ofi_ids:
+    if (cid and cid in ofi_ids) or es_canal_anuel(can, cid):
         return True
     if comp and comp in ofi_nombres:  # sello oficial (Flow La Movie, Hear This Music…): el título debe nombrar a Anuel o a un acreditado
         return nombra_anuel or any(c and c in _f(tit).replace(' ', '') for c in cred_otros if len(c) >= 4)
@@ -1450,13 +1469,16 @@ def main():
     try:
         lim_c = (NOW - dt.timedelta(days=60)).strftime('%Y-%m-%d')
         sin_c = [x for x in songs if (x.get('spotify') or {}).get('id') and not x.get('creditos_sp') and (not RAPIDO or (x.get('lanzamiento') or '') >= lim_c)]
-        sin_c = sorted(sin_c, key=lambda x: (bool(x.get('youtube')), x.get('lanzamiento') or ''), reverse=False)[:(10 if RAPIDO else 250)]
+        sin_c = sorted(sin_c, key=lambda x: (bool(x.get('youtube')), x.get('lanzamiento') or ''), reverse=False)[:(10 if RAPIDO else 500)]
 
         def _cr(x):
             try:
                 return x, kworb_creditos(x['spotify']['id'])
             except Exception:  # noqa: BLE001
-                return x, None
+                try:
+                    return x, spotify_creditos(x['spotify']['id'])
+                except Exception:  # noqa: BLE001
+                    return x, None
         n_c = 0
         with cf.ThreadPoolExecutor(6) as ex:
             for x, names in ex.map(_cr, sin_c):
@@ -1496,7 +1518,8 @@ def main():
                     otros_ap = {_f(n) for n in re.split(r'\s*(?:,|&|\bfeat\.?|\bft\.?|\bwith\b)\s*', r.get('artistName') or '', flags=re.I) if n and not NAME_RE.search(n)}
                     def _solapa(a_, b_):
                         return any(p1 == p2 or (len(p1) >= 4 and (p1 in p2 or p2 in p1)) for p1 in a_ for p2 in b_)
-                    if otros_sp and otros_ap and not _solapa(otros_sp, otros_ap):
+                    falsa = bool(FALSA_VERSION.search(' '.join(str(r.get(k) or '') for k in ('trackName', 'artistName', 'collectionName')))) or not NAME_RE.search(r.get('artistName') or '')
+                    if falsa or (otros_sp and otros_ap and not _solapa(otros_sp, otros_ap)):
                         # el enlace de Apple era otra canción con el mismo nombre: se quita (y lo que vino de ella)
                         log(f'  - Apple desenlazado de {x["titulo"]}: era «{r.get("trackName")}» de {r.get("artistName")}')
                         art_ = x.get('portada_hd')
@@ -1504,6 +1527,8 @@ def main():
                         if art_ and x.get('portada') == art_:
                             x.pop('portada', None)
                         x.pop('portada_hd', None)
+                        if x.get('lanzamiento_fuente') == 'Apple Music':
+                            x.pop('lanzamiento', None); x.pop('lanzamiento_fuente', None)
                         if x.get('creditos') == [r.get('artistName')]:
                             x.pop('creditos', None)
                         if x.get('artistas') == r.get('artistName'):
@@ -1522,9 +1547,9 @@ def main():
     except Exception as e:  # noqa: BLE001
         fallo('créditos Apple', e)
     quitados = 0
-    if data.get('yt_reglas') != 4:  # reglas nuevas: se vuelve a dar oportunidad a los vídeos rechazados antes
+    if data.get('yt_reglas') != 5:  # reglas nuevas: se vuelve a dar oportunidad a los vídeos rechazados antes
         data['yt_vetados'] = []
-        data['yt_reglas'] = 4
+        data['yt_reglas'] = 5
     vetados = set(data.get('yt_vetados') or [])
     for s in songs:
         y = s.get('youtube') or {}
@@ -1532,8 +1557,8 @@ def main():
             continue
         can_ = y.get('canal') or ''
         _fan = bool(NAME_RE.search(can_) or re.match(r'anuel', can_, re.I)) and not can_.lower().endswith('- topic')
-        if y.get('canal_id') == YT_CHANNEL:
-            continue  # su canal oficial
+        if es_canal_anuel(can_, y.get('canal_id')):
+            continue  # su canal oficial (o su VEVO)
         if _fan and (y.get('canal_id') or can_ != ARTISTA):
             malo = True  # se llama «Anuel…» (AnuelVEVO, ANUEL AA OFICIAL…) pero no es su canal
         elif y.get('origen') == 'rss' or (y.get('origen') is None and can_ == ARTISTA):
@@ -1868,7 +1893,8 @@ def main():
                 time.sleep(3)
                 continue
             ft = _fold(t0)
-            hits = [r for r in j.get('results', []) if _fold(r.get('trackName')).startswith(ft) and (NAME_RE.search(r.get('artistName') or '') or NAME_RE.search(r.get('trackName') or ''))]
+            hits = [r for r in j.get('results', []) if _fold(r.get('trackName')).startswith(ft) and NAME_RE.search(r.get('artistName') or '')
+                    and not FALSA_VERSION.search(' '.join(str(r.get(k) or '') for k in ('trackName', 'artistName', 'collectionName')))]
             otros_sp = {_f(n) for n in (x.get('creditos_sp') or []) if not NAME_RE.search(n)}
             if otros_sp:  # mismos artistas que en Spotify (6ix9ine ≠ Ozuna)
                 hits = [r for r in hits if otros_sp & {_f(n) for n in re.split(r'\s*(?:,|&|\bfeat\.?|\bft\.?|\bwith\b)\s*', r.get('artistName') or '', flags=re.I) if n}]
@@ -1994,7 +2020,8 @@ def main():
             img = oembed(f'https://open.spotify.com/artist/{SP_ARTIST}')
             if img:
                 data['artista']['imagen'] = img
-            cola_p = [x for x in songs if (x.get('spotify') or {}).get('id') and not x.get('portada')][:500]
+            # la portada de Spotify manda: se pone a todo tema con id de Spotify que aún no la tenga (aunque tenga otra de Deezer/Apple)
+            cola_p = [x for x in songs if (x.get('spotify') or {}).get('id') and 'scdn.co' not in str(x.get('portada') or '')][:500]
             def _ofoto(x):
                 try:
                     return x, oembed(f'https://open.spotify.com/track/{x["spotify"]["id"]}')
@@ -2005,6 +2032,8 @@ def main():
                 for x, u in ex.map(_ofoto, cola_p):
                     if u:
                         x['portada'] = u
+                        if not x.get('apple'):  # una portada «HD» sin enlace de Apple validado no se usa
+                            x.pop('portada_hd', None)
                         n_ok += 1
             # sin Spotify: portada de Deezer (1000 px)
             n_dz = 0
