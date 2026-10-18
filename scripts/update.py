@@ -311,7 +311,8 @@ def yt_watch(video_id):
         out['canal'] = json.loads('"' + au.group(1) + '"')
     io = html.find('"videoOwnerRenderer"')
     if io >= 0:
-        out['verificado'] = 'BADGE_STYLE_TYPE_VERIFIED' in html[io:io + 4000]
+        seg = html[io:io + 4000]
+        out['verificado'] = 'artista' if 'BADGE_STYLE_TYPE_VERIFIED_ARTIST' in seg else ('verificado' if 'BADGE_STYLE_TYPE_VERIFIED' in seg else False)
     ci = re.search(r'"videoDetails":\{.*?"channelId":"(UC[\w-]{22})"', html, re.S)
     if ci:
         out['canal_id'] = ci.group(1)
@@ -599,7 +600,7 @@ def yt_search_scrape(query):
                 out.append({'video_id': vr['videoId'], 'titulo': ''.join(r.get('text', '') for r in vr['title']['runs']),
                             'canal': ''.join(r.get('text', '') for r in own),
                             'canal_id': next((r['navigationEndpoint']['browseEndpoint'].get('browseId') for r in own if (r.get('navigationEndpoint') or {}).get('browseEndpoint')), None),
-                            'verificado': 'VERIFIED' in badges,
+                            'verificado': 'artista' if 'VERIFIED_ARTIST' in badges else ('verificado' if 'VERIFIED' in badges else False),
                             'hace': (vr.get('publishedTimeText') or {}).get('simpleText', ''), 'vistas_txt': (vr.get('viewCountText') or {}).get('simpleText', '')})
             except (KeyError, TypeError):
                 continue
@@ -612,7 +613,7 @@ def yt_search_scrape(query):
         try:
             j = get(url, as_json=True, tries=1)
             out = [{'video_id': (it.get('url') or '').split('v=')[-1], 'titulo': it.get('title') or '', 'canal': it.get('uploaderName') or '',
-                    'canal_id': (it.get('uploaderUrl') or '').split('/channel/')[-1] or None, 'verificado': bool(it.get('uploaderVerified')),
+                    'canal_id': (it.get('uploaderUrl') or '').split('/channel/')[-1] or None, 'verificado': None,
                     'vistas': it.get('views'), 'hace': it.get('uploadedDate') or '', 'vistas_txt': str(it.get('views') or '')} for it in (j.get('items') or []) if 'watch?v=' in (it.get('url') or '')]
             if out:
                 return out
@@ -621,7 +622,7 @@ def yt_search_scrape(query):
     for host in ('https://inv.nadeko.net', 'https://invidious.nerdvpn.de', 'https://yewtu.be'):
         try:
             j = get(f'{host}/api/v1/search', as_json=True, params={'q': query, 'type': 'video'}, tries=1)
-            out = [{'video_id': it['videoId'], 'titulo': it.get('title') or '', 'canal': it.get('author') or '', 'canal_id': it.get('authorId'), 'verificado': bool(it.get('authorVerified')), 'vistas': it.get('viewCount'),
+            out = [{'video_id': it['videoId'], 'titulo': it.get('title') or '', 'canal': it.get('author') or '', 'canal_id': it.get('authorId'), 'verificado': None, 'vistas': it.get('viewCount'),
                     'hace': it.get('publishedText') or '', 'vistas_txt': str(it.get('viewCount') or '')}
                    for it in (j or []) if it.get('videoId')]
             if out:
@@ -648,28 +649,38 @@ def creditos(song):
 
 
 def canal_oficial(r, song):
-    """¿Es un canal oficial? True / False / None (no se sabe).
-    Oficiales: el canal de Anuel (por su ID), cualquier VEVO o «- Topic», un vídeo compartido «X and Anuel AA»,
-    un canal verificado por YouTube o el de un artista acreditado. Canales de fans con «Anuel» en el nombre: no."""
+    """¿Es el videoclip oficial? True / False / None (no se sabe).
+    Vale: el canal de Anuel (ID), un VEVO o «- Topic» de Anuel o de un acreditado, un vídeo compartido «X and Anuel AA»,
+    el canal de un artista acreditado (verificado o no, p. ej. un emergente), o un canal de ARTISTA verificado (♪) cuyo título nombra a Anuel.
+    No vale: canales de fans («Anuel AA Fans», «ANUEL AA OFICIAL»…), canales de música/reacciones aunque estén verificados,
+    ni vídeos de otros artistas que solo coinciden en el nombre de la canción."""
     cid, can = r.get('canal_id'), (r.get('canal') or '').strip()
+    tit = r.get('titulo') or ''
     ofi = CFG.get('canales_oficiales') or []
     ofi_ids = {YT_CHANNEL} | set(ofi.values() if isinstance(ofi, dict) else ofi)
+    cred = creditos(song)
+    cred_otros = {c for c in cred if not NAME_RE.search(c)}
+    nombra_anuel = bool(NAME_RE.search(tit))
     if cid and cid in ofi_ids:
         return True
-    if re.search(r'vevo$|\s-\s*topic$', can, re.I):
-        return True
     partes = [p.strip() for p in re.split(r'\s+(?:and|y)\s+|\s*&\s*|\s*,\s*', can) if p.strip()]
-    if len(partes) >= 2 and (any(p.casefold() == ARTISTA.casefold() for p in partes) or any(_f(p) in creditos(song) for p in partes)) \
-            and not (cid and NAME_RE.search(can) and cid not in ofi_ids and len(partes) < 2):
-        return True  # vídeo publicado a la vez en varios canales («ROA and Anuel AA»)
+    if len(partes) >= 2 and any(p.casefold() == ARTISTA.casefold() for p in partes):
+        return True  # publicado a la vez en el canal de Anuel y en otro («ROA and Anuel AA»)
+    limpio = _f(re.sub(r'\s*-\s*topic$|vevo$|\bofficial\b|\boficial\b|\bmusic\b|\btv\b', '', can, flags=re.I))
+    compacto = limpio.replace(' ', '')
+    if re.search(r'vevo$|\s-\s*topic$', can, re.I):
+        if compacto.startswith('anuel'):
+            return True
+        return any(c.replace(' ', '') == compacto for c in cred_otros) or nombra_anuel
     if NAME_RE.search(can) or re.match(r'anuel', can, re.I):
         return False  # se llama «Anuel …» pero no es su canal: fan
-    if r.get('verificado'):
-        return True
-    limpio = _f(re.sub(r'\bofficial\b|\boficial\b|\bmusic\b|\btv\b', '', can, flags=re.I))
-    if limpio and limpio in creditos(song):
-        return True
-    return False if r.get('verificado') is False else None
+    if limpio and (limpio in cred_otros or any(p and _f(p) in cred_otros for p in partes)):
+        return True  # canal del artista acreditado (aunque no esté verificado)
+    if r.get('verificado') == 'artista':
+        return nombra_anuel
+    if r.get('verificado') is None and nombra_anuel:
+        return None  # se comprueba la insignia
+    return False
 
 
 def yt_owner_verified(video_id):
@@ -678,7 +689,8 @@ def yt_owner_verified(video_id):
     i = html.find('"videoOwnerRenderer"')
     if i < 0:
         raise ValueError('sin datos del canal')
-    return 'BADGE_STYLE_TYPE_VERIFIED' in html[i:i + 4000]
+    seg = html[i:i + 4000]
+    return 'artista' if 'BADGE_STYLE_TYPE_VERIFIED_ARTIST' in seg else ('verificado' if 'BADGE_STYLE_TYPE_VERIFIED' in seg else False)
 
 
 def yt_pick(song, res):
@@ -691,10 +703,10 @@ def yt_pick(song, res):
         if t_ not in _f(r['titulo']):
             continue
         ok = canal_oficial(r, song)
-        if ok is None and not NO_OFICIAL.search(r['titulo']):  # no se sabe: se mira si el canal está verificado
+        if ok is None and not NO_OFICIAL.search(r['titulo']):  # no se sabe: se mira la insignia del canal
             try:
                 r['verificado'] = yt_owner_verified(r['video_id'])
-                ok = r['verificado']
+                ok = canal_oficial(r, song)
             except Exception:  # noqa: BLE001
                 ok = False
         if ok:
@@ -1398,13 +1410,29 @@ def main():
     except Exception as e:  # noqa: BLE001
         fallo('créditos de artistas', e)
     quitados = 0
+    # vídeos dudosos (no se sabe si el canal es oficial): se mira la insignia del canal en su página
+    dudosos = [x for x in songs if (x.get('youtube') or {}).get('video_id') and not x['youtube'].get('fijo') and x['youtube'].get('origen') not in ('kworb', 'rss')
+               and not (x['youtube'].get('origen') is None and (x['youtube'].get('canal') == ARTISTA or x['youtube'].get('canal_id') == YT_CHANNEL))
+               and x['youtube'].get('verificado') is None and x['youtube'].get('canal')
+               and canal_oficial({'canal': x['youtube'].get('canal'), 'canal_id': x['youtube'].get('canal_id'), 'verificado': None, 'titulo': x['youtube'].get('titulo')}, x) is not True]
+
+    def _ver(x):
+        try:
+            return x, yt_owner_verified(x['youtube']['video_id'])
+        except Exception:  # noqa: BLE001
+            return x, None
+    with cf.ThreadPoolExecutor(6) as ex:
+        for x, v in ex.map(_ver, dudosos[:(15 if RAPIDO else 120)]):
+            if v is not None:
+                x['youtube']['verificado'] = v
     for s in songs:
         y = s.get('youtube') or {}
         if not y or y.get('fijo') or y.get('origen') in ('kworb', 'rss') or not y.get('canal'):
             continue
         if y.get('origen') is None and (y.get('canal') == ARTISTA or y.get('canal_id') == YT_CHANNEL):  # antiguos del canal oficial
             continue
-        if canal_oficial({'canal': y.get('canal'), 'canal_id': y.get('canal_id'), 'verificado': y.get('verificado')}, s) is False:
+        _fan = bool(NAME_RE.search(y.get('canal') or '') or re.match(r'anuel', y.get('canal') or '', re.I))
+        if (s.get('creditos') or _fan) and canal_oficial({'canal': y.get('canal'), 'canal_id': y.get('canal_id'), 'verificado': y.get('verificado'), 'titulo': y.get('titulo')}, s) is False:
             log(f'  - vídeo no oficial quitado de {s["titulo"]}: {y.get("canal")}')
             s.pop('youtube', None)
             s.pop('yt_buscado', None)
