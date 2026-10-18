@@ -230,7 +230,7 @@
     SONGS = DATA.canciones.map(s => {
       const o = Object.assign({}, s);
       const yt = s.youtube ? Object.assign({}, s.youtube) : null;
-      if (yt && LIVE.v[yt.video_id]) { const L = LIVE.v[yt.video_id]; if (isNum(L.vistas) && !(isNum(yt.vistas) && L.vistas < yt.vistas)) { yt.vistas = L.vistas; yt.likes = L.likes; yt.fecha = L.at.slice(0, 10); yt.live = L.at; } }
+      if (yt && LIVE.v[yt.video_id]) { const L = LIVE.v[yt.video_id]; if (isNum(L.vistas) && !(DATA.generado && L.at < DATA.generado) && !(isNum(yt.vistas) && L.vistas < yt.vistas)) { yt.vistas = L.vistas; yt.likes = L.likes; yt.fecha = L.at.slice(0, 10); yt.live = L.at; } }
       o.yt = yt;
       o.sp = s.spotify || {};
       o.b = base(s.titulo);
@@ -443,8 +443,7 @@
     nav.append(h('button', { class: 'yc-tab more-btn', type: 'button', onclick: openMore }, icon('dots'), h('span', { text: 'Más' })));
   }
   function openMore() {
-    const b = h('div', { class: 'yc-list' }, PAGES.filter(p => !MOBILE_MAIN.includes(p[0])).map(([id, label, ic]) => h('div', { class: 'yc-row', onclick: () => { closeSheet(); go(id); } }, h('span', { class: 'yc-moreic' }, icon(ic)), h('div', { class: 'yc-row-main' }, h('b', { text: label })), icon('chev', 'yc-chev'))),
-      h('div', { class: 'yc-row', onclick: () => { closeSheet(); setTimeout(openAlerts, 350); } }, h('span', { class: 'yc-moreic' }, icon('mail')), h('div', { class: 'yc-row-main' }, h('b', { text: 'Alertas por correo' })), icon('chev', 'yc-chev')));
+    const b = h('div', { class: 'yc-list' }, PAGES.filter(p => !MOBILE_MAIN.includes(p[0])).map(([id, label, ic]) => h('div', { class: 'yc-row', onclick: () => { closeSheet(); go(id); } }, h('span', { class: 'yc-moreic' }, icon(ic)), h('div', { class: 'yc-row-main' }, h('b', { text: label })), icon('chev', 'yc-chev'))));
     openSheet('Más', b);
   }
   const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1329,7 +1328,7 @@
     const el = $('#p-novedades'); el.replaceChildren();
     const N = (DATA.novedades || []).slice().sort((a, b) => String(b.fecha || '').localeCompare(String(a.fecha || '')) || String(b.detectado || '').localeCompare(String(a.detectado || '')));
     el.append(h('h1', { class: 'yc-h1', text: 'Lo nuevo' }), h('p', { class: 'yc-sub', text: `Todo lo que pasa con ${AN()}: estrenos, listas, hitos, sus vídeos, quién lo menciona en YouTube, noticias y actividad en redes. Se revisa cada 30 minutos.` }));
-    el.append(h('div', { class: 'yc-toolbar' }, h('span'), h('div', { style: 'display:flex;gap:6px;flex-wrap:wrap' }, h('button', { class: 'yc-chip', onclick: openFeeds }, '➕ Fuentes'), h('button', { class: 'yc-chip', onclick: openAlerts }, '🔔 Alertas por correo'))));
+    el.append(h('div', { class: 'yc-toolbar' }, h('span'), h('div', { style: 'display:flex;gap:6px;flex-wrap:wrap' }, h('button', { class: 'yc-chip', onclick: openFeeds }, '➕ Fuentes'))));
     const chips = h('div', { class: 'yc-chips' }, [['todo', 'Todo'], ...Object.entries(NOV_T).map(([k, v]) => [k, v[0]])].map(([k, l]) => h('button', { class: 'yc-chip', 'aria-pressed': String(novF === k), onclick: () => { novF = k; renderNovedades(); }, text: l + (k !== 'todo' ? ` · ${N.filter(n => n.tipo === k).length}` : '') })));
     el.append(chips);
     const rows = N.filter(n => novF === 'todo' || n.tipo === novF);
@@ -1457,7 +1456,7 @@
   function renderLogros() {
     const el = $('#p-logros'); el.replaceChildren();
     const all = logrosList();
-    el.append(h('h1', { class: 'yc-h1', text: 'Logros' }), h('p', { class: 'yc-sub', text: 'Lo que merece post. Se detecta solo con datos reales y te avisa por correo.' }));
+    el.append(h('h1', { class: 'yc-h1', text: 'Logros' }), h('p', { class: 'yc-sub', text: 'Lo que merece post. Se detecta solo con datos reales.' }));
     const cats = Object.keys(LG_CAT).filter(k => k === 'todo' || all.some(n => n.cat === k));
     el.append(h('div', { class: 'yc-seg yc-lg-seg' }, cats.map(k => h('button', { type: 'button', 'aria-pressed': String(lgF === k), onclick: () => { lgF = k; renderLogros(); }, text: LG_CAT[k] }))));
     const rows = all.filter(n => lgF === 'todo' || n.cat === lgF);
@@ -2263,6 +2262,23 @@
     return { ok, total: vids.length };
   }
 
+  let liveBgT = 0;
+  async function liveBackground() {
+    clearTimeout(liveBgT);
+    try {
+      if (document.visibilityState === 'visible' && SONGS.length) {
+        const lim = new Date(Date.now() - 60 * 864e5).toISOString().slice(0, 10);
+        const top = SONGS.filter(s => s.yt && s.yt.video_id).sort((a, b) => (b.yt.vistas || 0) - (a.yt.vistas || 0)).slice(0, 20);
+        const rec = SONGS.filter(s => s.yt && s.yt.video_id && (s.lanzamiento || '') >= lim);
+        const lista = [...new Set([...rec, ...top])].slice(0, 30);
+        let n = 0;
+        for (const s of lista) { const prev = LIVE.v[s.yt.video_id]; if (prev && Date.now() - new Date(prev.at) < 10 * 60e3) continue; try { LIVE.v[s.yt.video_id] = await rydFetch(s.yt.video_id); n++; } catch (e) { /* sigue */ } }
+        if (n) { LIVE.at = new Date().toISOString(); store.set('yc.live.yt', LIVE); const lab = $('#updated-label'); if (lab && DATA.generado) lab.textContent = `Datos ${ago(DATA.generado)} · ${new Date(DATA.generado).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · YouTube en vivo ${ago(LIVE.at)}`; }
+      }
+    } catch (e) { /* sin conexión */ }
+    liveBgT = setTimeout(liveBackground, 10 * 60e3);
+  }
+
   // ---------- actualización completa (GitHub Actions) ----------
   async function gh(path, opts = {}) {
     const r = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}${path}`, Object.assign({}, opts, { headers: Object.assign({ Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + GH.token, 'X-GitHub-Api-Version': '2022-11-28' }, opts.headers || {}) }));
@@ -2285,13 +2301,13 @@
     }
     throw new Error('Tardó demasiado; mira la pestaña Actions de GitHub.');
   }
-  // conectar GitHub (solo para guardar alertas, fuentes y playlists desde la web)
+  // conectar GitHub (solo para guardar fuentes y playlists desde la web)
   function openGitHubConnect(onDone) {
     const body = h('div', { class: 'yc-form' });
     const fOwner = h('input', { class: 'yc-in', value: GH.owner, autocapitalize: 'off', 'aria-label': 'Usuario' });
     const fRepo = h('input', { class: 'yc-in', value: GH.repo, autocapitalize: 'off', 'aria-label': 'Repositorio' });
     const fTok = h('input', { class: 'yc-in', type: 'password', autocapitalize: 'off', placeholder: GH.token ? '•••••• guardado' : 'github_pat_…', 'aria-label': 'Token' });
-    body.append(h('p', { class: 'yc-form-intro', text: 'Hace falta una sola vez en cada dispositivo para guardar tus alertas, fuentes y playlists. El token se queda solo en este navegador.' }),
+    body.append(h('p', { class: 'yc-form-intro', text: 'Hace falta una sola vez en cada dispositivo para guardar tus fuentes y playlists. El token se queda solo en este navegador.' }),
       h('div', { class: 'yc-list' }, h('label', { class: 'yc-frow-in' }, h('span', { text: 'Usuario' }), fOwner), h('label', { class: 'yc-frow-in' }, h('span', { text: 'Repo' }), fRepo), h('label', { class: 'yc-frow-in' }, h('span', { text: 'Token' }), fTok)),
       h('p', { class: 'yc-note', text: 'Token «fine-grained» solo para este repositorio con permisos: Actions (lectura y escritura), Contents (lectura) y Variables (lectura y escritura).' }),
       h('button', { class: 'yc-btn yc-btn-wide', type: 'button', text: 'Guardar', onclick: () => { GH.owner = fOwner.value.trim(); GH.repo = fRepo.value.trim(); if (fTok.value.trim()) GH.token = fTok.value.trim(); saveGH(); toast('GitHub conectado ✓'); closeSheet(); if (onDone) setTimeout(onDone, 450); } }),
@@ -2377,7 +2393,7 @@
       catch (e) { st.textContent = 'No se pudo guardar en GitHub (' + e.message + ').'; saveB.disabled = false; saveB.textContent = 'Guardar'; }
     });
     body.append(
-      h('p', { class: 'yc-form-intro', text: 'Sus publicaciones aparecen en Lo nuevo y en las alertas.' }),
+      h('p', { class: 'yc-form-intro', text: 'Sus publicaciones aparecen en Lo nuevo.' }),
       h('div', { class: 'yc-group-h', text: 'Tus fuentes' }), ul,
       h('div', { class: 'yc-group-h', text: 'Añadir' }),
       h('div', { class: 'yc-list' },
@@ -2395,71 +2411,6 @@
     if (GH.owner && GH.repo && GH.token) ghVar('FEEDS_EXTRA').then(v => { if (!v) return; list = v.split(/\n/).map(l => l.split('|')).filter(x => x[1]).map(([n, u]) => ({ nombre: n.trim(), url: u.trim() })); store.set('yc.feeds', list); draw(); }).catch(() => null);
   }
 
-  // ---------- alertas por correo ----------
-  function openAlerts() {
-    const A = store.get('yc.alerts', { email: '', tipos: Object.keys(NOV_T), resumen: false });
-    const body = h('div');
-    body.append(h('p', { class: 'yc-sub', text: 'Recibe un correo cuando haya algo nuevo: un estreno, una entrada en listas, un hito, un vídeo nuevo, menciones o noticias.' }));
-    const em = h('input', { class: 'yc-field', type: 'email', placeholder: 'tu@correo.com', value: A.email, 'aria-label': 'Correo' });
-    const checks = h('div', { class: 'yc-checks' }, Object.entries(NOV_T).map(([k, v]) => h('label', null, h('input', { type: 'checkbox', value: k, checked: A.tipos.includes(k) || null }), ' ' + v[0])));
-    body.append(h('b', { text: 'Tu correo' }), em, h('b', { text: 'Avísame de' }), checks);
-    const st = h('p', { class: 'yc-note' });
-    const save = async () => {
-      const email = em.value.trim(); const tipos = $$('input:checked', checks).map(i => i.value);
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { st.textContent = 'Escribe un correo válido.'; return; }
-      store.set('yc.alerts', { email, tipos });
-      if (!(GH.owner && GH.repo && GH.token)) { openGitHubConnect(); return; }
-      st.textContent = 'Guardando en GitHub…';
-      try {
-        for (const [name, value] of [['ALERT_EMAIL', email], ['ALERT_PREFS', tipos.join(',')]]) {
-          const r = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/actions/variables/${name}`, { method: 'PATCH', headers: { Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + GH.token }, body: JSON.stringify({ name, value }) });
-          if (r.status === 404) { const c = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/actions/variables`, { method: 'POST', headers: { Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + GH.token }, body: JSON.stringify({ name, value }) }); if (!c.ok) throw new Error('GitHub ' + c.status); }
-          else if (!r.ok) throw new Error('GitHub ' + r.status);
-        }
-        st.textContent = '✓ Alertas activadas. Llegarán al correo en cada actualización con novedades (si ya configuraste el correo remitente; mira abajo).'; toast('Alertas guardadas');
-      } catch (e) { st.textContent = 'No se pudo guardar en GitHub (' + e.message + '). Revisa que el token tenga el permiso «Variables: lectura y escritura».'; }
-    };
-    body.append(h('button', { class: 'yc-btn', style: 'margin-top:12px', onclick: save, text: 'Guardar alertas' }), st);
-    // notificaciones al móvil con ntfy
-    const rnd = () => `${AU()}-` + Math.random().toString(36).slice(2, 10);
-    const ntIn = h('input', { class: 'yc-in', value: store.get('yc.ntfy', '') || rnd(), autocapitalize: 'off', 'aria-label': 'Canal de ntfy' });
-    const ntSt = h('p', { class: 'yc-note yc-form-st' });
-    body.append(section('Notificaciones al móvil', 'gratis y al momento'), h('div', { class: 'yc-form' },
-      h('p', { class: 'yc-form-intro', text: 'Avisos como los de una app («🔥 Nuevo tema en el top 10…») con la app gratuita ntfy, sin registrarte.' }),
-      h('div', { class: 'yc-list' }, [
-        ['Instala ntfy', 'App Store o Google Play: busca «ntfy».'],
-        ['Suscríbete a tu canal', 'En la app pulsa «+» y escribe exactamente el nombre de abajo. Es como una contraseña: no lo compartas.'],
-        ['Guarda y prueba', 'Pulsa «Guardar canal» y luego «Probar»: te llegará un aviso al momento.']].map(([t, d], i) =>
-        h('div', { class: 'yc-row yc-frow', style: 'cursor:default' }, h('span', { class: 'yc-stepn', text: String(i + 1) }), h('div', { class: 'yc-row-main' }, h('b', { text: t }), h('small', { style: 'white-space:normal', text: d }))))),
-      h('div', { class: 'yc-list', style: 'margin-top:12px' }, h('label', { class: 'yc-frow-in' }, h('span', { text: 'Canal' }), ntIn)),
-      h('div', { class: 'st-actions', style: 'margin-top:10px' },
-        h('button', { class: 'yc-btn', type: 'button', text: 'Guardar canal', onclick: async () => {
-          const t = ntIn.value.trim().replace(/[^\w-]/g, ''); if (t.length < 8) { ntSt.textContent = 'Usa un nombre de al menos 8 letras o números.'; return; }
-          store.set('yc.ntfy', t);
-          if (!(GH.owner && GH.repo && GH.token)) { openGitHubConnect(); return; }
-          ntSt.textContent = 'Guardando…';
-          try { await ghVar('NTFY_TOPIC', t); ntSt.textContent = '✓ Guardado. Los avisos llegarán en cada actualización con novedades.'; toast('Notificaciones activadas'); } catch (e) { ntSt.textContent = 'No se pudo guardar en GitHub (' + e.message + ').'; }
-        } }),
-        h('button', { class: 'yc-btn sec', type: 'button', text: 'Probar', onclick: async () => {
-          const t = ntIn.value.trim(); if (!t) return;
-          try { const r = await fetch('https://ntfy.sh/', { method: 'POST', body: JSON.stringify({ topic: t, title: `🔥 ${AN()} Charts`, message: 'Las notificaciones funcionan. Te avisaré de logros, listas y estrenos.', tags: ['tada'], click: location.href.split('#')[0] }) }); ntSt.textContent = r.ok ? '✓ Enviado. Si no te llega, revisa que estés suscrito al mismo canal.' : 'ntfy respondió ' + r.status; } catch (e) { ntSt.textContent = 'No se pudo enviar la prueba.'; }
-        } })), ntSt));
-    // cuándo se actualiza
-    const C = DATA.charts || [];
-    const lastOf = (pl) => C.filter(c => c.plataforma === pl && c.fecha_lista).map(c => c.fecha_lista).sort().pop();
-    const nxt = (() => { const n = new Date(); const hrs = [8, 14, 20]; for (const hh of hrs) { const d = new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate(), hh, 50)); if (d > n) return d; } const d = new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate() + 1, 8, 50)); return d; })();
-    body.append(section('Cuándo se actualiza', ''), h('div', { class: 'yc-list' },
-      infoRow('Esta web', 'Cada 30 minutos (rápida: YouTube, tendencias, Apple Music, iTunes, novedades y logros) y una completa cada 5 horas con todo lo demás.'),
-      infoRow('Spotify (listas diarias)', `Spotify publica cada Top 200 al día siguiente. Última lista leída: ${dfmt(lastOf('Spotify'))}`),
-      infoRow('Spotify (streams por canción)', `kworb actualiza la página del artista cada pocos días. Último dato: ${dfmt(DATA.perfil.spotify.fecha)}`),
-      infoRow('Apple Music y Shazam', 'Sus listas se renuevan varias veces al día; se leen en cada actualización.'),
-      infoRow('YouTube', `Tendencias varias veces al día; vistas de cada vídeo en cada actualización. Última lista: ${dfmt(lastOf('YouTube'))}`)));
-    body.append(section('Configurar el correo que envía', 'una sola vez'), h('div', { class: 'yc-card yc-steps-card' },
-      h('p', { text: '1. En tu cuenta de Gmail activa la verificación en 2 pasos y crea una «contraseña de aplicación» (myaccount.google.com → Seguridad → Contraseñas de aplicaciones).' }),
-      h('p', { text: '2. En GitHub: Settings → Secrets and variables → Actions → New repository secret. Crea MAIL_USERNAME (tu Gmail) y MAIL_PASSWORD (la contraseña de aplicación de 16 letras).' }),
-      h('p', { text: '3. Guarda aquí arriba el correo donde quieres recibir las alertas. Listo: llegará un correo cada vez que haya novedades.' })));
-    openSheet('Alertas', body);
-  }
   const infoRow = (a, b) => h('div', { class: 'yc-row', style: 'cursor:default' }, h('div', { class: 'yc-row-main' }, h('b', { text: a }), h('small', { style: 'white-space:normal', text: b })));
 
   // ---------- general ----------
@@ -2467,7 +2418,7 @@
   const RENDER = { inicio: () => renderInicio(), canciones: () => renderCanciones(), novedades: () => renderNovedades(), logros: () => renderLogros(), trayectoria: () => renderTrayectoria(), records: () => renderRecords(), comparar: () => renderComparar(), lanzamientos: () => renderLanz(), listas: () => renderListas(), albumes: () => renderAlbumes(), redes: () => renderRedes(), estudio: () => renderPosts() };
   function renderPage(id) { if (RENDERED.has(id) || !RENDER[id]) return; RENDERED.add(id); RENDER[id](); if (typeof glideSoon === 'function') glideSoon(); }
   function renderAll(first) {
-    $('#updated-label').textContent = !DATA.generado ? 'Preparando la primera actualización…' : `Datos ${ago(DATA.generado)} · ${new Date(DATA.generado).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${LIVE.at ? ' · YouTube en vivo ' + ago(LIVE.at) : ''}`;
+    $('#updated-label').textContent = !DATA.generado ? 'Preparando la primera actualización…' : `Datos ${ago(DATA.generado)} · ${new Date(DATA.generado).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${LIVE.at && (!DATA.generado || LIVE.at > DATA.generado) ? ' · YouTube en vivo ' + ago(LIVE.at) : ''}`;
     RENDERED.clear(); renderPage(current);
     const ig = (u) => h('a', { href: `https://www.instagram.com/${u}/`, target: '_blank', rel: 'noopener', text: '@' + u });
     $('#foot').replaceChildren(
@@ -2478,7 +2429,7 @@
         h('p', { text: 'Spotify, YouTube, Apple Music, Shazam, Deezer, iTunes, kworb.net, Chartmetric y Social Blade. Cada cifra indica su fuente y su fecha.' })),
       h('div', { class: 'yc-foot-bottom' }, h('span', null, `© ${new Date().getFullYear()} `, ig(CREADOR), ' · Todos los derechos reservados'), h('span', null, 'Página creada por ', ig(CREADOR))));
     const logo = $('.yc-logo'); if (logo && DATA.artista.imagen && !logo.querySelector('img')) logo.replaceChildren(artistPhoto('yc-logo-in'));
-    if (first) go(current, false); else { $$('.yc-page').forEach(p => p.classList.toggle('on', p.dataset.page === current)); if (current === 'inicio') drawHist(); }
+    if (first) { go(current, false); setTimeout(liveBackground, 4000); } else { $$('.yc-page').forEach(p => p.classList.toggle('on', p.dataset.page === current)); if (current === 'inicio') drawHist(); }
   }
   // ---------- auto-actualización: isla de estado estilo iOS ----------
   const AUTO = { timer: 0, runId: null, runStart: null, waiting: false, pending: null, lastRunsCheck: 0, lastDataCheck: 0, backoff: 0 };
@@ -2578,8 +2529,6 @@
     themeBtn(); buildTabs(); sheetDrag();
     $('#sheet-close').addEventListener('click', closeSheet); $('#sheet-bg').addEventListener('click', closeSheet);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheetOpen) closeSheet(); });
-    const bell = h('button', { class: 'yc-iconbtn', id: 'bell-btn', type: 'button', 'aria-label': 'Alertas por correo', onclick: () => DATA && openAlerts() }, icon('bell'));
-    $('#theme-btn').before(bell);
     searchSetup();
     const nav = $('#nav'); addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 8), { passive: true });
     let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawHist, 150); });

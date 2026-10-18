@@ -677,7 +677,7 @@ def _f(t):
 
 def creditos(song):
     """Artistas acreditados en la canción (para aceptar el canal oficial de un colaborador)."""
-    txt = ' , '.join([str(song.get('artistas') or ''), ', '.join(song.get('creditos') or []), ' '.join(re.findall(r'\((?:with|feat\.?|ft\.?|con)\s+([^)]*)\)', song.get('titulo') or '', re.I))])
+    txt = ' , '.join([str(song.get('artistas') or ''), ', '.join(song.get('creditos') or []), ', '.join(song.get('creditos_sp') or []), ' '.join(re.findall(r'\((?:with|feat\.?|ft\.?|con)\s+([^)]*)\)', song.get('titulo') or '', re.I))])
     gruesas = re.split(r'\s*(?:,|\bfeat\.?|\bft\.?|\bwith\b)\s*', txt, flags=re.I)  # «Zion & Lennox» entero
     finas = re.split(r'\s*(?:,|&|\+|\bfeat\.?|\bft\.?|\bwith\b|\bx\b|\by\b)\s*', txt, flags=re.I)
     return {_f(p) for p in gruesas + finas if len(_f(p)) >= 2}
@@ -702,8 +702,10 @@ def canal_oficial(r, song):
     cred_otros = {_compacto(c) for c in creditos(song) if not NAME_RE.search(c)} - {''}
     nombra_anuel = bool(NAME_RE.search(tit))
     comp = _compacto(re.sub(r'\s*-\s*topic$', '', can, flags=re.I))
-    if (cid and cid in ofi_ids) or (comp and comp in ofi_nombres):
+    if cid and cid in ofi_ids:
         return True
+    if comp and comp in ofi_nombres:  # sello oficial (Flow La Movie, Hear This Music…): el título debe nombrar a Anuel o a un acreditado
+        return nombra_anuel or any(c and c in _f(tit).replace(' ', '') for c in cred_otros if len(c) >= 4)
     if re.search(r'\b(?:y|and)\s+\d+\s+(?:m[aá]s|more)\b', can, re.I):  # «Chris Jedi y 2 más»: vale si el primer canal es de un acreditado
         primero = _compacto(re.split(r'\s+(?:y|and)\s+\d+', can)[0])
         return bool(primero) and (primero in cred_otros or primero in ofi_nombres or primero.startswith('anuel'))
@@ -754,13 +756,25 @@ def yt_pick(song, res):
         return False
     veto = set((DATA_VETO or []))
     cand = [r for r in res[:15] if r.get('video_id') not in veto and titulo_ok(r) and canal_oficial(r, song)]
+    for r in cand:
+        if not isinstance(r.get('vistas'), int):
+            r['vistas'] = compact(re.sub(r'(?i)\s*(de\s+)?(visualizaciones|vistas|views).*$', '', str(r.get('vistas_txt') or ''))) or None
+    falta = [r['video_id'] for r in cand if not r.get('vistas')]
+    if falta and len(cand) > 1 and os.environ.get('YT_API_KEY'):
+        try:
+            got_ = yt_api(os.environ['YT_API_KEY'], falta)  # 1 unidad
+            for r in cand:
+                if (got_.get(r['video_id']) or {}).get('vistas'):
+                    r['vistas'] = got_[r['video_id']]['vistas']
+        except Exception:  # noqa: BLE001
+            pass
     if not cand:
         return None
 
     def rank(r):
         tit, can = r['titulo'], r['canal'] or ''
         oficial = bool(re.search(r'official\s*(music\s*)?video|video\s*oficial|videoclip', tit, re.I))
-        return (bool(NO_OFICIAL.search(tit)), can.endswith('- Topic'), r.get('canal_id') != YT_CHANNEL, not oficial)
+        return (bool(NO_OFICIAL.search(tit)), can.endswith('- Topic'), -(r.get('vistas') or 0), r.get('canal_id') != YT_CHANNEL, not oficial)
     cand.sort(key=rank)
     return cand[0]
 
@@ -1430,40 +1444,10 @@ def main():
     except Exception as e:  # noqa: BLE001
         fallo('kworb YouTube artista', e)
     # créditos reales de cada tema (quién colabora), para reconocer el canal oficial de cualquier artista, verificado o no
-    # 1) Apple/iTunes en lote (pocas consultas para todos los temas)
-    try:
-        def _aid(x):
-            a = x.get('apple') or {}
-            if a.get('id'):
-                return str(a['id'])
-            m = re.search(r'[?&]i=(\d+)|/song/[^/]+/(\d+)', a.get('url') or '')
-            return (m.group(1) or m.group(2)) if m else None
-        por_id = {}
-        for x in songs:
-            if not x.get('creditos') and _aid(x):
-                por_id.setdefault(_aid(x), []).append(x)
-        ids = list(por_id)
-        n_a = 0
-        for i in range(0, len(ids), 150):
-            try:
-                j = get('https://itunes.apple.com/lookup', as_json=True, params={'id': ','.join(ids[i:i + 150]), 'entity': 'song'}, tries=2)
-            except Exception:  # noqa: BLE001
-                continue
-            for r in j.get('results', []):
-                for x in por_id.get(str(r.get('trackId')), []):
-                    if r.get('artistName'):
-                        x['creditos'] = [r['artistName']]
-                        if (not x.get('artistas') or x.get('artistas') == ARTISTA) and not NAME_RE.fullmatch(r['artistName'].strip()):
-                            x['artistas'] = r['artistName']
-                        n_a += 1
-        if ids:
-            HECHO.append(f'créditos Apple ({n_a}/{len(ids)})')
-    except Exception as e:  # noqa: BLE001
-        fallo('créditos Apple', e)
-    # 2) kworb (Spotify) para los que faltan
+    # 1) kworb: créditos de Spotify (la referencia)
     try:
         lim_c = (NOW - dt.timedelta(days=60)).strftime('%Y-%m-%d')
-        sin_c = [x for x in songs if (x.get('spotify') or {}).get('id') and not x.get('creditos') and (not RAPIDO or (x.get('lanzamiento') or '') >= lim_c)]
+        sin_c = [x for x in songs if (x.get('spotify') or {}).get('id') and not x.get('creditos_sp') and (not RAPIDO or (x.get('lanzamiento') or '') >= lim_c)]
         sin_c = sorted(sin_c, key=lambda x: (bool(x.get('youtube')), x.get('lanzamiento') or ''), reverse=False)[:(10 if RAPIDO else 250)]
 
         def _cr(x):
@@ -1475,15 +1459,68 @@ def main():
         with cf.ThreadPoolExecutor(6) as ex:
             for x, names in ex.map(_cr, sin_c):
                 if names:
-                    x['creditos'] = names
-                    if len(names) > 1 and (not x.get('artistas') or x.get('artistas') == ARTISTA):
+                    x['creditos_sp'] = names
+                    if len(names) > 1:
                         x['artistas'] = ', '.join(names)
                     n_c += 1
         if sin_c:
             HECHO.append(f'créditos de artistas ({n_c}/{len(sin_c)})')
     except Exception as e:  # noqa: BLE001
         fallo('créditos de artistas', e)
+    # 2) Apple/iTunes en lote (pocas consultas para todos los temas)
+    try:
+        def _aid(x):
+            a = x.get('apple') or {}
+            if a.get('id'):
+                return str(a['id'])
+            m = re.search(r'[?&]i=(\d+)|/song/[^/]+/(\d+)', a.get('url') or '')
+            return (m.group(1) or m.group(2)) if m else None
+        por_id = {}
+        for x in songs:
+            if _aid(x) and (not x.get('creditos') or not RAPIDO):
+                por_id.setdefault(_aid(x), []).append(x)
+        ids = list(por_id)
+        n_a = 0
+        for i in range(0, len(ids), 150):
+            try:
+                j = get('https://itunes.apple.com/lookup', as_json=True, params={'id': ','.join(ids[i:i + 150]), 'entity': 'song'}, tries=2)
+            except Exception:  # noqa: BLE001
+                continue
+            for r in j.get('results', []):
+                for x in por_id.get(str(r.get('trackId')), []):
+                    dur, ad = x.get('duracion_ms'), r.get('trackTimeMillis')
+                    año_s, año_a = (x.get('lanzamiento') or '')[:4], (r.get('releaseDate') or '')[:4]
+                    otros_sp = {_f(n) for n in (x.get('creditos_sp') or []) if not NAME_RE.search(n)}
+                    otros_ap = {_f(n) for n in re.split(r'\s*(?:,|&|\bfeat\.?|\bft\.?|\bwith\b)\s*', r.get('artistName') or '', flags=re.I) if n and not NAME_RE.search(n)}
+                    if (otros_sp and otros_ap and not (otros_sp & otros_ap)) or (dur and ad and abs(dur - ad) > 6000) or (año_s and año_a and abs(int(año_s) - int(año_a)) > 1 and x.get('lanzamiento_fuente') != 'Apple Music'):
+                        # el enlace de Apple era otra canción con el mismo nombre: se quita (y lo que vino de ella)
+                        log(f'  - Apple desenlazado de {x["titulo"]}: era «{r.get("trackName")}» de {r.get("artistName")}')
+                        art_ = x.get('portada_hd')
+                        x.pop('apple', None); x.pop('apple_buscado', None)
+                        if art_ and x.get('portada') == art_:
+                            x.pop('portada', None)
+                        x.pop('portada_hd', None)
+                        if x.get('creditos') == [r.get('artistName')]:
+                            x.pop('creditos', None)
+                        if x.get('artistas') == r.get('artistName'):
+                            x['artistas'] = ', '.join(x['creditos_sp']) if x.get('creditos_sp') else ARTISTA
+                        sh = x.get('shazam') or {}
+                        if sh.get('url') and str(r.get('trackId')) in sh.get('url', ''):
+                            x.pop('shazam', None)
+                        continue
+                    if r.get('artistName'):
+                        x['creditos'] = [r['artistName']]
+                        if not x.get('creditos_sp') and (not x.get('artistas') or x.get('artistas') == ARTISTA) and not NAME_RE.fullmatch(r['artistName'].strip()):
+                            x['artistas'] = r['artistName']
+                        n_a += 1
+        if ids:
+            HECHO.append(f'créditos Apple ({n_a}/{len(ids)})')
+    except Exception as e:  # noqa: BLE001
+        fallo('créditos Apple', e)
     quitados = 0
+    if data.get('yt_reglas') != 3:  # reglas nuevas: se vuelve a dar oportunidad a los vídeos rechazados antes
+        data['yt_vetados'] = []
+        data['yt_reglas'] = 3
     vetados = set(data.get('yt_vetados') or [])
     for s in songs:
         y = s.get('youtube') or {}
@@ -1498,7 +1535,7 @@ def main():
         elif y.get('origen') in ('kworb', 'rss') or (y.get('origen') is None and can_ == ARTISTA):
             continue
         else:
-            malo = bool(s.get('creditos')) and canal_oficial({'canal': can_, 'canal_id': y.get('canal_id'), 'verificado': y.get('verificado'), 'titulo': y.get('titulo')}, s) is False
+            malo = bool(s.get('creditos') or s.get('creditos_sp')) and canal_oficial({'canal': can_, 'canal_id': y.get('canal_id'), 'verificado': y.get('verificado'), 'titulo': y.get('titulo')}, s) is False
         if malo:
             log(f'  - vídeo no oficial quitado de {s["titulo"]}: {can_}')
             vetados.add(y.get('video_id'))
@@ -1573,6 +1610,10 @@ def main():
         viejos = sorted([x for x in songs if flojo(x) and (x.get('lanzamiento') or '') < lim120 and (x.get('yt_buscado') or '') < hace7],
                         key=lambda x: (bool(x.get('youtube')), -((x.get('spotify') or {}).get('total') or 0)))
         cola = (sorted(recientes, key=lambda x: x.get('lanzamiento') or '', reverse=True)[:(12 if RAPIDO else 40)] + viejos[:(6 if RAPIDO else 40)])
+        if not RAPIDO:  # una vez por semana se revisa si hay un vídeo oficial mejor (más visto) que el encontrado
+            ya = {id(x) for x in cola}
+            cola += sorted([x for x in songs if id(x) not in ya and (x.get('youtube') or {}).get('origen') == 'busqueda' and not x['youtube'].get('fijo')
+                            and (x.get('yt_revisado') or '') < hace7], key=lambda x: x.get('yt_revisado') or '')[:25]
         hallados = errores = 0
         for x in cola:
             x['yt_buscado'] = HOY
@@ -1588,7 +1629,12 @@ def main():
                 if r and es_oficial(r):
                     break
                 time.sleep(0.4)
-            if r and (not x.get('youtube') or es_oficial(r)) and r['video_id'] != (x.get('youtube') or {}).get('video_id'):
+            x['yt_revisado'] = HOY
+            cur = x.get('youtube') or {}
+            mejor = bool(r) and r['video_id'] != cur.get('video_id') and (
+                not cur or (es_oficial(r) and not es_oficial(cur)) or
+                (es_oficial(r) == es_oficial(cur) and (r.get('vistas') or 0) > 2 * (cur.get('vistas') or 0) and cur.get('origen') == 'busqueda'))
+            if mejor:
                 x['youtube'] = {'video_id': r['video_id'], 'titulo': r['titulo'], 'canal': r['canal'], 'canal_id': r.get('canal_id'), 'verificado': r.get('verificado'), 'vistas': r.get('vistas') if isinstance(r.get('vistas'), int) else None,
                                 'likes': None, 'publicado': None, 'fecha': HOY, 'fuente': 'YouTube (búsqueda)', 'origen': 'busqueda'}
                 hallados += 1
@@ -1810,7 +1856,14 @@ def main():
                 continue
             ft = _fold(t0)
             hits = [r for r in j.get('results', []) if _fold(r.get('trackName')).startswith(ft) and (NAME_RE.search(r.get('artistName') or '') or NAME_RE.search(r.get('trackName') or ''))]
-            hits.sort(key=lambda r: (_fold(r.get('trackName')) != _fold(x['titulo']), 'remix' in (r.get('trackName') or '').lower() and 'remix' not in x['titulo'].lower()))
+            otros_sp = {_f(n) for n in (x.get('creditos_sp') or []) if not NAME_RE.search(n)}
+            if otros_sp:  # mismos artistas que en Spotify (6ix9ine ≠ Ozuna)
+                hits = [r for r in hits if otros_sp & {_f(n) for n in re.split(r'\s*(?:,|&|\bfeat\.?|\bft\.?|\bwith\b)\s*', r.get('artistName') or '', flags=re.I) if n}]
+            dur = x.get('duracion_ms')
+            if dur:  # misma canción = misma duración (±4 s)
+                hits = [r for r in hits if not r.get('trackTimeMillis') or abs(r['trackTimeMillis'] - dur) <= 4000]
+            hits.sort(key=lambda r: (_fold(r.get('trackName')) != _fold(x['titulo']), 'remix' in (r.get('trackName') or '').lower() and 'remix' not in x['titulo'].lower(),
+                                     abs((r.get('trackTimeMillis') or 0) - (dur or 0)) if dur else 0))
             if hits:
                 r = hits[0]
                 x['apple'] = dict(x.get('apple') or {}, url=(r.get('trackViewUrl') or '').split('&uo')[0], id=str(r.get('trackId')))
@@ -2193,17 +2246,6 @@ def main():
     first_run = not data.get('config', {}).get('alertas_iniciadas')
     cfg['alertas_iniciadas'] = True
     site_url = os.environ.get('SITE_URL') or (f'https://{os.environ["GITHUB_REPOSITORY"].split("/")[0].lower()}.github.io/{os.environ["GITHUB_REPOSITORY"].split("/")[1]}/' if os.environ.get('GITHUB_REPOSITORY') else '')
-    try:
-        # en la primera ejecución no se manda todo el histórico de golpe, solo lo de los últimos 3 días
-        res = send_alerts(nuevas if not first_run else [n for n in nuevas if (n.get('fecha') or '') >= (NOW - dt.timedelta(days=3)).strftime('%Y-%m-%d')], site_url)
-        HECHO.append(f'alertas por correo: {res}')
-    except Exception as e:  # noqa: BLE001
-        fallo('Alertas por correo', e)
-    try:
-        res = send_ntfy(nuevas if not first_run else [n for n in nuevas if (n.get('fecha') or '') >= (NOW - dt.timedelta(days=1)).strftime('%Y-%m-%d')], site_url)
-        HECHO.append(f'notificaciones al móvil: {res}')
-    except Exception as e:  # noqa: BLE001
-        fallo('Notificaciones ntfy', e)
     log(f'Novedades nuevas: {len(nuevas)}')
 
     # --- Historial y YouTube diario
