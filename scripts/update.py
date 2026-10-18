@@ -714,8 +714,10 @@ def canal_oficial(r, song):
         return True
     if re.search(r'\s-\s*topic$', can, re.I):
         return comp.startswith('anuel') or comp in cred_otros
-    if re.search(r'vevo$', can, re.I):  # VEVO de otro artista acreditado (OzunaVEVO…); los «AnuelVEVO» no son su canal
-        return (not comp.startswith('anuel')) and comp in cred_otros
+    if re.search(r'vevo$', can, re.I):  # VEVO de otro artista (OzunaVEVO, MarshmelloVEVO…); el de Anuel solo por su ID (config)
+        if comp.startswith('anuel'):
+            return False
+        return comp in cred_otros or (bool(re.fullmatch(r'[A-Za-z0-9]+VEVO', can)) and nombra_anuel)
     if NAME_RE.search(can) or re.match(r'anuel', can, re.I):
         return False  # se llama «Anuel …» pero no es su canal: fan
     if comp and (comp in cred_otros or any(_compacto(p) in cred_otros for p in partes)):
@@ -1492,7 +1494,9 @@ def main():
                     año_s, año_a = (x.get('lanzamiento') or '')[:4], (r.get('releaseDate') or '')[:4]
                     otros_sp = {_f(n) for n in (x.get('creditos_sp') or []) if not NAME_RE.search(n)}
                     otros_ap = {_f(n) for n in re.split(r'\s*(?:,|&|\bfeat\.?|\bft\.?|\bwith\b)\s*', r.get('artistName') or '', flags=re.I) if n and not NAME_RE.search(n)}
-                    if (otros_sp and otros_ap and not (otros_sp & otros_ap)) or (dur and ad and abs(dur - ad) > 6000) or (año_s and año_a and abs(int(año_s) - int(año_a)) > 1 and x.get('lanzamiento_fuente') != 'Apple Music'):
+                    def _solapa(a_, b_):
+                        return any(p1 == p2 or (len(p1) >= 4 and (p1 in p2 or p2 in p1)) for p1 in a_ for p2 in b_)
+                    if otros_sp and otros_ap and not _solapa(otros_sp, otros_ap):
                         # el enlace de Apple era otra canción con el mismo nombre: se quita (y lo que vino de ella)
                         log(f'  - Apple desenlazado de {x["titulo"]}: era «{r.get("trackName")}» de {r.get("artistName")}')
                         art_ = x.get('portada_hd')
@@ -1518,9 +1522,9 @@ def main():
     except Exception as e:  # noqa: BLE001
         fallo('créditos Apple', e)
     quitados = 0
-    if data.get('yt_reglas') != 3:  # reglas nuevas: se vuelve a dar oportunidad a los vídeos rechazados antes
+    if data.get('yt_reglas') != 4:  # reglas nuevas: se vuelve a dar oportunidad a los vídeos rechazados antes
         data['yt_vetados'] = []
-        data['yt_reglas'] = 3
+        data['yt_reglas'] = 4
     vetados = set(data.get('yt_vetados') or [])
     for s in songs:
         y = s.get('youtube') or {}
@@ -1869,8 +1873,8 @@ def main():
             if otros_sp:  # mismos artistas que en Spotify (6ix9ine ≠ Ozuna)
                 hits = [r for r in hits if otros_sp & {_f(n) for n in re.split(r'\s*(?:,|&|\bfeat\.?|\bft\.?|\bwith\b)\s*', r.get('artistName') or '', flags=re.I) if n}]
             dur = x.get('duracion_ms')
-            if dur:  # misma canción = misma duración (±4 s)
-                hits = [r for r in hits if not r.get('trackTimeMillis') or abs(r['trackTimeMillis'] - dur) <= 4000]
+            if dur:  # se prefiere la de duración parecida (sin descartar)
+                pass
             hits.sort(key=lambda r: (_fold(r.get('trackName')) != _fold(x['titulo']), 'remix' in (r.get('trackName') or '').lower() and 'remix' not in x['titulo'].lower(),
                                      abs((r.get('trackTimeMillis') or 0) - (dur or 0)) if dur else 0))
             if hits:
