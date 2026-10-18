@@ -195,8 +195,10 @@ def col(heads, *names):
 def kworb_creditos(track_id):
     """Artistas acreditados de un tema (cabecera «Artists:» de su página en kworb)."""
     html = get(f'https://kworb.net/spotify/track/{track_id}.html', tries=2)
+    i = html.find('Artists')
+    zona = html[i:i + 3000] if i >= 0 else html[:30000]
     names = []
-    for m in re.finditer(r'<a[^>]+href="[^"]*spotify/artist/[\w]+\.html"[^>]*>([^<]+)</a>', html[:8000]):
+    for m in re.finditer(r'<a[^>]+href="[^"]*spotify/artist/[\w]+\.html"[^>]*>([^<]+)</a>', zona):
         n = htmlmod.unescape(m.group(1)).strip()
         if n and n not in names:
             names.append(n)
@@ -455,6 +457,10 @@ def yt_match_score(song_title, video_title):
     parts = [_fold(re.sub(r'\b(?:ft|feat|featuring|prod)\b.*$', '', x, flags=re.I)) for x in re.split(r'\s[-–|]\s', vt)]
     if b in parts:
         return 3
+    if len(b) >= 4:
+        import difflib
+        if any(difflib.SequenceMatcher(None, b, p).ratio() >= 0.85 for p in parts if p):
+            return 2
     full = ' ' + _fold(vt) + ' '
     if len(b) >= 5 and f' {b} ' in full:
         return 2
@@ -587,9 +593,26 @@ def rel_days(txt):
     return 999
 
 
+_FALLOS_HOST = {}
+
+
+def _host_ok(h):
+    return _FALLOS_HOST.get(h, 0) < 3  # tras 3 fallos en esta vuelta, ese servicio no se vuelve a intentar
+
+
+def _host_mal(h):
+    _FALLOS_HOST[h] = _FALLOS_HOST.get(h, 0) + 1
+
+
 def yt_search_scrape(query):
     """Busca en YouTube (por relevancia). Si YouTube bloquea a GitHub, prueba espejos públicos (Piped / Invidious)."""
+    if not _host_ok('youtube'):
+        raise_yt = True
+    else:
+        raise_yt = False
     try:
+        if raise_yt:
+            raise RuntimeError('YouTube bloqueado en esta vuelta')
         html = get('https://www.youtube.com/results', params={'search_query': query, 'hl': 'es', 'gl': 'US'},
                    headers={'Cookie': 'CONSENT=YES+1; SOCS=CAI', 'Accept-Language': 'es-ES,es;q=0.9'}, tries=2)
         out = []
@@ -606,10 +629,15 @@ def yt_search_scrape(query):
                 continue
         if out:
             return out
+        _host_mal('youtube')
     except Exception:  # noqa: BLE001
-        pass
+        if not raise_yt:
+            _host_mal('youtube')
     q = requests.utils.quote(query)
     for url in (f'https://pipedapi.kavin.rocks/search?q={q}&filter=videos', f'https://pipedapi.adminforge.de/search?q={q}&filter=videos'):
+        h = url.split('/')[2]
+        if not _host_ok(h):
+            continue
         try:
             j = get(url, as_json=True, tries=1)
             out = [{'video_id': (it.get('url') or '').split('v=')[-1], 'titulo': it.get('title') or '', 'canal': it.get('uploaderName') or '',
@@ -617,9 +645,13 @@ def yt_search_scrape(query):
                     'vistas': it.get('views'), 'hace': it.get('uploadedDate') or '', 'vistas_txt': str(it.get('views') or '')} for it in (j.get('items') or []) if 'watch?v=' in (it.get('url') or '')]
             if out:
                 return out
+            _host_mal(h)
         except Exception:  # noqa: BLE001
+            _host_mal(h)
             continue
     for host in ('https://inv.nadeko.net', 'https://invidious.nerdvpn.de', 'https://yewtu.be'):
+        if not _host_ok(host):
+            continue
         try:
             j = get(f'{host}/api/v1/search', as_json=True, params={'q': query, 'type': 'video'}, tries=1)
             out = [{'video_id': it['videoId'], 'titulo': it.get('title') or '', 'canal': it.get('author') or '', 'canal_id': it.get('authorId'), 'verificado': None, 'vistas': it.get('viewCount'),
@@ -627,7 +659,9 @@ def yt_search_scrape(query):
                    for it in (j or []) if it.get('videoId')]
             if out:
                 return out
+            _host_mal(host)
         except Exception:  # noqa: BLE001
+            _host_mal(host)
             continue
     raise RuntimeError('YouTube y los espejos no devolvieron resultados')
 
@@ -684,8 +718,8 @@ def canal_oficial(r, song):
     if comp and not re.search(r'fan|letra|lyric|edit|reac|clip|remix|slowed|karaoke|cover|sped|8d', comp) \
             and any(len(c) >= 4 and (comp.startswith(c) or c.startswith(comp) and len(comp) >= 5) for c in cred_otros):
         return True
-    if r.get('verificado') == 'artista':
-        return nombra_anuel
+    if r.get('verificado') == 'artista':  # canal de artista: vale si su nombre también sale en el título («Ozuna x Anuel AA - …»)
+        return nombra_anuel and bool(comp) and len(comp) >= 3 and comp in _f(tit).replace(' ', '')
     return False
 
 
@@ -704,14 +738,24 @@ def yt_pick(song, res):
     t_ = _f(base(song['titulo']))
     if len(t_) < 2:
         return None
-    cand = [r for r in res[:15] if t_ in _f(r['titulo']) and canal_oficial(r, song)]
+    def titulo_ok(r):
+        tt = _f(r['titulo'])
+        if t_ in tt:
+            return True
+        propio = r.get('canal_id') == YT_CHANNEL or re.match(r'anuel.*vevo$', (r.get('canal') or '').replace(' ', ''), re.I)
+        if propio and len(t_) >= 4:  # en su propio canal se admite una pequeña diferencia («DE KILO» / «Del Kilo»)
+            import difflib
+            trozos = [_f(x) for x in re.split(r'\s[-–|❌x]\s|\||❌|\(|\)', r['titulo']) if _f(x)]
+            return any(difflib.SequenceMatcher(None, t_, z).ratio() >= 0.85 for z in trozos)
+        return False
+    cand = [r for r in res[:15] if titulo_ok(r) and canal_oficial(r, song)]
     if not cand:
         return None
 
     def rank(r):
         tit, can = r['titulo'], r['canal'] or ''
         oficial = bool(re.search(r'official\s*(music\s*)?video|video\s*oficial|videoclip', tit, re.I))
-        return (bool(NO_OFICIAL.search(tit)), can.endswith('- Topic'), not oficial, r.get('canal_id') != YT_CHANNEL)
+        return (bool(NO_OFICIAL.search(tit)), can.endswith('- Topic'), r.get('canal_id') != YT_CHANNEL, not oficial)
     cand.sort(key=rank)
     return cand[0]
 
@@ -1381,6 +1425,37 @@ def main():
     except Exception as e:  # noqa: BLE001
         fallo('kworb YouTube artista', e)
     # créditos reales de cada tema (quién colabora), para reconocer el canal oficial de cualquier artista, verificado o no
+    # 1) Apple/iTunes en lote (pocas consultas para todos los temas)
+    try:
+        def _aid(x):
+            a = x.get('apple') or {}
+            if a.get('id'):
+                return str(a['id'])
+            m = re.search(r'[?&]i=(\d+)|/song/[^/]+/(\d+)', a.get('url') or '')
+            return (m.group(1) or m.group(2)) if m else None
+        por_id = {}
+        for x in songs:
+            if not x.get('creditos') and _aid(x):
+                por_id.setdefault(_aid(x), []).append(x)
+        ids = list(por_id)
+        n_a = 0
+        for i in range(0, len(ids), 150):
+            try:
+                j = get('https://itunes.apple.com/lookup', as_json=True, params={'id': ','.join(ids[i:i + 150]), 'entity': 'song'}, tries=2)
+            except Exception:  # noqa: BLE001
+                continue
+            for r in j.get('results', []):
+                for x in por_id.get(str(r.get('trackId')), []):
+                    if r.get('artistName'):
+                        x['creditos'] = [r['artistName']]
+                        if (not x.get('artistas') or x.get('artistas') == ARTISTA) and not NAME_RE.fullmatch(r['artistName'].strip()):
+                            x['artistas'] = r['artistName']
+                        n_a += 1
+        if ids:
+            HECHO.append(f'créditos Apple ({n_a}/{len(ids)})')
+    except Exception as e:  # noqa: BLE001
+        fallo('créditos Apple', e)
+    # 2) kworb (Spotify) para los que faltan
     try:
         lim_c = (NOW - dt.timedelta(days=60)).strftime('%Y-%m-%d')
         sin_c = [x for x in songs if (x.get('spotify') or {}).get('id') and not x.get('creditos') and (not RAPIDO or (x.get('lanzamiento') or '') >= lim_c)]
