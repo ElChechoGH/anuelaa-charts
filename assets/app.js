@@ -639,7 +639,7 @@
     // próximo hito
     const m = typeof proximosHitos === 'function' ? proximosHitos()[0] : null;
     if (m) {
-      const t = tile('hito', [tLabel('Próximo hito', 'trophy'), h('div', { class: 'lg-hito' }, ring(m.pct), h('div', null, h('b', { class: 'lg-mid num', text: short(m.meta) }), h('small', { text: `≈ ${m.dias} ${m.dias === 1 ? 'día' : 'días'}` }))), h('small', { class: 'lg-clip', text: m.s.titulo })], () => go('logros'), 'Próximo hito');
+      const t = tile('hito', [tLabel('Próximo hito', 'trophy'), h('div', { class: 'lg-hito' }, ring(m.pct), h('div', null, h('b', { class: 'lg-mid num', text: short(m.meta) }), h('small', { text: m.aPunto ? '¡A punto! 🔥' : `≈ ${m.dias} ${m.dias === 1 ? 'día' : 'días'}` }))), h('small', { class: 'lg-clip', text: m.s.titulo })], () => go('logros'), 'Próximo hito');
       tint(t, coverOf(m.s), m.s.titulo); g.append(t);
     }
     // último estreno
@@ -944,7 +944,7 @@
   function postIdeas(s) {
     const I = [], tt = s.titulo.replace(/\s*\((with|feat\.)[^)]*\)/i, '');
     const nx = nextHito(s.sp.total), d = s.sp.diarios || s.spMedia;
-    if (nx && d) { const dd = Math.ceil((nx - s.sp.total) / d); if (dd <= 30) I.push({ ic: '⏳', t: `Cuenta atrás: «${tt}» llegará a ${short(nx)} en ≈ ${dd} días`, pre: { plantilla: 'meta', titular: `${tt} va a por los ${short(nx)}`, etiqueta: 'PRÓXIMO HITO', numero: `FALTAN ${short(nx - s.sp.total)}`, numeroTxt: `≈ ${dd} ${dd === 1 ? 'DÍA' : 'DÍAS'} A ESTE RITMO`, progreso: s.sp.total / nx * 100, imagen: coverOf(s) }, cap: `⏳ «${tt}» de @${AU()} está a solo ${full(nx - s.sp.total)} streams de los ${short(nx)} en @spotify. Al ritmo de ${short(d)} al día, lo logrará en unos ${dd} días 🔥` }); }
+    if (nx && d) { const dd = Math.ceil((nx - s.sp.total) / d); if (dd <= 30) I.push({ ic: dd <= 1 ? '🔥' : '⏳', t: dd <= 1 ? `¡A punto! «${tt}» ya estaría pasando los ${short(nx)} en Spotify (compruébalo en la app antes de publicar)` : `Cuenta atrás: «${tt}» llegará a ${short(nx)} en ≈ ${dd} días`, pre: { plantilla: 'meta', titular: `${tt} va a por los ${short(nx)}`, etiqueta: 'PRÓXIMO HITO', numero: `FALTAN ${short(nx - s.sp.total)}`, numeroTxt: `≈ ${dd} ${dd === 1 ? 'DÍA' : 'DÍAS'} A ESTE RITMO`, progreso: s.sp.total / nx * 100, imagen: coverOf(s) }, cap: `⏳ «${tt}» de @${AU()} está a solo ${full(nx - s.sp.total)} streams de los ${short(nx)} en @spotify. Al ritmo de ${short(d)} al día, lo logrará en unos ${dd} días 🔥` }); }
     const past = HITOS.filter(x => x <= (s.sp.total || 0)).pop();
     if (past && isNum(s.sp.diarios) && s.sp.total - s.sp.diarios * 2 < past) I.push({ ic: '🏆', t: `Acaba de superar los ${short(past)} en Spotify`, pre: { plantilla: 'hito', titular: tt, etiqueta: 'NUEVO RÉCORD', numero: short(past).replace(/\s/g, ''), numeroTxt: 'STREAMS EN SPOTIFY', imagen: coverOf(s) }, cap: `🏆 «${tt}» de @${AU()} supera los ${short(past)} de streams en @spotify 💿🔥` });
     const bp = bestPositions(s);
@@ -1073,7 +1073,7 @@
       h('div', { class: 'lg-hcard-main' },
         h('small', { class: 'lg-lab', text: `Hacia ${short(m.meta)} en Spotify` }),
         h('b', { class: 'lg-title', text: m.s.titulo }),
-        h('small', { text: `Faltan ${full(m.faltan)} · ≈ ${m.dias} ${m.dias === 1 ? 'día' : 'días'} (${eta}) al ritmo de ${short(m.s.sp.diarios)}/día` }),
+        h('small', { text: m.aPunto ? `¡A punto! 🔥 Le faltaban ${full(m.faltan)} en el último dato y suma ${short(m.s.sp.diarios)} al día: en Spotify ya lo habría superado o está a punto` : `Faltan ${full(m.faltan)} · ≈ ${m.dias} ${m.dias === 1 ? 'día' : 'días'} (${eta}) al ritmo de ${short(m.s.sp.diarios)}/día` }),
         h('div', { class: 'lg-hcard-act' }, h('button', { class: 'yc-chip', type: 'button', onclick: (e) => { e.stopPropagation(); toStudio({ plantilla: 'meta', titular: `${m.s.titulo} va a por los ${short(m.meta)}`, etiqueta: 'PRÓXIMO HITO', numero: `FALTAN ${short(m.faltan)}`, numeroTxt: `≈ ${m.dias} ${m.dias === 1 ? 'DÍA' : 'DÍAS'} A ESTE RITMO`, progreso: m.pct, imagen: coverOf(m.s) }); }, text: 'Hacer post' }))));
     tint(t, coverOf(m.s), m.s.titulo);
     return t;
@@ -1256,7 +1256,7 @@
     if (s.hoy.length) L.push(` Hoy está en ${s.hoy.length} ${s.hoy.length === 1 ? 'lista' : 'listas'}${s.best ? `, su mejor puesto: ${s.best.t}` : ''}.`);
     else if (s.best) L.push(` Su mejor puesto: ${s.best.t}.`);
     const nx = nextHito(s.sp.total), d2 = s.sp.diarios || s.spMedia;
-    if (nx && d2) L.push(` Le faltan ${short(nx - s.sp.total)} para los ${short(nx)} (≈ ${Math.ceil((nx - s.sp.total) / d2)} días).`);
+    if (nx && d2) L.push(nx - s.sp.total <= d2 ? ` ¡A punto! Le faltaban ${short(nx - s.sp.total)} para los ${short(nx)} y suma ${short(d2)} al día: en Spotify ya los habría superado o está a punto.` : ` Le faltan ${short(nx - s.sp.total)} para los ${short(nx)} (≈ ${Math.ceil((nx - s.sp.total) / d2)} días).`);
     return L.join('');
   }
 
@@ -2055,7 +2055,7 @@
     return SONGS.filter(s => isNum(s.sp.total) && isNum(s.sp.diarios) && s.sp.diarios > 0).map(s => {
       const meta = nextHito(s.sp.total); if (!meta) return null;
       const faltan = meta - s.sp.total, dias = Math.ceil(faltan / s.sp.diarios);
-      return { s, meta, faltan, dias, pct: s.sp.total / meta * 100 };
+      return { s, meta, faltan, dias, pct: s.sp.total / meta * 100, aPunto: faltan <= s.sp.diarios };
     }).filter(Boolean).sort((a, b) => a.dias - b.dias);
   }
   function studioDatos() {
@@ -2167,7 +2167,7 @@
       const dd = nx && daily ? Math.ceil((nx - s.sp.total) / daily) : null;
       body.append(h('div', { class: 'yc-card lg-song-hitos' },
         h('div', { class: 'lg-song-hito' }, nx ? ring(s.sp.total / nx * 100, 68) : null,
-          h('div', null, h('span', { class: 'lg-lab', text: 'Próximo hito en Spotify' }), h('b', { class: 'lg-mid', text: nx ? short(nx) : '—' }), h('small', { text: nx ? `faltan ${full(nx - s.sp.total)}${dd ? ` · ≈ ${dd} ${dd === 1 ? 'día' : 'días'}` : ''}` : '' }))),
+          h('div', null, h('span', { class: 'lg-lab', text: 'Próximo hito en Spotify' }), h('b', { class: 'lg-mid', text: nx ? short(nx) : '—' }), h('small', { text: nx ? (daily && nx - s.sp.total <= daily ? `¡A punto! 🔥 faltaban ${full(nx - s.sp.total)} · en Spotify ya lo habría superado` : `faltan ${full(nx - s.sp.total)}${dd ? ` · ≈ ${dd} ${dd === 1 ? 'día' : 'días'}` : ''}`) : '' }))),
         past.length ? h('div', { class: 'lg-chips' }, h('small', { class: 'lg-lab', text: 'Ya superó' }), past.reverse().map(x => h('span', { class: 'lg-chip', text: '✓ ' + short(x) }))) : null));
     }
     body.append(songPostKit(s));

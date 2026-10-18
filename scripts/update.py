@@ -380,6 +380,36 @@ def spotify_playcount(track_id):
     raise ValueError('la página no muestra reproducciones')
 
 
+def spotify_playcounts_browser(track_ids, limite_s=240):
+    """Abre cada tema en un navegador real (como tú en open.spotify.com) y lee el contador de reproducciones.
+    Solo si el workflow instaló Playwright; si no, devuelve {} y se usa kworb."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except Exception:  # noqa: BLE001
+        return {}
+    out, t0 = {}, time.time()
+    with sync_playwright() as pw:
+        br = pw.chromium.launch(args=['--disable-blink-features=AutomationControlled'])
+        ctx = br.new_context(locale='es-ES', user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36',
+                             viewport={'width': 1280, 'height': 900})
+        pg = ctx.new_page()
+        fallos = 0
+        for tid in track_ids:
+            if time.time() - t0 > limite_s or fallos >= 5:
+                break
+            try:
+                pg.goto(f'https://open.spotify.com/track/{tid}', wait_until='domcontentloaded', timeout=25000)
+                el = pg.wait_for_selector('[data-testid="playcount"]', timeout=12000)
+                n = int(re.sub(r'\D', '', el.inner_text() or ''))
+                if n:
+                    out[tid] = n
+                    fallos = 0
+            except Exception:  # noqa: BLE001
+                fallos += 1
+        br.close()
+    return out
+
+
 def yt_api(key, video_ids):
     out = {}
     for i in range(0, len(video_ids), 50):
@@ -1442,7 +1472,13 @@ def main():
         n_sp = 0
         prueba = [spc(x) for x in sp_todo[:8]]
         if not any(pc for _, pc in prueba):
-            sp_todo, prueba = [], []
+            # sin sesión la página no trae la cifra: se abre en un navegador real (si el workflow lo instaló)
+            orden = sorted(sp_todo, key=lambda x: ((x.get('lanzamiento') or '') < lim_sp, -((x.get('spotify') or {}).get('diarios') or 0)))[:(25 if RAPIDO else 70)]
+            vivos = spotify_playcounts_browser([x['spotify']['id'] for x in orden], limite_s=150 if RAPIDO else 300)
+            prueba = [(x, vivos.get(x['spotify']['id'])) for x in orden]
+            sp_todo = []
+            if vivos:
+                log(f'  · contador de Spotify leído con navegador ({len(vivos)} temas)')
         with cf.ThreadPoolExecutor(3) as ex:
             for x, pc in prueba + list(ex.map(spc, sp_todo[8:])):
                 if not pc:
@@ -1462,7 +1498,7 @@ def main():
                     n_sp += 1
         HECHO.append(f'Spotify por tema ({n_sp}/{len(sp_todo)})') if n_sp else None
         if not n_sp:
-            fallo('Spotify por tema', 'la página de Spotify no mostró reproducciones (se usa kworb)')
+            fallo('Spotify por tema', 'Spotify no mostró el contador ni con navegador (se usa kworb)')
 
     # --- YouTube: canal, nuevos videos y vistas por video
     log('YouTube')
