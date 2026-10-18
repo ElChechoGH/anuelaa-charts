@@ -949,10 +949,10 @@
     if (past && isNum(s.sp.diarios) && s.sp.total - s.sp.diarios * 2 < past) I.push({ ic: '🏆', t: `Acaba de superar los ${short(past)} en Spotify`, pre: { plantilla: 'hito', titular: tt, etiqueta: 'NUEVO RÉCORD', numero: short(past).replace(/\s/g, ''), numeroTxt: 'STREAMS EN SPOTIFY', imagen: coverOf(s) }, cap: `🏆 «${tt}» de @${AU()} supera los ${short(past)} de streams en @spotify 💿🔥` });
     const bp = bestPositions(s);
     const best = bp[0];
-    if (best && best.hoy) I.push({ ic: '📈', t: `Hoy está #${best.hoy} en ${best.plat} ${best.pais}${s.hoy.length > 1 ? ` (y en ${s.hoy.length - 1} listas más)` : ''}`, pre: { plantilla: 'charts', titular: tt, etiqueta: String(best.lista).toUpperCase(), numero: '#' + best.hoy, numeroTxt: `${best.plat} · ${best.pais}`.toUpperCase(), imagen: coverOf(s) }, cap: `📈 «${tt}» de @${AU()} está hoy en el #${best.hoy} de ${best.plat} ${best.pais}${s.hoy.length > 1 ? ` y en ${s.hoy.length} listas en total` : ''} 🔥` });
+    if (best && best.hoy) I.push({ ic: '📈', t: `Hoy está Top ${best.hoy} en ${best.plat} ${best.pais}${s.hoy.length > 1 ? ` (y en ${s.hoy.length - 1} listas más)` : ''}`, pre: { plantilla: 'charts', titular: tt, etiqueta: String(best.lista).toUpperCase(), numero: '#' + best.hoy, numeroTxt: `${best.plat} · ${best.pais}`.toUpperCase(), imagen: coverOf(s) }, cap: `📈 «${tt}» de @${AU()} está hoy en el #${best.hoy} de ${best.plat} ${best.pais}${s.hoy.length > 1 ? ` y en ${s.hoy.length} listas en total` : ''} 🔥` });
     if (s.rank_spd && s.rank_spd <= 3) I.push({ ic: '🔥', t: `Es su canción nº ${s.rank_spd} más escuchada hoy (${short(s.sp.diarios)} streams)`, pre: { plantilla: 'titular', titular: `${tt} *ARRASA* HOY`, etiqueta: `${short(s.sp.diarios)} STREAMS HOY`, imagen: coverOf(s) }, cap: `🔥 «${tt}» es hoy la ${s.rank_spd === 1 ? 'canción más escuchada' : `${s.rank_spd}ª canción más escuchada`} de @${AU()} en @spotify con ${full(s.sp.diarios)} streams en un día` });
     const pls = songPlaylists(s.id);
-    if (pls.length) I.push({ ic: '📋', t: `Está en ${pls.length} ${pls.length === 1 ? 'playlist oficial' : 'playlists oficiales'}: #${pls[0].t.pos} en «${plName(pls[0].p)}»`, pre: { plantilla: 'charts', titular: tt, etiqueta: plName(pls[0].p).toUpperCase(), numero: '#' + pls[0].t.pos, numeroTxt: `PLAYLIST DE ${pls[0].p.plataforma.toUpperCase()}`, imagen: coverOf(s) }, cap: `📋 «${tt}» de @${AU()} está en el #${pls[0].t.pos} de la playlist «${plName(pls[0].p)}» de ${pls[0].p.plataforma}${pls.length > 1 ? ` y en ${pls.length - 1} playlists oficiales más` : ''} 💿` });
+    if (pls.length) I.push({ ic: '📋', t: `Está en ${pls.length} ${pls.length === 1 ? 'playlist oficial' : 'playlists oficiales'}: Top ${pls[0].t.pos} en «${plName(pls[0].p)}»`, pre: { plantilla: 'charts', titular: tt, etiqueta: plName(pls[0].p).toUpperCase(), numero: '#' + pls[0].t.pos, numeroTxt: `PLAYLIST DE ${pls[0].p.plataforma.toUpperCase()}`, imagen: coverOf(s) }, cap: `📋 «${tt}» de @${AU()} está en el #${pls[0].t.pos} de la playlist «${plName(pls[0].p)}» de ${pls[0].p.plataforma}${pls.length > 1 ? ` y en ${pls.length - 1} playlists oficiales más` : ''} 💿` });
     if (s.yt && isNum(s.yt.vistas)) { const yd = ytDaily(s); if (isNum(yd) && yd > 50000) I.push({ ic: '▶️', t: `Su vídeo suma ${short(yd)} vistas al día (${short(s.yt.vistas)} en total)`, pre: { plantilla: 'versus', titular: tt, vsA: 'SPOTIFY', vsANum: short(s.sp.total).replace(/\s/g, ''), vsB: 'YOUTUBE', vsBNum: short(s.yt.vistas).replace(/\s/g, ''), subtitulo: '¿DÓNDE LO ESCUCHAS TÚ?', imagen: coverOf(s) }, cap: `▶️ El vídeo de «${tt}» de @${AU()} ya tiene ${full(s.yt.vistas)} vistas en @youtube y suma unas ${short(yd)} al día 🔥` }); }
     if (s.isNew && s.diasPublicado != null) I.push({ ic: '🆕', t: `Estreno de hace ${s.diasPublicado} días: ${short(s.combinado)} reproducciones entre plataformas`, pre: { plantilla: 'portada', titular: tt, etiqueta: 'NUEVO LANZAMIENTO', subtitulo: `${short(s.combinado)} REPRODUCCIONES EN ${s.diasPublicado} DÍAS`, imagen: coverOf(s) }, cap: `🆕 «${tt}» de @${AU()} suma ${full(s.combinado)} reproducciones entre @spotify y @youtube en solo ${s.diasPublicado} días 🚀` });
     return I;
@@ -1370,7 +1370,8 @@
   }
   function logroCaption(n) {
     const em = { aniversario: '🎂', playlist: '📋', mundial: '🌍', numero1: '🥇', top10: '🔟', debut: '🚀', pico: '📈', record: '💥', cifra: '🏆' }[n.cat] || '🏆';
-    return `${em} ${String(n.titulo).toUpperCase()}\n\n${n.texto || ''}${n.fuente ? `\n\nFuente: ${n.fuente}` : ''}\n\n#${AH()}${mkTag()} #charts #musicaurbana${mkSig()}`;
+    const topN = (t) => String(t || '').replace(/#(\d+)/g, 'Top $1');
+    return `${em} ${topN(n.titulo).toUpperCase()}\n\n${topN(n.texto)}${n.fuente ? `\n\nFuente: ${n.fuente}` : ''}\n\n#${AH()}${mkTag()} #charts #musicaurbana${mkSig()}`;
   }
   function logroPost(n) {
     const s = n.cancion ? songById(n.cancion) : null;
@@ -1582,7 +1583,7 @@
     const L = [`📊 ${AN()} HOY (${dfmt(t.T, { year: undefined })})`, ''];
     if (isNum(t.sp.streams_diarios)) L.push(`🟢 @spotify: ${short2(t.sp.streams_diarios)} streams en un día${isNum(t.sp.oyentes_mensuales) ? ` · ${short2(t.sp.oyentes_mensuales)} oyentes mensuales${sgn(t.dOy) ? ` (${sgn(t.dOy)})` : ''}` : ''}`);
     if (t.ytToday) L.push(`🔴 @youtube: +${short2(t.ytToday)} views en sus vídeos${isNum(t.yt.suscriptores) ? ` · ${short2(t.yt.suscriptores)} suscriptores${sgn(t.dSubs) ? ` (${sgn(t.dSubs)})` : ''}` : ''}`);
-    if (t.nCharts) L.push(`📈 En ${t.nCharts} listas${t.best ? ` · mejor puesto #${t.best.posicion} en ${t.best.lista} de ${t.best.plataforma} ${t.best.pais} ${flagEmoji(t.best.codigo || ccOf(t.best.pais))}` : ''}`);
+    if (t.nCharts) L.push(`📈 En ${t.nCharts} listas${t.best ? ` · mejor puesto Top ${t.best.posicion} en ${t.best.lista} de ${t.best.plataforma} ${t.best.pais} ${flagEmoji(t.best.codigo || ccOf(t.best.pais))}` : ''}`);
     if (t.mover) L.push(`🚀 La que más sube: ${String(t.mover.c.cancion).split(' (')[0]} (${t.mover.c.cambio}) en ${t.mover.c.plataforma} ${t.mover.c.pais}`);
     if (sgn(t.dIg) || sgn(t.dTt)) L.push(`📱 Redes: ${[sgn(t.dIg) ? `Instagram ${sgn(t.dIg)}` : '', sgn(t.dTt) ? `TikTok ${sgn(t.dTt)}` : ''].filter(Boolean).join(' · ')}`);
     if (t.lgs.length) { L.push('', '🏆 Logros de hoy:'); t.lgs.slice(0, 5).forEach(n => L.push(`• ${n.titulo}`)); }
@@ -1624,14 +1625,14 @@
   }
   function anivText(a) {
     const s = a.s, spT = s.sp.total, ytT = s.yt && s.yt.vistas, b = bestNow(s);
-    const tt = '#' + s.titulo.replace(/\s*\(.*?\)\s*/g, '').replace(/[^\p{L}\p{N}]/gu, '');
+    const tt = '«' + s.titulo.replace(/\s*\(.*?\)\s*/g, '').trim() + '»';
     const L = [`🎂 ${tt} de @${AU()} cumple ${a.label} 🎉`, '', `Salió el ${dfmt(s.lanzamiento)} y desde entonces lleva:`];
     if (isNum(spT)) L.push(`🟢 ${esN(spT)} de streams en @spotify`.replace(/(\d+k) de/, '$1'));
     if (isNum(ytT)) L.push(`🔴 ${esN(ytT)} de views en @youtube`.replace(/(\d+k) de/, '$1'));
     if (isNum(spT) && isNum(ytT)) L.push(`🔥 Total: ${esN(spT + ytT)} de reproducciones`.replace(/(\d+k) de/, '$1'));
     const pk = (s.picos || []).slice().sort((x, y) => x.pico - y.pico)[0];
-    if (pk) L.push(`📈 Su mejor puesto en Spotify: #${pk.pico} en ${pk.pais} ${flagEmoji(pk.codigo)}`);
-    if (b) L.push(`📍 Hoy sigue en el #${b.p} de ${b.plat} ${b.pais} ${flagEmoji(b.cc)}`);
+    if (pk) L.push(`📈 Su mejor puesto en Spotify: Top ${pk.pico} en ${pk.pais} ${flagEmoji(pk.codigo)}`);
+    if (b) L.push(`📍 Hoy sigue en el Top ${b.p} de ${b.plat} ${b.pais} ${flagEmoji(b.cc)}`);
     L.push('', `#${AH()}${mkTag()}`); if (MK()) L.push(`🎨 @${MK()}`);
     return L.join('\n');
   }
@@ -1861,15 +1862,15 @@
     const seen = new Set();
     const charts = (DATA.charts || []).filter(c => c.posicion != null && c.cancion && base(c.cancion) === s.b).sort((a, b) => a.posicion - b.posicion)
       .filter(c => { const k = c.plataforma + c.lista + c.pais; if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 3);
-    const alb = s.album && base(s.album) !== s.b ? '#' + s.album.replace(/[^\p{L}\p{N}]/gu, '') : null;
+    const alb = s.album && base(s.album) !== s.b ? '«' + s.album.trim() + '»' : null;
     const atPl = (p) => ({ 'Spotify': '@spotify', 'Apple Music': '@applemusic', 'Deezer': '@deezer' }[p.plataforma] || p.plataforma);
-    const chartTxt = (c) => `#${c.posicion} ${c.plataforma === 'YouTube' ? (String(c.lista).startsWith('Top') ? 'del top diario de @youtube' : 'de tendencias de @youtube') : `de @${c.plataforma.toLowerCase().replace(/\s+/g, '')}`} ${c.pais} ${flagEmoji(c.codigo)}`;
-    const tt = '#' + s.titulo.replace(/\s*\(.*?\)\s*/g, '').replace(/[^\p{L}\p{N}]/gu, '');
+    const chartTxt = (c) => `Top ${c.posicion} ${c.plataforma === 'YouTube' ? (String(c.lista).startsWith('Top') ? 'del top diario de @youtube' : 'de tendencias de @youtube') : `de @${c.plataforma.toLowerCase().replace(/\s+/g, '')}`} ${c.pais} ${flagEmoji(c.codigo)}`;
+    const tt = '«' + s.titulo.replace(/\s*\(.*?\)\s*/g, '').trim() + '»';
     if (estilo === 'corto') {
       const L = [`${tt} ${tags.join(' / ')} 💿${since ? ` · ${since} desde su salida` : ''}`, ''];
       if (isNum(spT)) L.push(`🟢 @spotify: ${de(spT, 'streams')}${isNum(spD) ? ` (+${esK(spD)} al día)` : ''}`);
       if (isNum(ytT)) L.push(`🔴 @youtube: ${de(ytT, 'views')}${isNum(ytD) ? ` (+${esK(ytD)} al día)` : ''}`);
-      pls.slice(0, 3).forEach(({ p, t }) => L.push(`📋 #${t.pos} en “${plName(p)}” (${atPl(p)})`));
+      pls.slice(0, 3).forEach(({ p, t }) => L.push(`📋 Top ${t.pos} en “${plName(p)}” (${atPl(p)})`));
       charts.forEach(c => L.push(`📈 ${chartTxt(c)}`));
       if (isNum(spT) && isNum(ytT)) L.push('', `🔥 Total: ${de(spT + ytT, 'reproducciones')}${since && days < 400 ? ` en ${since}` : ''} 🏆`);
       return L.join('\n');
@@ -1881,7 +1882,7 @@
       const sp1 = pls.find(x => x.p.plataforma === 'Spotify');
       if (sp1) t += ` El tema también sigue siendo parte de la playlist oficial de @spotify llamada “${plName(sp1.p)}” estando en el número ${sp1.t.pos}º${sp1.t.pos <= 3 ? (sp1.t.antes && sp1.t.antes > 3 ? ' y estaría entrando al top 3 de esta' : ', dentro del top 3 de esta') : sp1.t.antes && sp1.t.antes > sp1.t.pos ? ` (antes estaba en el ${sp1.t.antes}º)` : ''}.`;
       const others = pls.filter(x => x !== sp1).slice(0, 2);
-      if (others.length) t += ` Además aparece en ${others.map(({ p, t: q }) => `“${plName(p)}” de ${atPl(p)} (#${q.pos})`).join(' y ')}.`;
+      if (others.length) t += ` Además aparece en ${others.map(({ p, t: q }) => `“${plName(p)}” de ${atPl(p)} (Top ${q.pos})`).join(' y ')}.`;
       P.push(t);
     }
     if (isNum(ytT)) {
