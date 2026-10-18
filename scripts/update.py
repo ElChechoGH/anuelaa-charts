@@ -1532,8 +1532,8 @@ def main():
             continue  # su canal oficial
         if _fan and (y.get('canal_id') or can_ != ARTISTA):
             malo = True  # se llama «Anuel…» (AnuelVEVO, ANUEL AA OFICIAL…) pero no es su canal
-        elif y.get('origen') in ('kworb', 'rss') or (y.get('origen') is None and can_ == ARTISTA):
-            continue
+        elif y.get('origen') == 'rss' or (y.get('origen') is None and can_ == ARTISTA):
+            continue  # de su propio canal
         else:
             malo = bool(s.get('creditos') or s.get('creditos_sp')) and canal_oficial({'canal': can_, 'canal_id': y.get('canal_id'), 'verificado': y.get('verificado'), 'titulo': y.get('titulo')}, s) is False
         if malo:
@@ -1547,6 +1547,13 @@ def main():
     DATA_VETO[:] = data['yt_vetados']
     if quitados:
         HECHO.append(f'vídeos de canales no oficiales quitados ({quitados})')
+    sin_video = {norm(t) for t in (CFG.get('sin_video') or [])}  # temas que no tienen vídeo oficial: no se les pone ninguno
+    for s in songs:
+        if norm(s['titulo']) in sin_video:
+            if s.get('youtube'):
+                vetados.add(s['youtube'].get('video_id'))
+            s['youtube'] = None
+            s['yt_buscado'] = s['yt_revisado'] = s['yt_api_buscado'] = '9999-12-31'
     manual = {norm(k): re.sub(r'^.*(?:v=|youtu\.be/|shorts/)([\w-]{11}).*$', r'\1', str(v).strip()) for k, v in (CFG.get('videos') or {}).items()}
     for s in songs:
         vid_ = manual.get(norm(s['titulo']))
@@ -1563,6 +1570,8 @@ def main():
         by_id = {v['video_id']: v for v in kw_vids}
         lyric = re.compile(r'lyric|letra|audio|visualizer|en vivo|live|remix', re.I)
         for s in songs:
+            if s.get('yt_buscado') == '9999-12-31':
+                continue
             y = s.get('youtube')
             if y and y.get('video_id') in by_id:  # ya tenía vídeo: vistas y vistas de ayer de kworb
                 v = by_id[y['video_id']]
@@ -1593,7 +1602,7 @@ def main():
     for v in channel_vids:  # asigna videos nuevos a canciones sin video
         tv = norm(re.sub(r'\[.*?\]|\(.*?(video|visualizer|audio|lyric).*?\)', '', v['titulo'], flags=re.I))
         for s in songs:
-            if s.get('youtube'):
+            if s.get('youtube') or s.get('yt_buscado') == '9999-12-31':
                 continue
             b = base(s['titulo'])
             if len(b) >= 3 and re.search(r'(^|[\s\-"“])' + re.escape(b) + r'($|[\s\-"”(])', tv):
@@ -1606,7 +1615,7 @@ def main():
         lim120 = (NOW - dt.timedelta(days=120)).strftime('%Y-%m-%d')
         flojo = lambda x: not x.get('youtube') or (not x['youtube'].get('fijo') and not es_oficial(x['youtube']))  # sin vídeo o con audio/letra
         # recientes SIN vídeo: en cada actualización (cada 30 min) hasta encontrarlo; con audio/letra: se intenta mejorar una vez al día
-        recientes = [x for x in songs if flojo(x) and (x.get('lanzamiento') or '') >= lim120 and (not x.get('youtube') or (x.get('yt_buscado') or '') < hace1)]
+        recientes = [x for x in songs if flojo(x) and x.get('yt_buscado') != '9999-12-31' and (x.get('lanzamiento') or '') >= lim120 and (not x.get('youtube') or (x.get('yt_buscado') or '') < hace1)]
         viejos = sorted([x for x in songs if flojo(x) and (x.get('lanzamiento') or '') < lim120 and (x.get('yt_buscado') or '') < hace7],
                         key=lambda x: (bool(x.get('youtube')), -((x.get('spotify') or {}).get('total') or 0)))
         cola = (sorted(recientes, key=lambda x: x.get('lanzamiento') or '', reverse=True)[:(12 if RAPIDO else 40)] + viejos[:(6 if RAPIDO else 40)])
@@ -1648,7 +1657,7 @@ def main():
             cuota = {'d': HOY, 'busquedas': 0}
         TOPE = 40  # 40 búsquedas = 4.000 unidades/día como máximo (el límite gratis es 10.000)
         _lim = (NOW - dt.timedelta(days=120)).strftime('%Y-%m-%d')
-        _sin = [x for x in songs if (x.get('_bloq') or (x.get('_bloq') is False and not x.get('youtube') and (x.get('lanzamiento') or '') >= _lim))
+        _sin = [x for x in songs if x.get('yt_buscado') != '9999-12-31' and (x.get('_bloq') or (x.get('_bloq') is False and not x.get('youtube') and (x.get('lanzamiento') or '') >= _lim))
                 and (x.get('yt_api_buscado') or '') != HOY
                 and (not x.get('youtube') or (not x['youtube'].get('fijo') and not es_oficial(x['youtube'])))]
         _sin.sort(key=lambda x: ((x.get('lanzamiento') or '') < _lim, bool(x.get('youtube')), -((x.get('spotify') or {}).get('total') or 0)))
