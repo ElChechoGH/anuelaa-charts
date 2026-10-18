@@ -367,9 +367,16 @@ def spotify_playcount(track_id):
                 return int(mm.group(1))
         except Exception:  # noqa: BLE001
             pass
-    mm = re.search(r'"playcount"\s*:\s*"?(\d+)', html)
+    mm = re.search(r'"playcount"\s*:\s*"?(\d+)', html, re.I)
     if mm:
         return int(mm.group(1))
+    try:  # reserva: el reproductor incrustado de Spotify
+        emb = get(f'https://open.spotify.com/embed/track/{track_id}', tries=1)
+        mm = re.search(r'"playcount"\s*:\s*"?(\d+)', emb, re.I)
+        if mm:
+            return int(mm.group(1))
+    except Exception:  # noqa: BLE001
+        pass
     raise ValueError('la página no muestra reproducciones')
 
 
@@ -1417,7 +1424,13 @@ def main():
 
     # --- Spotify: reproducciones exactas de la página de cada tema (más al día que kworb)
     lim_sp = (NOW - dt.timedelta(days=90)).strftime('%Y-%m-%d')
-    sp_todo = [x for x in songs if (x.get('spotify') or {}).get('id') and (not RAPIDO or (x.get('lanzamiento') or '') >= lim_sp)] if CFG.get('spotify_por_tema') else []
+    sp_todo = []
+    if CFG.get('spotify_por_tema'):
+        con_id = [x for x in songs if (x.get('spotify') or {}).get('id')]
+        recientes_sp = [x for x in con_id if (x.get('lanzamiento') or '') >= lim_sp]
+        # cada 30 min: los temas de los últimos 90 días; en la completa, además los 120 que más suenan (sin saturar a Spotify)
+        top_sp = [] if RAPIDO else sorted(con_id, key=lambda x: -((x.get('spotify') or {}).get('diarios') or 0))[:120]
+        sp_todo = list({id(x): x for x in recientes_sp + top_sp}.values())
     if sp_todo:
         log('Spotify · reproducciones por tema')
 
@@ -1427,8 +1440,11 @@ def main():
             except Exception:  # noqa: BLE001
                 return x, None
         n_sp = 0
-        with cf.ThreadPoolExecutor(4) as ex:
-            for x, pc in ex.map(spc, sp_todo):
+        prueba = [spc(x) for x in sp_todo[:8]]
+        if not any(pc for _, pc in prueba):
+            sp_todo, prueba = [], []
+        with cf.ThreadPoolExecutor(3) as ex:
+            for x, pc in prueba + list(ex.map(spc, sp_todo[8:])):
                 if not pc:
                     continue
                 sp = x['spotify']
@@ -1444,7 +1460,7 @@ def main():
                             sp['diarios_fuente'] = 'Spotify (calculado)'
                     sp.update({'total': pc, 'fecha': HOY, 'fuente': 'Spotify (página del tema)'})
                     n_sp += 1
-        HECHO.append(f'Spotify por tema ({n_sp}/{len(sp_todo)})')
+        HECHO.append(f'Spotify por tema ({n_sp}/{len(sp_todo)})') if n_sp else None
         if not n_sp:
             fallo('Spotify por tema', 'la página de Spotify no mostró reproducciones (se usa kworb)')
 

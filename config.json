@@ -84,5 +84,6 @@
  "apple": {
   "Baby Demon": "https://music.apple.com/es/song/baby-demon/1755230676",
   "Triste Verano": "https://music.apple.com/es/album/triste-verano-single/1682277586"
- }
+ },
+ "spotify_por_tema": true
 }
