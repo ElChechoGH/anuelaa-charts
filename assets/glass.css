@@ -445,3 +445,80 @@ html.noblur .lg-links a { -webkit-backdrop-filter: none; backdrop-filter: none; 
 .yc-logo { background: none !important; box-shadow: none !important; }
 img.yc-logo-in { object-fit: cover; display: block; border-radius: 50%; }
 .yc-logo { border-radius: 50% !important; }
+
+/* ─────────── LOGROS Y METAS · estilo iOS (Fitness / Actividad) ─────────── */
+.mt-hero { position: relative; padding: 18px 0 4px; }
+.mt-hero-glow { display: none; }
+.mt-hero-k { font-size: 13px; font-weight: 600; letter-spacing: 0; color: var(--text2); }
+.mt-h1 { margin-top: 2px; }
+.mt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+.mt-card { position: relative; border-radius: 22px; padding: 16px; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center;
+  background: linear-gradient(180deg, var(--lg-fill), var(--lg-fill2)); border: 1px solid var(--lg-edge); box-shadow: inset 0 1px 0 var(--lg-rim);
+  transition: transform .4s var(--spring, cubic-bezier(.2,.8,.2,1)), box-shadow .4s ease; overflow: hidden; }
+.mt-card:hover { transform: translateY(-2px); }
+.mt-card.hot { box-shadow: inset 0 1px 0 var(--lg-rim), 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent), 0 12px 36px -14px color-mix(in srgb, var(--accent) 70%, transparent); animation: mt-breathe 3.2s ease-in-out infinite; }
+@keyframes mt-breathe { 50% { box-shadow: inset 0 1px 0 var(--lg-rim), 0 0 0 1px color-mix(in srgb, var(--accent) 80%, transparent), 0 16px 44px -12px color-mix(in srgb, var(--accent) 85%, transparent); } }
+.mt-ringbox { position: relative; width: 64px; height: 64px; flex: none; }
+.mt-ringbox .lg-ring { width: 64px !important; height: 64px !important; }
+.mt-ringbox .yc-pico { position: absolute; inset: 0; margin: auto; width: 26px; height: 26px; border-radius: 8px; }
+.mt-ringbox .mt-pct { position: absolute; inset: 0; display: grid; place-items: center; font-size: 13px; font-weight: 700; letter-spacing: -.02em; }
+.mt-body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.mt-top { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.mt-plat { font-size: 13px; font-weight: 600; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mt-badge { margin-left: auto; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, transparent); white-space: nowrap; }
+.mt-nums { display: flex; align-items: baseline; gap: 6px; }
+.mt-now { font-family: var(--font-d); font-size: 26px; font-weight: 750; letter-spacing: -.035em; }
+.mt-nums.sm .mt-now { font-size: 21px; }
+.mt-arrow { color: var(--text3); font-size: 13px; }
+.mt-goal { font-size: 15px; font-weight: 650; color: var(--text2); }
+.mt-bar { display: none; }
+.mt-sub { color: var(--text2); font-size: 12.5px; line-height: 1.35; }
+.mt-song { cursor: pointer; }
+.mt-cov { width: 64px; height: 64px; flex: none; border-radius: 14px; overflow: hidden; position: relative; }
+.mt-cov img, .mt-cov > * { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.mt-main { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.mt-title { font-size: 15px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mt-line { height: 4px; border-radius: 99px; background: color-mix(in srgb, var(--text) 10%, transparent); overflow: hidden; margin-top: 6px; }
+.mt-line i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--accent); transition: width 1.1s cubic-bezier(.2,.8,.2,1); }
+.reveal.in .mt-line i, .mt-card.in .mt-line i { width: var(--w); }
+.mt-link { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; margin: 14px 0; padding: 14px 16px; border-radius: 18px; border: 1px solid var(--lg-edge); background: linear-gradient(180deg, var(--lg-fill), var(--lg-fill2)); box-shadow: inset 0 1px 0 var(--lg-rim); color: var(--text); font: inherit; cursor: pointer; }
+.mt-link > span:nth-child(2) { display: flex; flex-direction: column; flex: 1; }
+.mt-link small { color: var(--text2); }
+/* logros desbloqueados: tarjetas de cristal teñidas con la portada, como el resto de la web */
+.lgx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.lgx-card { position: relative; border-radius: 24px; overflow: hidden; cursor: pointer; isolation: isolate; border: 1px solid var(--lg-edge); box-shadow: inset 0 1px 0 var(--lg-rim); transition: transform .4s var(--spring, ease); }
+.lgx-card:hover { transform: translateY(-2px); }
+.lgx-bg { position: absolute; inset: 0; z-index: -2; background:
+  radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--t1, var(--accent)) 38%, transparent), transparent 60%),
+  radial-gradient(120% 140% at 100% 100%, color-mix(in srgb, var(--t2, var(--amb2, var(--accent))) 26%, transparent), transparent 60%),
+  linear-gradient(180deg, var(--lg-fill), var(--lg-fill2)); }
+.lgx-card::after { display: none; }
+.lgx-shine { position: absolute; inset: 0; z-index: -1; background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.07) 50%, transparent 60%); background-size: 260% 100%; animation: mt-shine 6s ease-in-out infinite; }
+@keyframes mt-shine { from { background-position: 160% 0; } to { background-position: -60% 0; } }
+.lgx-in { display: flex; align-items: center; gap: 14px; padding: 16px; color: var(--text); }
+.lgx-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.lgx-tag { font-size: 12px; font-weight: 600; color: var(--text2); letter-spacing: 0; }
+.lgx-t { font-size: 15.5px; font-weight: 650; line-height: 1.28; letter-spacing: -.01em; }
+.lgx-n { font-family: var(--font-d); font-size: 28px; font-weight: 800; letter-spacing: -.04em; color: var(--accent); margin-top: 2px; }
+.lgx-post { flex: none; display: inline-flex !important; align-items: center; gap: 6px; padding: 7px 12px !important; border-radius: 999px !important; font-weight: 650; white-space: nowrap; }
+.lgx-post svg { width: 14px; height: 14px; }
+/* aviso al abrir: hoja de cristal tipo iOS */
+.cel-ov { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.45); -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%); opacity: 0; transition: opacity .4s ease; }
+.cel-ov.on { opacity: 1; } .cel-ov.out { opacity: 0; }
+.cel-cv { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.cel-card { position: relative; width: min(390px, 100%); text-align: center; padding: 30px 22px 20px; border-radius: 32px; color: var(--text);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--card-solid, #1c1c1e) 92%, transparent), color-mix(in srgb, var(--card-solid, #1c1c1e) 82%, transparent));
+  border: 1px solid var(--lg-edge); box-shadow: inset 0 1px 0 var(--lg-rim), 0 40px 100px -30px rgba(0,0,0,.7); transform: scale(.94) translateY(14px); transition: transform .55s var(--spring, cubic-bezier(.2,1.3,.3,1)); overflow: hidden; }
+.cel-ov.on .cel-card { transform: none; }
+.cel-ring { position: absolute; left: 50%; top: 22px; width: 96px; height: 96px; margin-left: -48px; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 55%, transparent), transparent); opacity: .9; }
+.cel-em { position: relative; font-size: 52px; line-height: 1; margin: 6px 0 14px; animation: cel-pop .7s cubic-bezier(.2,1.5,.3,1) both .1s; }
+@keyframes cel-pop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+.cel-k { display: block; font-size: 13px; font-weight: 650; color: var(--accent); letter-spacing: 0; }
+.cel-t { display: block; font-size: 20px; font-weight: 700; line-height: 1.25; letter-spacing: -.02em; margin: 6px 0 4px; }
+.cel-n { font-family: var(--font-d); font-size: 46px; font-weight: 800; letter-spacing: -.045em; color: var(--text); }
+.cel-more { display: flex; flex-direction: column; gap: 3px; margin: 10px 0 2px; color: var(--text2); font-size: 13px; }
+.cel-hot { display: block; margin-top: 8px; color: var(--accent); font-weight: 600; font-size: 13px; }
+.cel-act { display: grid; gap: 8px; margin-top: 18px; }
+.cel-x { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; border-radius: 50%; border: 0; background: color-mix(in srgb, var(--text) 10%, transparent); color: var(--text2); font-size: 13px; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .mt-card.hot, .lgx-shine, .cel-em { animation: none; } }
+@media (max-width: 520px) { .mt-grid, .lgx-grid { grid-template-columns: 1fr; } }

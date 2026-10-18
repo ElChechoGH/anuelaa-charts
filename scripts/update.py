@@ -1124,20 +1124,25 @@ def logros(data, songs, P, prev_perfil, prev_sp, prev_yt, add):
                           f'Ahora {MILES(new)}', corto(m), f'{unit} EN {plat.upper()}', 'NUEVA CIFRA', None, s, plat)
     # 3) récords del perfil (máximos de siempre) y cifras redondas
     rec = st.setdefault('records', {})
-    for key_, path, label, sub, step in (('oyentes', ('spotify', 'oyentes_mensuales'), 'oyentes mensuales en Spotify', 'OYENTES MENSUALES', 1e6),
+    def paso(v):  # seguidores: cada 5 M (de 10 a 100 M), cada 10 M (desde 100 M), cada 1 M (de 1 a 10 M)
+        return 10e6 if v >= 100e6 else 5e6 if v >= 10e6 else 1e6 if v >= 1e6 else 250e3
+    for key_, path, label, sub, step in (('oyentes', ('spotify', 'oyentes_mensuales'), 'oyentes mensuales en Spotify', 'OYENTES MENSUALES', 'auto'),
+                                         ('sp_seg', ('spotify', 'seguidores'), 'seguidores en Spotify', 'SEGUIDORES EN SPOTIFY', 'auto'),
                                          ('diarios', ('spotify', 'streams_diarios'), 'streams en un día en Spotify', 'STREAMS EN UN DÍA', None),
                                          ('total_sp', ('spotify', 'streams_totales'), 'streams totales en Spotify', 'STREAMS TOTALES EN SPOTIFY', 500e6),
-                                         ('subs', ('youtube', 'suscriptores'), 'suscriptores en YouTube', 'SUSCRIPTORES EN YOUTUBE', 250e3),
+                                         ('subs', ('youtube', 'suscriptores'), 'suscriptores en YouTube', 'SUSCRIPTORES EN YOUTUBE', 'auto'),
                                          ('yt_vistas', ('youtube', 'vistas'), 'vistas en YouTube', 'VISTAS EN YOUTUBE', 100e6),
-                                         ('ig', ('instagram', 'seguidores'), 'seguidores en Instagram', 'SEGUIDORES EN INSTAGRAM', 250e3),
-                                         ('tt', ('tiktok', 'seguidores'), 'seguidores en TikTok', 'SEGUIDORES EN TIKTOK', 250e3)):
+                                         ('ig', ('instagram', 'seguidores'), 'seguidores en Instagram', 'SEGUIDORES EN INSTAGRAM', 'auto'),
+                                         ('tt', ('tiktok', 'seguidores'), 'seguidores en TikTok', 'SEGUIDORES EN TIKTOK', 'auto')):
         n = (P.get(path[0]) or {}).get(path[1])
         o = (prev_perfil.get(path[0]) or {}).get(path[1])
         if not isinstance(n, (int, float)) or not n:
             continue
+        if step == 'auto':
+            step = paso(min(n, o or n))
         if step and o and int(n // step) > int(o // step):
             mark = int(n // step) * step
-            L(f'perfil:{key_}:{int(mark)}', 3 if key_ in ('oyentes', 'total_sp') else 2, 'cifra', f'{ARTISTA} llega a {corto(mark)} de {label}', f'Ahora {MILES(int(n))}', corto(mark), sub, 'NUEVA CIFRA', None, None, path[0].capitalize())
+            L(f'perfil:{key_}:{int(mark)}', 3 if key_ in ('oyentes', 'total_sp') or mark >= 10e6 else 2, 'cifra', f'{ARTISTA} llega a {corto(mark)} de {label}', f'Ahora {MILES(int(n))}', corto(mark), sub, 'NUEVA CIFRA', None, None, path[0].capitalize())
         if key_ in ('oyentes', 'diarios'):
             r0 = rec.get(key_)
             if r0 and n > r0 * 1.01 and not (P.get(path[0]) or {}).get('oyentes_aprox' if key_ == 'oyentes' else '_'):

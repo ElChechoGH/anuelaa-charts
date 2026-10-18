@@ -432,7 +432,7 @@
 
   // ---------- páginas ----------
   const PAGES = [
-    ['inicio', 'Inicio', 'home'], ['canciones', 'Canciones', 'music'], ['listas', 'Listas', 'chart'], ['novedades', 'Lo nuevo', 'bell'], ['logros', 'Logros', 'trophy'],
+    ['inicio', 'Inicio', 'home'], ['canciones', 'Canciones', 'music'], ['listas', 'Listas', 'chart'], ['novedades', 'Lo nuevo', 'bell'], ['logros', 'Logros y metas', 'trophy'],
     ['records', 'Récords', 'star'], ['comparar', 'Comparar', 'bolt'], ['trayectoria', 'Trayectoria', 'spark'], ['albumes', 'Discografía', 'disc'], ['lanzamientos', 'Estrenos', 'flame'], ['redes', 'Perfiles', 'people'], ['estudio', 'Estudio', 'pen']
   ];
   const MOBILE_MAIN = ['inicio', 'canciones', 'listas', 'novedades', 'estudio'];
@@ -1080,7 +1080,7 @@
   }
   function renderRecords() {
     const el = $('#p-records'); el.replaceChildren();
-    el.append(h('h1', { class: 'yc-h1' }, 'Récords ', h('em', { text: 'e hitos' })), h('p', { class: 'yc-sub', text: `Las cifras más grandes de ${AN()} y los próximos números redondos, con la cuenta atrás calculada al ritmo de streams del último dato.` }));
+    el.append(h('h1', { class: 'yc-h1' }, 'Récords'), h('p', { class: 'yc-sub', text: `Las cifras más grandes de ${AN()} y los próximos números redondos, con la cuenta atrás calculada al ritmo de streams del último dato.` }));
     if (!SONGS.length) { el.append(h('p', { class: 'yc-empty', text: 'Aún no hay datos.' })); return; }
     const sp = (x) => x.sp.total;
     const bySp = SONGS.filter(x => isNum(sp(x))).sort((a, b) => sp(b) - sp(a));
@@ -1100,9 +1100,7 @@
       rec('Mayor total combinado', SONGS.slice().sort((a, b) => (b.combinado || 0) - (a.combinado || 0))[0], short(SONGS.reduce((m, x) => Math.max(m, x.combinado || 0), 0)), 'Spotify + YouTube + Audiomack')));
     $$('.lg-rec', el).forEach(reveal);
     // próximos hitos
-    const ph = proximosHitos().slice(0, 12);
-    el.append(section('Cuenta atrás', 'próximos números redondos en Spotify'));
-    el.append(ph.length ? h('div', { class: 'lg-hcards' }, ph.map(hitoCard)) : h('p', { class: 'yc-empty', text: 'Ningún hito cercano.' }));
+    el.append(h('button', { class: 'mt-link reveal', type: 'button', onclick: () => go('logros') }, h('span', { text: '🎯' }), h('span', null, h('b', { text: 'Cuenta atrás y metas' }), h('small', { text: 'Ahora en «Logros», con avisos de lo que está a punto de caer' })), icon('chev', 'yc-chev')));
     // clubs
     el.append(section('Clubs de streams', 'canciones que superan cada cifra en Spotify'));
     const clubs = h('div', { class: 'lg-clubs' });
@@ -1454,22 +1452,152 @@
     return d ? parseD(d).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }) : 'Sin fecha';
   }
   let lgF = 'todo';
+  // ---------- METAS Y LOGROS (nueva sección) ----------
+  // siguiente número redondo: 28,3 M → 30 M · 1,2 M → 1,5 M · 840 mil → 900 mil
+  function metaRedonda(v) {
+    if (!isNum(v) || v <= 0) return null;
+    const mag = Math.pow(10, Math.floor(Math.log10(v)));
+    for (const f of [1, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 7.5, 8, 9, 10]) { const m = f * mag; if (m > v) return m; }
+    return 10 * mag;
+  }
+  const PERFIL_METAS = [
+    ['spotify', 'Oyentes mensuales', 'spotify_oyentes_mensuales', P => (P.spotify || {}).oyentes_mensuales, 'Spotify'],
+    ['spotify', 'Seguidores', 'spotify_seguidores', P => (P.spotify || {}).seguidores, 'Spotify'],
+    ['spotify', 'Streams totales', 'spotify_streams_totales', P => (P.spotify || {}).streams_totales, 'Spotify'],
+    ['youtube', 'Suscriptores', 'youtube_suscriptores', P => (P.youtube || {}).suscriptores, 'YouTube'],
+    ['youtube', 'Vistas del canal', 'youtube_vistas_totales', P => (P.youtube || {}).vistas, 'YouTube'],
+    ['instagram', 'Seguidores', 'instagram_seguidores', P => (P.instagram || {}).seguidores, 'Instagram'],
+    ['tiktok', 'Seguidores', 'tiktok_seguidores', P => (P.tiktok || {}).seguidores, 'TikTok'],
+    ['shazam', 'Shazams', 'shazams', P => (P.shazam || {}).total, 'Shazam'],
+  ];
+  function metasPerfil() {
+    const P = DATA.perfil || {};
+    return PERFIL_METAS.map(([k, label, key, get, plat]) => {
+      const v = get(P); if (!isNum(v) || v <= 0) return null;
+      const paso = v >= 100e6 ? 10e6 : v >= 10e6 ? 5e6 : v >= 1e6 ? 1e6 : 250e3;  // seguidores: cada 5 M / 10 M
+      const meta = /seguidores|suscriptores|oyentes/i.test(label) ? (Math.floor(v / paso) + 1) * paso : metaRedonda(v), g = growth(key);
+      const ritmo = g && isNum(g.d7) && g.d7 > 0 ? g.d7 / 7 : g && isNum(g.media) && g.media > 0 ? g.media : null;
+      const faltan = meta - v, dias = ritmo ? Math.ceil(faltan / ritmo) : null;
+      return { k, label, plat, v, meta, faltan, ritmo, dias, pct: v / meta * 100, aPunto: dias != null && dias <= 1 };
+    }).filter(Boolean).sort((a, b) => (a.dias ?? 1e9) - (b.dias ?? 1e9));
+  }
+  function metaCard(m) {
+    const rb = h('div', { class: 'mt-ringbox' }, ring(m.pct, 64), pico(m.k));
+    return h('div', { class: 'mt-card reveal' + (m.aPunto ? ' hot' : '') },
+      rb,
+      h('div', { class: 'mt-body' },
+        h('div', { class: 'mt-top' }, h('span', { class: 'mt-plat', text: m.label.toLowerCase().startsWith(m.plat.toLowerCase().slice(0, 5)) ? m.plat : `${m.label} · ${m.plat}` }), m.aPunto ? h('span', { class: 'mt-badge', text: 'A punto' }) : null),
+        h('div', { class: 'mt-nums' }, h('b', { class: 'mt-now num', text: short2(m.v) }), h('span', { class: 'mt-arrow', text: '→' }), h('b', { class: 'mt-goal num', text: short(m.meta) })),
+        h('small', { class: 'mt-sub', text: m.ritmo ? (m.aPunto ? `Faltan ${full(m.faltan)} · lo consigue hoy o mañana` : `Faltan ${full(m.faltan)} · ≈ ${m.dias} ${m.dias === 1 ? 'día' : 'días'} a +${short(Math.round(m.ritmo))}/día`) : `Faltan ${full(m.faltan)}` })));
+  }
+  function songMetaCard(m) {
+    const t = h('div', { class: 'mt-card mt-song reveal' + (m.aPunto ? ' hot' : ''), role: 'button', tabindex: '0', onclick: () => openSong(m.s.id) },
+      h('div', { class: 'mt-cov' }, art(m.s)),
+      h('div', { class: 'mt-main' },
+        h('div', { class: 'mt-top' }, h('span', { class: 'mt-plat', text: `${short(m.meta)} en Spotify` }), m.aPunto ? h('span', { class: 'mt-badge', text: 'A punto' }) : null),
+        h('b', { class: 'mt-title', text: m.s.titulo }),
+        h('small', { class: 'mt-sub', text: m.aPunto ? `Faltaban ${full(m.faltan)} · suma ${short(m.s.sp.diarios)} al día, ya casi` : `${short2(m.s.sp.total)} · faltan ${short(m.faltan)} · ≈ ${m.dias} ${m.dias === 1 ? 'día' : 'días'}` }),
+        h('div', { class: 'mt-line' }, h('i', { style: `--w:${Math.min(100, m.pct).toFixed(2)}%` }))));
+    return t;
+  }
+  function logroBig(n) {
+    const s = n.cancion ? songById(n.cancion) : null;
+    const em = { aniversario: '🎂', playlist: '📋', mundial: '🌍', numero1: '🥇', top10: '🔟', debut: '🚀', pico: '📈', record: '💥', cifra: '🏆' }[n.cat] || '🏆';
+    const t = h('div', { class: 'lgx-card reveal n' + (n.nivel || 1), role: 'button', tabindex: '0', onclick: () => openLogro(n) },
+      h('div', { class: 'lgx-bg' }), h('div', { class: 'lgx-shine' }),
+      h('div', { class: 'lgx-in' },
+        lgThumb(n, 64),
+        h('div', { class: 'lgx-main' },
+          h('span', { class: 'lgx-tag', text: `${em}  ${LG_CAT[n.cat] || 'Logro'} · ${lgDay(n.fecha)}` }),
+          h('b', { class: 'lgx-t', text: n.titulo }),
+          n.numero ? h('span', { class: 'lgx-n num', text: String(n.numero).replace(/^#(\d+)/, 'Top $1') }) : null),
+        h('button', { class: 'yc-chip lgx-post', type: 'button', onclick: (e) => { e.stopPropagation(); logroPost(n); } }, icon('pen'), 'Post')));
+    if (s) tint(t, coverOf(s), s.titulo);
+    return t;
+  }
   function renderLogros() {
     const el = $('#p-logros'); el.replaceChildren();
     const all = logrosList();
-    el.append(h('h1', { class: 'yc-h1', text: 'Logros' }), h('p', { class: 'yc-sub', text: 'Lo que merece post. Se detecta solo con datos reales.' }));
+    const T = today().toISOString().slice(0, 10), hace3 = new Date(today() - 3 * 864e5).toISOString().slice(0, 10);
+    const recientes = all.filter(n => (n.fecha || '') >= hace3).sort((a, b) => (b.nivel || 1) - (a.nivel || 1)).slice(0, 6);
+    const mp = metasPerfil(), ms = proximosHitos();
+    const calientes = [...mp.filter(m => m.dias != null && m.dias <= 7).map(m => ({ t: 'p', m, d: m.dias })), ...ms.filter(m => m.dias <= 7).map(m => ({ t: 's', m, d: m.dias }))].sort((a, b) => a.d - b.d);
+    el.append(h('div', { class: 'mt-hero' },
+      h('div', { class: 'mt-hero-glow' }),
+      h('span', { class: 'mt-hero-k', text: 'Logros y metas' }),
+      h('h1', { class: 'yc-h1 mt-h1', text: recientes.length ? `${recientes.length} ${recientes.length === 1 ? 'logro nuevo' : 'logros nuevos'}` : 'Metas y logros' }),
+      h('p', { class: 'yc-sub', text: calientes.length ? `${calientes.filter(c => c.m.aPunto).length ? `${calientes.filter(c => c.m.aPunto).length} a punto de caer · ` : ''}${calientes.length} ${calientes.length === 1 ? 'meta' : 'metas'} en los próximos 7 días. Se detecta todo solo, con datos reales.` : 'Todo lo que merece post, detectado solo con datos reales.' })));
+    if (recientes.length) {
+      el.append(section('Desbloqueados', 'últimos 3 días'));
+      el.append(h('div', { class: 'lgx-grid' }, recientes.map(logroBig)));
+    }
+    if (calientes.length) {
+      el.append(section('A punto de caer', 'próximos 7 días'));
+      el.append(h('div', { class: 'mt-grid' }, calientes.slice(0, 9).map(c => c.t === 'p' ? metaCard(c.m) : songMetaCard(c.m))));
+    }
+    el.append(section('Metas del perfil', 'cada plataforma'));
+    el.append(mp.length ? h('div', { class: 'mt-grid' }, mp.filter(m => !(m.dias != null && m.dias <= 7)).map(metaCard)) : h('p', { class: 'yc-empty', text: 'Faltan datos del perfil.' }));
+    el.append(section('Cuenta atrás', 'canciones en Spotify'));
+    const resto = ms.filter(m => m.dias > 7).slice(0, 12);
+    el.append(resto.length ? h('div', { class: 'mt-grid' }, resto.map(songMetaCard)) : h('p', { class: 'yc-empty', text: 'Ningún hito cercano.' }));
+    // historial
+    el.append(section('Todos los logros', `${all.length}`));
     const cats = Object.keys(LG_CAT).filter(k => k === 'todo' || all.some(n => n.cat === k));
     el.append(h('div', { class: 'yc-seg yc-lg-seg' }, cats.map(k => h('button', { type: 'button', 'aria-pressed': String(lgF === k), onclick: () => { lgF = k; renderLogros(); }, text: LG_CAT[k] }))));
     const rows = all.filter(n => lgF === 'todo' || n.cat === lgF);
-    if (!rows.length) {
-      el.append(h('div', { class: 'yc-lg-empty' }, h('span', { class: 'yc-moreic' }, icon('trophy')), h('b', { text: 'Aún no hay logros' }), h('p', { text: 'Cuando un tema entre en una lista global, llegue al top 10, bata un récord o pase una cifra redonda, aparecerá aquí listo para publicar.' })));
-      return;
-    }
+    if (!rows.length) { el.append(h('div', { class: 'yc-lg-empty' }, h('span', { class: 'yc-moreic' }, icon('trophy')), h('b', { text: 'Aún no hay logros' }))); }
     let day = null, list = null;
     for (const n of rows.slice(0, 150)) {
       if (n.fecha !== day) { day = n.fecha; el.append(h('div', { class: 'yc-group-h', text: lgDay(day) })); list = h('div', { class: 'yc-list' }); el.append(list); }
       list.append(logroRow(n));
     }
+    $$('.reveal', el).forEach(x => typeof reveal === 'function' ? reveal(x) : x.classList.add('in'));
+  }
+  // ---------- celebración: aviso a pantalla completa con confeti cuando hay un logro nuevo ----------
+  function celebrar() {
+    try {
+      const hace2 = new Date(today() - 2 * 864e5).toISOString().slice(0, 10);
+      const vistos = new Set(store.get('aa.lg.vistos', []));
+      const nuevos = logrosList().filter(n => (n.fecha || '') >= hace2 && !vistos.has(n.id)).sort((a, b) => (b.nivel || 1) - (a.nivel || 1));
+      const aPunto = [...metasPerfil().filter(m => m.aPunto), ...proximosHitos().filter(m => m.aPunto)];
+      if (!nuevos.length && !aPunto.length) return;
+      const clave = 'aa.lg.apunto.' + today().toISOString().slice(0, 10);
+      if (!nuevos.length && store.get(clave, false)) return;
+      const n = nuevos[0];
+      const ov = h('div', { class: 'cel-ov', role: 'dialog', 'aria-modal': 'true' });
+      const cv = h('canvas', { class: 'cel-cv' });
+      const close = () => { ov.classList.add('out'); setTimeout(() => ov.remove(), 380); store.set('aa.lg.vistos', [...vistos, ...nuevos.map(x => x.id)].slice(-400)); store.set(clave, true); };
+      const em = n ? ({ aniversario: '🎂', playlist: '📋', mundial: '🌍', numero1: '🥇', top10: '🔟', debut: '🚀', pico: '📈', record: '💥', cifra: '🏆' }[n.cat] || '🏆') : '🔥';
+      const m0 = aPunto[0];
+      ov.append(cv, h('div', { class: 'cel-card' },
+        h('div', { class: 'cel-ring' }), h('div', { class: 'cel-em', text: em }),
+        h('span', { class: 'cel-k', text: n ? (nuevos.length > 1 ? `${nuevos.length} logros nuevos` : 'Logro desbloqueado') : 'A punto de caer' }),
+        h('b', { class: 'cel-t', text: n ? n.titulo : (m0.s ? `«${m0.s.titulo}» va a superar los ${short(m0.meta)} en Spotify` : `${AN()} va a llegar a ${short(m0.meta)} ${m0.label.toLowerCase()} en ${m0.plat}`) }),
+        n && n.numero ? h('div', { class: 'cel-n num', text: String(n.numero).replace(/^#(\d+)/, 'Top $1') }) : null,
+        nuevos.length > 1 ? h('div', { class: 'cel-more' }, nuevos.slice(1, 4).map(x => h('small', { text: '• ' + x.titulo }))) : null,
+        aPunto.length && n ? h('small', { class: 'cel-hot', text: `Y ${aPunto.length} ${aPunto.length === 1 ? 'meta está' : 'metas están'} a punto de caer` }) : null,
+        h('div', { class: 'cel-act' },
+          n ? h('button', { class: 'yc-btn', type: 'button', onclick: () => { close(); logroPost(n); } }, 'Crear post') : null,
+          h('button', { class: 'yc-btn sec', type: 'button', onclick: () => { close(); go('logros'); } }, 'Ver metas y logros'),
+          h('button', { class: 'cel-x', type: 'button', 'aria-label': 'Cerrar', onclick: close }, '✕'))));
+      ov.addEventListener('click', (e) => { if (e.target === ov || e.target === cv) close(); });
+      document.body.append(ov);
+      requestAnimationFrame(() => ov.classList.add('on'));
+      if (!REDUCED) confeti(cv);
+    } catch (e) { /* nunca rompe la web */ }
+  }
+  function confeti(cv) {
+    const ctx = cv.getContext('2d'), dpr = Math.min(2, devicePixelRatio || 1);
+    const W = cv.width = innerWidth * dpr, H = cv.height = innerHeight * dpr;
+    const ac = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#ff2b3d'; const cols = [ac, ac, '#ffffff', '#ffffff', '#ffd27a'];
+    const P = Array.from({ length: 90 }, () => ({ x: W / 2 + (Math.random() - .5) * W * .3, y: H * .45, vx: (Math.random() - .5) * 26 * dpr, vy: (-Math.random() * 24 - 8) * dpr, r: (4 + Math.random() * 6) * dpr, c: cols[Math.floor(Math.random() * cols.length)], a: Math.random() * 6, va: (Math.random() - .5) * .4 }));
+    let t = 0;
+    const tick = () => {
+      t++; ctx.clearRect(0, 0, W, H);
+      for (const p of P) { p.vy += .55 * dpr; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.globalAlpha = Math.max(0, 1 - t / 200); ctx.beginPath(); ctx.roundRect ? ctx.roundRect(-p.r, -p.r / 3, p.r * 2, p.r * .66, p.r / 3) : ctx.rect(-p.r, -p.r / 3, p.r * 2, p.r * .66); ctx.fill(); ctx.restore(); }
+      if (t < 200 && cv.isConnected) requestAnimationFrame(tick); else ctx.clearRect(0, 0, W, H);
+    };
+    requestAnimationFrame(tick);
   }
 
   // ---------- playlists oficiales ----------
@@ -2430,7 +2558,7 @@
         h('p', { text: 'Spotify, YouTube, Apple Music, Shazam, Deezer, iTunes, kworb.net, Chartmetric y Social Blade. Cada cifra indica su fuente y su fecha.' })),
       h('div', { class: 'yc-foot-bottom' }, h('span', null, `© ${new Date().getFullYear()} `, ig(CREADOR), ' · Todos los derechos reservados'), h('span', null, 'Página creada por ', ig(CREADOR))));
     const logo = $('.yc-logo'); if (logo && DATA.artista.imagen && !logo.querySelector('img')) logo.replaceChildren(artistPhoto('yc-logo-in'));
-    if (first) { go(current, false); setTimeout(liveBackground, 4000); } else { $$('.yc-page').forEach(p => p.classList.toggle('on', p.dataset.page === current)); if (current === 'inicio') drawHist(); }
+    if (first) { go(current, false); setTimeout(liveBackground, 4000); setTimeout(celebrar, 1200); } else { $$('.yc-page').forEach(p => p.classList.toggle('on', p.dataset.page === current)); if (current === 'inicio') drawHist(); }
   }
   // ---------- auto-actualización: isla de estado estilo iOS ----------
   const AUTO = { timer: 0, runId: null, runStart: null, waiting: false, pending: null, lastRunsCheck: 0, lastDataCheck: 0, backoff: 0 };
