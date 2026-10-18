@@ -594,6 +594,7 @@ def rel_days(txt):
 
 
 _FALLOS_HOST = {}
+DATA_VETO = []
 
 
 def _host_ok(h):
@@ -709,8 +710,10 @@ def canal_oficial(r, song):
     partes = [p.strip() for p in re.split(r'\s+(?:and|y)\s+|\s*&\s*|\s*,\s*', can) if p.strip()]
     if len(partes) >= 2 and (any(p.casefold() == ARTISTA.casefold() for p in partes) or any(_compacto(p) in cred_otros for p in partes)):
         return True
-    if re.search(r'vevo$|\s-\s*topic$', can, re.I):
-        return comp.startswith('anuel') or comp in cred_otros or nombra_anuel
+    if re.search(r'\s-\s*topic$', can, re.I):
+        return comp.startswith('anuel') or comp in cred_otros
+    if re.search(r'vevo$', can, re.I):  # VEVO de otro artista acreditado (OzunaVEVO…); los «AnuelVEVO» no son su canal
+        return (not comp.startswith('anuel')) and comp in cred_otros
     if NAME_RE.search(can) or re.match(r'anuel', can, re.I):
         return False  # se llama «Anuel …» pero no es su canal: fan
     if comp and (comp in cred_otros or any(_compacto(p) in cred_otros for p in partes)):
@@ -749,7 +752,8 @@ def yt_pick(song, res):
             trozos = [_f(x) for x in re.split(r'\s[-–|❌x]\s|\||❌|\(|\)', r['titulo']) if _f(x)]
             return any(difflib.SequenceMatcher(None, t_, z).ratio() >= 0.85 for z in trozos)
         return False
-    cand = [r for r in res[:15] if titulo_ok(r) and canal_oficial(r, song)]
+    veto = set((DATA_VETO or []))
+    cand = [r for r in res[:15] if r.get('video_id') not in veto and titulo_ok(r) and canal_oficial(r, song)]
     if not cand:
         return None
 
@@ -1480,18 +1484,30 @@ def main():
     except Exception as e:  # noqa: BLE001
         fallo('créditos de artistas', e)
     quitados = 0
+    vetados = set(data.get('yt_vetados') or [])
     for s in songs:
         y = s.get('youtube') or {}
-        if not y or y.get('fijo') or y.get('origen') in ('kworb', 'rss') or not y.get('canal'):
+        if not y or y.get('fijo') or not y.get('canal'):
             continue
-        if y.get('origen') is None and (y.get('canal') == ARTISTA or y.get('canal_id') == YT_CHANNEL):  # antiguos del canal oficial
+        can_ = y.get('canal') or ''
+        _fan = bool(NAME_RE.search(can_) or re.match(r'anuel', can_, re.I)) and not can_.lower().endswith('- topic')
+        if y.get('canal_id') == YT_CHANNEL:
+            continue  # su canal oficial
+        if _fan and (y.get('canal_id') or can_ != ARTISTA):
+            malo = True  # se llama «Anuel…» (AnuelVEVO, ANUEL AA OFICIAL…) pero no es su canal
+        elif y.get('origen') in ('kworb', 'rss') or (y.get('origen') is None and can_ == ARTISTA):
             continue
-        _fan = bool(NAME_RE.search(y.get('canal') or '') or re.match(r'anuel', y.get('canal') or '', re.I))
-        if (s.get('creditos') or _fan) and canal_oficial({'canal': y.get('canal'), 'canal_id': y.get('canal_id'), 'verificado': y.get('verificado'), 'titulo': y.get('titulo')}, s) is False:
-            log(f'  - vídeo no oficial quitado de {s["titulo"]}: {y.get("canal")}')
+        else:
+            malo = bool(s.get('creditos')) and canal_oficial({'canal': can_, 'canal_id': y.get('canal_id'), 'verificado': y.get('verificado'), 'titulo': y.get('titulo')}, s) is False
+        if malo:
+            log(f'  - vídeo no oficial quitado de {s["titulo"]}: {can_}')
+            vetados.add(y.get('video_id'))
             s.pop('youtube', None)
             s.pop('yt_buscado', None)
             quitados += 1
+    vetados.discard(None)
+    data['yt_vetados'] = sorted(vetados)[-2000:]
+    DATA_VETO[:] = data['yt_vetados']
     if quitados:
         HECHO.append(f'vídeos de canales no oficiales quitados ({quitados})')
     manual = {norm(k): re.sub(r'^.*(?:v=|youtu\.be/|shorts/)([\w-]{11}).*$', r'\1', str(v).strip()) for k, v in (CFG.get('videos') or {}).items()}
@@ -1523,6 +1539,8 @@ def main():
                 continue
             best = None
             for v in kw_vids:
+                if v['video_id'] in vetados:
+                    continue
                 sc = yt_match_score(s['titulo'], v['titulo'])
                 if not sc:
                     continue
