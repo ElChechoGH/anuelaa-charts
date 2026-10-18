@@ -119,6 +119,11 @@ def get(url, *, as_json=False, headers=None, params=None, tries=3):
                     return r.text
             if r.status_code in (403, 404, 410):
                 raise RuntimeError(f'HTTP {r.status_code}')
+            if r.status_code == 429 and i < tries - 1:  # «demasiadas peticiones»: se espera lo que pide el servidor (máx. 20 s)
+                try:
+                    time.sleep(min(20, max(3, int(r.headers.get('Retry-After') or 5))))
+                except ValueError:
+                    time.sleep(5)
             raise RuntimeError(f'HTTP {r.status_code}')
         except Exception as e:  # noqa: BLE001
             err = e
@@ -1524,7 +1529,7 @@ def main():
                     def _solapa(a_, b_):
                         return any(p1 == p2 or (len(p1) >= 4 and (p1 in p2 or p2 in p1)) for p1 in a_ for p2 in b_)
                     def _nucleo(t):
-                        return _f(re.sub(r'\s+-\s+.*$', '', re.sub(r'\s*[\(\[].*?[\)\]]', '', str(t or ''))))
+                        return _f(re.sub(r'\s+-\s+(?:.*\b(?:remix|rmx|version|versión|live|en vivo|edit|mix|acoustic|acústico|sped|slowed)\b.*|single|ep)$', '', re.sub(r'\s*[\(\[].*?[\)\]]', '', str(t or '')), flags=re.I))
                     falsa = bool(FALSA_VERSION.search(' '.join(str(r.get(k) or '') for k in ('trackName', 'artistName', 'collectionName')))) \
                         or not (NAME_RE.search(r.get('artistName') or '') or NAME_RE.search(r.get('trackName') or '')) \
                         or (_nucleo(r.get('trackName')) and _nucleo(x['titulo']) and _nucleo(r.get('trackName')) != _nucleo(x['titulo']))
@@ -1937,7 +1942,7 @@ def main():
                 continue
             ft = _fold(t0)
             def _nuc(t):
-                return _f(re.sub(r'\s+-\s+.*$', '', re.sub(r'\s*[\(\[].*?[\)\]]', '', str(t or ''))))
+                return _f(re.sub(r'\s+-\s+(?:.*\b(?:remix|rmx|version|versión|live|en vivo|edit|mix|acoustic|acústico|sped|slowed)\b.*|single|ep)$', '', re.sub(r'\s*[\(\[].*?[\)\]]', '', str(t or '')), flags=re.I))
             hits = [r for r in j.get('results', []) if _nuc(r.get('trackName')) == _nuc(x['titulo'])
                     and (NAME_RE.search(r.get('artistName') or '') or NAME_RE.search(r.get('trackName') or ''))
                     and not FALSA_VERSION.search(' '.join(str(r.get(k) or '') for k in ('trackName', 'artistName', 'collectionName')))]
@@ -2166,11 +2171,17 @@ def main():
         out_pl, ok_pl = [], 0
 
         def runp(item):
-            try:
-                return playlist_read(*item), None
-            except Exception as e:  # noqa: BLE001
-                return None, (item, e)
-        with cf.ThreadPoolExecutor(4) as ex:
+            e = None
+            for intento in range(3):  # si Spotify dice «demasiadas peticiones» (429), se espera y se reintenta
+                try:
+                    return playlist_read(*item), None
+                except Exception as e_:  # noqa: BLE001
+                    e = e_
+                    if '429' not in str(e_):
+                        break
+                    time.sleep(8 * (intento + 1))
+            return None, (item, e)
+        with cf.ThreadPoolExecutor(2) as ex:
             for res, err in ex.map(runp, lst):
                 if err:
                     (n_, u_), e = err
