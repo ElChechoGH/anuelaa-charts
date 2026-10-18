@@ -327,12 +327,28 @@
       img.addEventListener('error', () => img.remove());
       img.addEventListener('load', () => { box.firstChild && box.firstChild.nodeType === 3 && box.firstChild.remove(); });
       box.append(img);
+    } else if (s.sp && s.sp.id) {
+      // sin portada guardada: se pide a Spotify desde el navegador (y se recuerda)
+      spCover(s).then(u => { if (!u) return; s.portada = u; const img = h('img', { src: u, alt: '', decoding: 'async', class: 'cover' }); img.addEventListener('load', () => { box.firstChild && box.firstChild.nodeType === 3 && box.firstChild.remove(); }); img.addEventListener('error', () => img.remove()); box.append(img); });
     } else if (s.yt && s.yt.video_id) {
       const img = ytThumb(s.yt.video_id, ['mqdefault', 'hqdefault'], { loading: 'lazy' });
       img.addEventListener('load', () => { box.firstChild && box.firstChild.nodeType === 3 && box.firstChild.remove(); });
       box.append(img);
     }
     return box;
+  }
+  const COV = (() => { try { return JSON.parse(localStorage.getItem('aa.cov') || '{}'); } catch (e) { return {}; } })();
+  const COVP = new Map();
+  function spCover(s) {
+    const id = s.sp.id;
+    if (COV[id]) return Promise.resolve(COV[id]);
+    if (COVP.has(id)) return COVP.get(id);
+    const p = fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent('https://open.spotify.com/track/' + id)}`).then(r => r.ok ? r.json() : null).then(j => {
+      const u = j && j.thumbnail_url ? hd(j.thumbnail_url, 640) : null;
+      if (u) { COV[id] = u; try { localStorage.setItem('aa.cov', JSON.stringify(COV)); } catch (e) { /* sin espacio */ } }
+      return u;
+    }).catch(() => null);
+    COVP.set(id, p); return p;
   }
   function artistPhoto(cls) {
     const box = h('div', { class: cls || 'yc-avatar' });
@@ -702,7 +718,12 @@
   // Lanzamientos
   function releaseCard(s, wide) {
     const img = h('div', { class: 'yc-rel-img' });
-    if (s.yt) img.append(ytThumb(s.yt.video_id, ['sddefault', 'hqdefault'], { loading: 'lazy' }));
+    if (s.yt) img.append(ytThumb(s.yt.video_id, ['maxresdefault', 'sddefault', 'hqdefault'], { loading: 'lazy' }));
+    else {
+      img.classList.add('cov');
+      const put = (u) => { if (!u) return; const bg = h('img', { class: 'blur', src: u, alt: '', loading: 'lazy', decoding: 'async' }), fg = h('img', { class: 'sq', src: u, alt: s.titulo, loading: 'lazy', decoding: 'async' }); img.prepend(bg, fg); };
+      if (s.portada) put(hd(s.portada_hd || s.portada, 800)); else if (s.sp && s.sp.id) spCover(s).then(put);
+    }
     if (s.isNew) img.append(h('span', { class: 'yc-badge green' }, h('span', { class: 'dot' }), `Nuevo · hace ${s.diasPublicado} días`));
     else if (s.lanzamiento) img.append(h('span', { class: 'yc-badge', text: dfmt(s.lanzamiento) }));
     if (s.yt) img.append(h('button', { class: 'yc-play', type: 'button', 'aria-label': 'Reproducir el video', onclick: (e) => { e.stopPropagation(); openSong(s.id, true, { play: true }); } }, icon('play')));
@@ -718,13 +739,36 @@
     return h('div', { class: 'yc-rel' + (wide ? ' wide' : ''), role: 'button', tabindex: '0', onclick: () => openSong(s.id), onkeydown: (e) => { if (e.key === 'Enter') openSong(s.id); }, style: wide ? 'max-width:100%' : null },
       img, h('div', { class: 'yc-rel-body' }, h('h3', { text: s.titulo }), h('p', { text: `${s.artistas} · ${s.rol}` }), kv));
   }
+  // carrusel deslizable: con el dedo en el móvil, con flechas, arrastrando o con la rueda en el PC
+  function slider(items) {
+    const track = h('div', { class: 'yc-carousel lg-track' }, items);
+    const dots = h('div', { class: 'lg-dots' }, items.map((_, i) => h('button', { type: 'button', 'aria-label': `Ir a ${i + 1}`, onclick: () => to(i) })));
+    const step = () => { const c = track.children[0]; return c ? c.getBoundingClientRect().width + 12 : track.clientWidth; };
+    const to = (i) => { const c = track.children[Math.max(0, Math.min(items.length - 1, i))]; if (c) track.scrollTo({ left: c.offsetLeft - track.offsetLeft - 2, behavior: 'smooth' }); };
+    const prev = h('button', { class: 'lg-arrow prev', type: 'button', 'aria-label': 'Anterior', onclick: () => track.scrollBy({ left: -step(), behavior: 'smooth' }) }, icon('chev'));
+    const next = h('button', { class: 'lg-arrow next', type: 'button', 'aria-label': 'Siguiente', onclick: () => track.scrollBy({ left: step(), behavior: 'smooth' }) }, icon('chev'));
+    const sync = () => {
+      const max = track.scrollWidth - track.clientWidth - 4;
+      prev.disabled = track.scrollLeft <= 4; next.disabled = track.scrollLeft >= max;
+      const i = Math.round(track.scrollLeft / Math.max(1, step()));
+      [...dots.children].forEach((d, k) => d.setAttribute('aria-current', String(k === i)));
+    };
+    track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    // arrastrar con el ratón
+    let dx = null, sl = 0, moved = false;
+    track.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') return; dx = e.clientX; sl = track.scrollLeft; moved = false; track.classList.add('drag'); });
+    addEventListener('pointermove', (e) => { if (dx == null) return; const d = e.clientX - dx; if (Math.abs(d) > 5) moved = true; track.scrollLeft = sl - d; });
+    addEventListener('pointerup', () => { if (dx == null) return; dx = null; track.classList.remove('drag'); });
+    track.addEventListener('click', (e) => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+    requestAnimationFrame(sync); setTimeout(sync, 400);
+    return h('div', { class: 'lg-slider' }, track, prev, next, dots);
+  }
   const kvItem = (color, label, value, sub) => h('div', null, h('span', null, h('i', { style: `background:${color}` }), label), h('b', { text: value }), h('small', { text: sub || '' }));
   function renderLanz() {
     const el = $('#p-lanzamientos'); el.replaceChildren();
     const rel = releases();
     el.append(h('h1', { class: 'yc-h1', text: 'Lanzamientos' }), h('p', { class: 'yc-sub', text: 'Sus 5 últimos temas con todas sus cifras. Cuando salga uno nuevo, aparece aquí solo.' }));
-    const car = h('div', { class: 'yc-carousel' }, rel.slice(0, 5).map(s => releaseCard(s)));
-    el.append(car);
+    el.append(slider(rel.slice(0, 5).map(s => releaseCard(s))));
     el.append(section('¿Cuál arrancó mejor?', 'media diaria desde que salió'));
     const recent = rel.filter(s => String(s.lanzamiento) >= '2025-01-01');
     el.append(h('div', { class: 'yc-grid' },
@@ -1973,9 +2017,9 @@
       if (s.yt.live) $('.yc-plat-h b', ytb).prepend(h('span', { class: 'yc-livedot' }));
       body.append(ytb);
       liveOne(s);
-    } else body.append(platBlock('youtube', null, [], 'No se encontró un video de esta canción.'));
+    } else body.append(platBlock('youtube', `https://www.youtube.com/results?search_query=${encodeURIComponent(s.titulo.split(' (')[0] + ' ' + (s.artistas || AN()))}`, [], 'Todavía no está vinculado su vídeo: se busca en cada actualización completa. Mientras, «Abrir» te lleva a buscarlo en YouTube.'));
     // Shazam / Audiomack / Apple
-    body.append(platBlock('shazam', s.shazam && s.shazam.url, [stat('Shazams', full(s.shazam && s.shazam.total), s.shazam ? 'total de la canción' : 'sin dato')], s.shazam ? `Fuente: shazam.com · ${dfmt(s.shazam.fecha)}` : 'Sin dato de Shazam para esta canción.'));
+    body.append(platBlock('shazam', s.shazam && s.shazam.url, [stat('Shazams', full(s.shazam && s.shazam.total), s.shazam ? 'total de la canción' : 'sin dato')], s.shazam && s.shazam.total ? `Fuente: shazam.com · ${dfmt(s.shazam.fecha)}` : 'Se leerá de shazam.com en la próxima actualización completa.'));
     if (s.audiomack) body.append(platBlock('audiomack', s.audiomack.url, [stat('Reproducciones', full(s.audiomack.reproducciones), 'aprox.'), stat('Me gusta', full(s.audiomack.likes)), stat('En playlists', full(s.audiomack.playlists))], `Fuente: audiomack.com · ${dfmt(s.audiomack.fecha)} · cifras redondeadas por Audiomack`));
     body.append(platBlock('apple', (s.apple && s.apple.url) || `https://music.apple.com/us/search?term=${encodeURIComponent(s.titulo.split(' (')[0] + ` ${AN()}`)}`, [stat('En listas de Apple hoy', s.hoy.filter(c => c.plataforma === 'Apple Music').map(c => `#${c.posicion} ${c.pais}`).join(', ') || 'No')], 'Apple Music no publica reproducciones por canción.'));
 

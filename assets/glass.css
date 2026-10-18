@@ -337,3 +337,25 @@ html.noblur .lg-links a { -webkit-backdrop-filter: none; backdrop-filter: none; 
 .lg-share-r small { color: var(--text2); font-size: 12px; text-align: right; }
 @media (max-width: 560px) { .lg-share-r { grid-template-columns: minmax(0, 1fr) 70px auto; } .lg-share-r small { display: none; } }
 .yc-albumart.yc-art { display: grid; place-items: center; }
+
+/* ---------- carrusel deslizable con flechas ---------- */
+.lg-slider { position: relative; }
+.lg-track { scroll-behavior: smooth; cursor: grab; }
+.lg-track.drag { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; user-select: none; }
+.lg-track.drag * { pointer-events: none; }
+.lg-arrow { position: absolute; top: 42%; z-index: 3; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: var(--text);
+  background: var(--glass); border: 1px solid var(--lg-edge); box-shadow: inset 0 1px 0 var(--lg-rim), 0 12px 30px -10px rgba(0,0,0,.6); -webkit-backdrop-filter: var(--lg-blur); backdrop-filter: var(--lg-blur);
+  transition: opacity .25s, transform .35s var(--spring); }
+.lg-arrow svg { width: 20px; height: 20px; }
+.lg-arrow.prev { left: -14px; } .lg-arrow.prev svg { transform: rotate(180deg); }
+.lg-arrow.next { right: -14px; }
+.lg-arrow:active { transform: scale(.9); }
+.lg-arrow:disabled { opacity: 0; pointer-events: none; }
+@media (hover: none) { .lg-arrow { display: none; } }
+.lg-dots { display: flex; justify-content: center; gap: 7px; margin-top: 2px; }
+.lg-dots button { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--text) 25%, transparent); cursor: pointer; transition: width .35s var(--spring), background .25s; }
+.lg-dots button[aria-current="true"] { width: 22px; background: var(--accent); }
+/* estreno sin vídeo: su portada */
+.yc-rel-img.cov { position: relative; overflow: hidden; background: #0b0b0e; }
+.yc-rel-img.cov img.blur { position: absolute; inset: -20px; width: calc(100% + 40px); height: calc(100% + 40px); object-fit: cover; filter: blur(24px) saturate(1.5) brightness(.75); }
+.yc-rel-img.cov img.sq { position: relative; display: block; height: 82%; width: auto; aspect-ratio: 1; margin: 6% auto 0; border-radius: 12px; box-shadow: 0 16px 34px -12px rgba(0,0,0,.8); object-fit: cover; }

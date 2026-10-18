@@ -621,9 +621,10 @@ window.YCStudio = (() => {
       drawHead(g, r, W / 2, yHead);
       const yTxt = yHead - W * 0.065;
       const capTxt = small(g, up(S.numeroTxt), W / 2, yTxt, W * 0.032, S.colPeq && S.colPeq !== '#ffffff' ? S.colPeq : S.acento, 'center', 'alphabetic', 'numeroTxt', W * 0.86);
-      const numSize = W * 0.24, yNumTop = yTxt - capTxt - W * 0.05 - numSize * kOf('num') * 0.8;
-      bigNum(g, up(S.numero), W / 2, yNumTop, numSize, S.colNum || '#ffffff', 'center', 'numero', W * 0.9);
-      tagBox(g, S.etiqueta || 'NUEVO RÉCORD', W / 2, yNumTop - W * 0.1, W * 0.026, true);
+      // el número se apoya justo encima de su texto (se mide la letra real para que nunca lo tape)
+      const numBase = yTxt - (capTxt || W * 0.025) - W * 0.05;
+      const numCap = line(g, 'num', up(S.numero), W / 2, numBase, W * 0.24, S.colNum || '#ffffff', 'center', 'alphabetic', 'numero', W * 0.9, S.efectoNum);
+      tagBox(g, S.etiqueta || 'NUEVO RÉCORD', W / 2, numBase - numCap - W * 0.1, W * 0.026, true);
       dots(g, W, H - W * 0.04); firma(g, W, H);
     },
     top5(g, W, H, img) {

@@ -1256,8 +1256,11 @@ def main():
             import unicodedata
             return re.sub(r'[^a-z0-9 ]', '', unicodedata.normalize('NFD', str(t or '').lower()).encode('ascii', 'ignore').decode())
         hace7 = (NOW - dt.timedelta(days=7)).strftime('%Y-%m-%d')
-        cola = sorted([x for x in songs if not x.get('youtube') and (x.get('yt_buscado') or '') < hace7],
-                      key=lambda x: -((x.get('spotify') or {}).get('total') or 0))[:60]
+        lim120 = (NOW - dt.timedelta(days=120)).strftime('%Y-%m-%d')
+        recientes = [x for x in songs if not x.get('youtube') and (x.get('lanzamiento') or '') >= lim120]
+        viejos = sorted([x for x in songs if not x.get('youtube') and (x.get('lanzamiento') or '') < lim120 and (x.get('yt_buscado') or '') < hace7],
+                        key=lambda x: -((x.get('spotify') or {}).get('total') or 0))
+        cola = (sorted(recientes, key=lambda x: x.get('lanzamiento') or '', reverse=True) + viejos)[:70]
         hallados = 0
         for x in cola:
             x['yt_buscado'] = HOY
@@ -1279,9 +1282,11 @@ def main():
         if cola:
             HECHO.append(f'vídeos encontrados en YouTube ({hallados}/{len(cola)})')
     if yt_key:  # busca video de temas nuevos sin video
-        for s in songs:
-            if s.get('youtube') or not s.get('lanzamiento') or s['lanzamiento'] < (NOW - dt.timedelta(days=60)).strftime('%Y-%m-%d'):
-                continue
+        _hace7 = (NOW - dt.timedelta(days=7)).strftime('%Y-%m-%d')
+        _sin = sorted([x for x in songs if not x.get('youtube') and (x.get('yt_buscado') or '') < _hace7],
+                      key=lambda x: ((x.get('lanzamiento') or '') < (NOW - dt.timedelta(days=60)).strftime('%Y-%m-%d'), -((x.get('spotify') or {}).get('total') or 0)))
+        for s in (_sin[:15] if not RAPIDO else []):
+            s['yt_buscado'] = HOY
             try:
                 res = yt_search_api(yt_key, f"{base(s['titulo'])} {BUSCAR}")
                 hit = next((r for r in res if base(s['titulo']) in r['titulo'].lower() and NAME_RE.search(r['titulo'] + ' ' + r['canal'])), None)
@@ -1419,16 +1424,60 @@ def main():
         except Exception as e:  # noqa: BLE001
             fallo('Chartmetric', e)
 
+        # --- Apple Music por canción: ID (sirve para su Shazam) y portada en alta calidad
+        def apple_id_of(x):
+            m = re.search(r'[?&]i=(\d+)', ((x.get('apple') or {}).get('url') or ''))
+            return m.group(1) if m else (x.get('apple') or {}).get('id')
+        lim120a = (NOW - dt.timedelta(days=120)).strftime('%Y-%m-%d')
+        hace10 = (NOW - dt.timedelta(days=10)).strftime('%Y-%m-%d')
+        cola_a = [x for x in songs if not apple_id_of(x) and ((x.get('lanzamiento') or '') >= lim120a or (x.get('apple_buscado') or '') < hace10)]
+        cola_a.sort(key=lambda x: ((x.get('lanzamiento') or '') < lim120a, -((x.get('spotify') or {}).get('total') or 0)))
+        ap_ok = 0
+        for x in cola_a[:45]:
+            x['apple_buscado'] = HOY
+            t0 = re.split(r'\s+\((?:with|feat|ft|con)\b|\s+-\s+', x['titulo'], flags=re.I)[0]
+            try:
+                j = get('https://itunes.apple.com/search', as_json=True, params={'term': f'{t0} {ARTISTA}', 'entity': 'song', 'limit': 15, 'country': 'us'}, tries=2)
+            except Exception:  # noqa: BLE001
+                time.sleep(3)
+                continue
+            ft = _fold(t0)
+            hits = [r for r in j.get('results', []) if _fold(r.get('trackName')).startswith(ft) and (NAME_RE.search(r.get('artistName') or '') or NAME_RE.search(r.get('trackName') or ''))]
+            hits.sort(key=lambda r: (_fold(r.get('trackName')) != _fold(x['titulo']), 'remix' in (r.get('trackName') or '').lower() and 'remix' not in x['titulo'].lower()))
+            if hits:
+                r = hits[0]
+                x['apple'] = dict(x.get('apple') or {}, url=(r.get('trackViewUrl') or '').split('&uo')[0], id=str(r.get('trackId')))
+                art_ = (r.get('artworkUrl100') or '').replace('100x100bb', '1400x1400bb')
+                if art_:
+                    x['portada_hd'] = art_
+                    if not x.get('portada'):
+                        x['portada'] = art_
+                if not x.get('lanzamiento') and r.get('releaseDate'):
+                    x['lanzamiento'] = r['releaseDate'][:10]
+                    x['lanzamiento_fuente'] = 'Apple Music'
+                ap_ok += 1
+            time.sleep(3.1)  # iTunes permite unas 20 búsquedas por minuto
+        if cola_a:
+            HECHO.append(f'Apple Music por canción ({ap_ok}/{min(45, len(cola_a))})')
+        for x in songs:  # su página de Shazam usa el mismo ID que Apple Music
+            aid = apple_id_of(x)
+            if aid and not (x.get('shazam') or {}).get('url'):
+                x['shazam'] = dict(x.get('shazam') or {}, url=f'https://www.shazam.com/song/{aid}/{slug(x["titulo"])}')
+
         # --- Shazam por canción (Audiomack no se puede leer sin navegador: se conserva su dato)
         sh_ok = sh_fail = 0
-        for s in songs:
-            if s.get('shazam') and s['shazam'].get('url'):
-                try:
-                    n = shazam_count(s['shazam']['url'])
-                    if n:
-                        s['shazam'].update({'total': n, 'fecha': HOY})
-                        sh_ok += 1
-                except Exception:  # noqa: BLE001
+        cola_s = sorted([x for x in songs if (x.get('shazam') or {}).get('url')], key=lambda x: (x['shazam'].get('fecha') or ''))[:220]
+        def _sh(x):
+            try:
+                return x, shazam_count(x['shazam']['url'])
+            except Exception:  # noqa: BLE001
+                return x, None
+        with cf.ThreadPoolExecutor(4) as ex:
+            for x, n in ex.map(_sh, cola_s):
+                if n:
+                    x['shazam'].update({'total': n, 'fecha': HOY})
+                    sh_ok += 1
+                else:
                     sh_fail += 1
 
         if sh_fail:
