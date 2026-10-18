@@ -303,3 +303,37 @@ html.noblur .lg-links a { -webkit-backdrop-filter: none; backdrop-filter: none; 
   .yc-tab { padding: 8px 11px !important; font-size: 13px !important; gap: 0 !important; }
   .yc-tab svg { display: none; }
 }
+
+/* ---------- buscador grande del inicio ---------- */
+.lg-searchrow { display: flex; flex-direction: column; gap: 10px; margin: 6px 0 12px; }
+.lg-search { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 0 18px; border-radius: 999px; cursor: text; color: var(--text2); font: 550 15.5px/1 var(--font);
+  background: linear-gradient(180deg, var(--lg-fill), var(--lg-fill2)); border: 1px solid var(--lg-edge); box-shadow: inset 0 1px 0 var(--lg-rim), var(--lg-shadow); -webkit-backdrop-filter: var(--lg-blur); backdrop-filter: var(--lg-blur); transition: transform .35s var(--spring); text-align: left; }
+.lg-search:active { transform: scale(.985); }
+.lg-search svg { width: 19px; height: 19px; flex: none; }
+.lg-search span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lg-search kbd { font: 700 12px/1 var(--font); padding: 5px 8px; border-radius: 8px; background: var(--fill); color: var(--text2); border: 1px solid var(--lg-edge); }
+@media (hover: none) { .lg-search kbd { display: none; } }
+.lg-quick { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px 0; }
+.lg-quick::-webkit-scrollbar { display: none; }
+.lg-quick button { flex: none; display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; border-radius: 999px; cursor: pointer; color: var(--text); font: 650 13.5px/1 var(--font);
+  background: var(--lg-fill); border: 1px solid var(--lg-edge); box-shadow: inset 0 1px 0 var(--lg-rim); transition: transform .3s var(--spring); }
+.lg-quick button:active { transform: scale(.94); }
+.lg-quick svg { width: 16px; height: 16px; color: var(--accent); }
+
+/* ---------- «En pocas palabras» ---------- */
+.lg-sum { margin: 0 0 14px; padding: 14px 16px; border-radius: 22px; border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--lg-edge));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--t1, var(--accent)) 16%, transparent), transparent 70%), linear-gradient(180deg, var(--lg-fill), var(--lg-fill2)); }
+.lg-sum b { display: block; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.lg-sum p { margin: 0; font-size: 15.5px; line-height: 1.5; font-weight: 500; }
+
+/* ---------- reparto de un disco ---------- */
+.lg-share { display: flex; flex-direction: column; gap: 4px; padding: 10px 14px !important; }
+.lg-share-r { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(60px, 1fr) auto 40px; align-items: center; gap: 10px; padding: 8px 0; cursor: pointer; font-size: 14px; border-bottom: 1px solid color-mix(in srgb, var(--text) 6%, transparent); }
+.lg-share-r:last-child { border-bottom: 0; }
+.lg-share-r > span { font-weight: 650; }
+.lg-share-r > i { height: 7px; border-radius: 4px; background: color-mix(in srgb, var(--text) 10%, transparent); overflow: hidden; }
+.lg-share-r > i > i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--t1, var(--accent)), var(--accent)); transition: width 1s var(--ease); }
+.lg-share-r b { font-weight: 780; font-variant-numeric: tabular-nums; }
+.lg-share-r small { color: var(--text2); font-size: 12px; text-align: right; }
+@media (max-width: 560px) { .lg-share-r { grid-template-columns: minmax(0, 1fr) 70px auto; } .lg-share-r small { display: none; } }
+.yc-albumart.yc-art { display: grid; place-items: center; }

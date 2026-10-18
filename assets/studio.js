@@ -70,7 +70,7 @@ window.YCStudio = (() => {
   const EFFECTS = { nada: 'Relleno', contorno: 'Contorno', sombra: 'Sombra', degradado: 'Degradado', cromo: 'Cromo', d3: '3D' };
 
   const DEF = {
-    plantilla: 'titular', formato: 'post', marca: 'lvcifercharts', logo: 'cuernos', logoImg: '', marcaPos: 'izq',
+    plantilla: 'titular', formato: 'post', marca: '', logo: 'cuernos', logoImg: '', marcaPos: 'izq',
     etiqueta: 'DALE SWIPE', titular: 'ANUEL AA LA ROMPE EN *SPOTIFY*', sub: '¿QUÉ OPINAN?', efectoTit: 'nada', efectoNum: 'nada', wordColors: {},
     cuerpo: 'Escribe aquí el texto de la noticia. Usa cifras reales con su fuente.',
     numero: '#1', numeroTxt: 'TOP 50 · PUERTO RICO', acento: '#ff2b3d', zoom: 1, px: 0, py: 0, progreso: 75,
@@ -542,10 +542,12 @@ window.YCStudio = (() => {
     }
   }
   function brand(g, W, y, size, color, pos) {
-    const name = String(S.marca || '').replace(/^@/, '');
+    let name = String(S.marca || '').replace(/^@/, '').trim();
+    const ph = !name; // sin nombre: en la vista previa se ve «TU NOMBRE» (no sale al guardar)
+    if (ph) { if (EXPORTING) return; name = 'TU NOMBRE'; }
     const c = color || col('colMarca'); pos = pos || S.marcaPos;
     const s = size * kOf('marca') * 1.1, font = fontOf('marca', s), ls = lsOf('marca', s);
-    g.save(); g.font = font; g.textBaseline = 'alphabetic'; g.textAlign = 'left';
+    g.save(); g.font = font; g.textBaseline = 'alphabetic'; g.textAlign = 'left'; if (ph) g.globalAlpha = 0.45;
     const w = tw(g, name, ls), ca = capA(g, font);
     const li = S.logo === 'imagen' ? getLogoImg() : null;
     const lw = li ? ca * 1.5 * (li.width / li.height) : 0, gap = li ? ca * 0.4 : 0;
@@ -562,7 +564,7 @@ window.YCStudio = (() => {
     hit('marca', x0, y - ca * 1.3, total, ca * 1.6, 'marca');
   }
   function firma(g, W, H) {
-    if (!S.firma) return;
+    if (!S.firma || !String(S.marca || '').replace(/^@/, '').trim()) return;
     g.save(); g.font = `600 ${W * 0.019}px Inter, system-ui, sans-serif`; g.fillStyle = 'rgba(255,255,255,.72)'; g.textAlign = 'right'; g.textBaseline = 'alphabetic';
     g.fillText('diseño @' + String(S.marca).replace(/^@/, ''), W - W * 0.045, H - H * 0.022); g.restore();
   }
@@ -1234,6 +1236,7 @@ window.YCStudio = (() => {
     api = apiIn; root = el;
     const saved = LS.get(KEY, null);
     S = Object.assign({}, DEF, api.defaults || {}, saved ? saved.S : {});
+    if (S.marca === 'lvcifercharts') S.marca = '';
     S.wordColors = Object.assign({}, S.wordColors || {});
     S.typo = Object.assign({}, S.typo || {});
     if (!TPL[S.plantilla]) S.plantilla = 'titular';
@@ -1328,7 +1331,7 @@ window.YCStudio = (() => {
             styleName.value = ''; drawStyles();
           } })))),
       h('div', { class: 'sx-sec', 'data-sec': 'marca', hidden: true },
-        group('Tu marca', field('Nombre (sale en cada post)', 'marca', 'text', { max: 30, ph: 'tucuenta' }),
+        group('Tu marca', field('Tu nombre (sale en cada post)', 'marca', 'text', { max: 30, ph: 'Tu nombre' }),
           hint('Icono'), seg('logo', LOGOS, 'sx-wrapseg'),
           h('div', { class: 'sx-logo-up' }, h('button', { class: 'sx-btn', type: 'button', onclick: () => logoFile.click(), text: 'Subir tu logo (PNG con fondo transparente)' })),
           hint('Posición'), seg('marcaPos', { izq: 'Izquierda', centro: 'Centro', der: 'Derecha' }),

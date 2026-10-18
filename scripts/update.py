@@ -111,7 +111,12 @@ def get(url, *, as_json=False, headers=None, params=None, tries=3):
         try:
             r = S.get(url, timeout=30, headers=headers, params=params)
             if r.status_code == 200:
-                return r.json() if as_json else r.text
+                if as_json:
+                    return r.json()
+                try:
+                    return r.content.decode('utf-8')
+                except UnicodeDecodeError:
+                    return r.text
             if r.status_code in (403, 404, 410):
                 raise RuntimeError(f'HTTP {r.status_code}')
             raise RuntimeError(f'HTTP {r.status_code}')
@@ -347,6 +352,67 @@ def yt_rss():
     return out
 
 
+def fix_moji(t):
+    """Arregla tildes rotas tipo 'ReggaetÃ³n' -> 'Reggaetón'."""
+    if not isinstance(t, str) or not re.search('[ÃÂâ][\x80-\xbf€™œ\x9d‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜š›žŸ¡-¿]', t):
+        return t
+    for enc in ('cp1252', 'latin-1'):
+        try:
+            return t.encode(enc).decode('utf-8')
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            continue
+    return t
+
+
+def fix_all(o):
+    if isinstance(o, dict):
+        return {k: fix_all(v) for k, v in o.items()}
+    if isinstance(o, list):
+        return [fix_all(v) for v in o]
+    return fix_moji(o)
+
+
+def kworb_yt_artist():
+    """Todos los vídeos del artista en kworb (vistas totales y de ayer). Página: kworb.net/youtube/artist/<handle>.html"""
+    slug = (YT_HANDLE or ARTISTA).lower().replace(' ', '')
+    soup = BeautifulSoup(get(f'https://kworb.net/youtube/artist/{slug}.html'), 'lxml')
+    out = []
+    for tr in soup.select('table tr'):
+        tds = tr.find_all('td')
+        a = tr.find('a', href=True)
+        if len(tds) < 3 or not a:
+            continue
+        m = re.search(r'video/([\w-]{11})\.html|[?&]v=([\w-]{11})', a['href'])
+        if not m:
+            continue
+        vid = m.group(1) or m.group(2)
+        nums = [to_int(td.get_text()) for td in tds[1:]]
+        pub = re.search(r'(\d{4})/(\d{2})', tr.get_text(' '))
+        out.append({'video_id': vid, 'titulo': a.get_text(' ', strip=True).lstrip('*').strip(), 'vistas': nums[0] if nums else None,
+                    'ayer': nums[1] if len(nums) > 1 else None, 'publicado': f'{pub.group(1)}-{pub.group(2)}-01' if pub else None})
+    return out
+
+
+def _fold(t):
+    import unicodedata
+    return re.sub(r'\s+', ' ', re.sub(r'[^a-z0-9 ]', ' ', unicodedata.normalize('NFD', str(t or '').lower()).encode('ascii', 'ignore').decode())).strip()
+
+
+def yt_match_score(song_title, video_title):
+    """Cuánto se parece el título de un vídeo al de la canción (0 = nada)."""
+    b = _fold(re.split(r'\s+\((?:with|feat|ft|con)\b', song_title, flags=re.I)[0])
+    if len(b) < 2:
+        return 0
+    vt = re.sub(r'\[.*?\]|\((?:[^)]*\b(?:video|official|oficial|audio|lyric|letra|visualizer|en vivo|live)\b[^)]*)\)', ' ', video_title, flags=re.I)
+    parts = [_fold(re.sub(r'\b(?:ft|feat|featuring|prod)\b.*$', '', x, flags=re.I)) for x in re.split(r'\s[-–|]\s', vt)]
+    if b in parts:
+        return 3
+    full = ' ' + _fold(vt) + ' '
+    if len(b) >= 5 and f' {b} ' in full:
+        return 2
+    return 0
+
+
 def socialblade(url, patterns):
     html = get(url)
     txt = re.sub(r'\s+', ' ', BeautifulSoup(html, 'lxml').get_text(' '))
@@ -416,7 +482,7 @@ def itunes_releases():
             continue
         out.append({'titulo': re.sub(r'\s*-\s*(Single|EP)$', '', x.get('collectionName', '')), 'artistas': x.get('artistName'), 'fecha': (x.get('releaseDate') or '')[:10],
                     'url': x.get('collectionViewUrl', '').split('?')[0], 'tracks': x.get('trackCount'), 'id': x.get('collectionId'),
-                    'portada': (x.get('artworkUrl100') or '').replace('100x100bb', '600x600bb') or None})
+                    'portada': (x.get('artworkUrl100') or '').replace('100x100bb', '1400x1400bb') or None})
     return out
 
 
@@ -428,7 +494,8 @@ def itunes_tracks(collection_id):
             col_ = x
         elif x.get('wrapperType') == 'track':
             tracks.append({'n': x.get('trackNumber'), 'disco': x.get('discNumber'), 'titulo': x.get('trackName'), 'artistas': x.get('artistName'),
-                           'duracion_ms': x.get('trackTimeMillis'), 'apple_url': (x.get('trackViewUrl') or '').split('&uo')[0]})
+                           'duracion_ms': x.get('trackTimeMillis'), 'apple_url': (x.get('trackViewUrl') or '').split('&uo')[0],
+                           'portada': (x.get('artworkUrl100') or '').replace('100x100bb', '1400x1400bb') or None})
     tracks.sort(key=lambda r: ((r['disco'] or 1), (r['n'] or 0)))
     return col_, tracks
 
@@ -1138,6 +1205,42 @@ def main():
         HECHO.append('YouTube RSS')
     except Exception as e:  # noqa: BLE001
         fallo('YouTube RSS', e)
+    kw_vids = []
+    try:
+        kw_vids = kworb_yt_artist()
+        data['yt_kworb'] = len(kw_vids)
+        HECHO.append(f'kworb YouTube ({len(kw_vids)} vídeos)')
+    except Exception as e:  # noqa: BLE001
+        fallo('kworb YouTube artista', e)
+    if kw_vids:
+        by_id = {v['video_id']: v for v in kw_vids}
+        lyric = re.compile(r'lyric|letra|audio|visualizer|en vivo|live|remix', re.I)
+        for s in songs:
+            y = s.get('youtube')
+            if y and y.get('video_id') in by_id:  # ya tenía vídeo: vistas y vistas de ayer de kworb
+                v = by_id[y['video_id']]
+                if v.get('vistas') and (not y.get('vistas') or v['vistas'] >= y['vistas']):
+                    y['vistas'] = v['vistas']
+                if v.get('ayer') is not None:
+                    y['ayer'] = v['ayer']
+                y.setdefault('publicado', v.get('publicado'))
+                continue
+            if y:
+                continue
+            best = None
+            for v in kw_vids:
+                sc = yt_match_score(s['titulo'], v['titulo'])
+                if not sc:
+                    continue
+                if lyric.search(v['titulo']) and not lyric.search(s['titulo']):
+                    sc -= 0.5
+                key_ = (sc, v.get('vistas') or 0)
+                if not best or key_ > best[0]:
+                    best = (key_, v)
+            if best and best[0][0] >= 2:
+                v = best[1]
+                s['youtube'] = {'video_id': v['video_id'], 'titulo': v['titulo'], 'canal': ARTISTA, 'vistas': v.get('vistas'), 'ayer': v.get('ayer'), 'likes': None,
+                                'publicado': v.get('publicado'), 'fecha': HOY, 'fuente': 'kworb.net (YouTube)'}
     for v in channel_vids:  # asigna videos nuevos a canciones sin video
         tv = norm(re.sub(r'\[.*?\]|\(.*?(video|visualizer|audio|lyric).*?\)', '', v['titulo'], flags=re.I))
         for s in songs:
@@ -1154,7 +1257,7 @@ def main():
             return re.sub(r'[^a-z0-9 ]', '', unicodedata.normalize('NFD', str(t or '').lower()).encode('ascii', 'ignore').decode())
         hace7 = (NOW - dt.timedelta(days=7)).strftime('%Y-%m-%d')
         cola = sorted([x for x in songs if not x.get('youtube') and (x.get('yt_buscado') or '') < hace7],
-                      key=lambda x: -((x.get('spotify') or {}).get('total') or 0))[:30]
+                      key=lambda x: -((x.get('spotify') or {}).get('total') or 0))[:60]
         hallados = 0
         for x in cola:
             x['yt_buscado'] = HOY
@@ -1296,6 +1399,8 @@ def main():
                              'rank': r'Chartmetric Rank\D{0,25}?([\d,]{2,})(?:st|nd|rd|th)', 'playlists': r'Playlist Count\s*' + num, 'reach': r'Playlist Reach\s*' + num,
                              'sp_followers': r'Spotify.{0,40}?Followers\s*' + num, 'tt_followers': r'TikTok.{0,40}?Followers\s*' + num, 'shazams': r'Shazams\s*' + num}.items():
                 m = re.search(pat, txt, re.I)
+                if not m and key == 'rank':
+                    m = re.search(r'([\d,]{1,7})(?:st|nd|rd|th)\s*Chartmetric Rank', txt, re.I)
                 if m:
                     found[key] = compact(m.group(1))
             if not found:
@@ -1379,17 +1484,32 @@ def main():
             img = oembed(f'https://open.spotify.com/artist/{SP_ARTIST}')
             if img:
                 data['artista']['imagen'] = img
+            cola_p = [x for x in songs if (x.get('spotify') or {}).get('id') and not x.get('portada')][:500]
+            def _ofoto(x):
+                try:
+                    return x, oembed(f'https://open.spotify.com/track/{x["spotify"]["id"]}')
+                except Exception:  # noqa: BLE001
+                    return x, None
             n_ok = 0
-            for s in songs:
-                sid = (s.get('spotify') or {}).get('id')
-                if sid and not s.get('portada') and n_ok < 150:
-                    try:
-                        s['portada'] = oembed(f'https://open.spotify.com/track/{sid}')
+            with cf.ThreadPoolExecutor(6) as ex:
+                for x, u in ex.map(_ofoto, cola_p):
+                    if u:
+                        x['portada'] = u
                         n_ok += 1
-                        time.sleep(0.1)
-                    except Exception:  # noqa: BLE001
-                        pass
-            HECHO.append(f'fotos ({n_ok} portadas nuevas)')
+            # sin Spotify: portada de Deezer (1000 px)
+            n_dz = 0
+            for x in [x for x in songs if not x.get('portada')][:80]:
+                try:
+                    q = f'artist:"{ARTISTA}" track:"{re.split(r" [(]", x["titulo"])[0]}"'
+                    j = get('https://api.deezer.com/search', as_json=True, params={'q': q, 'limit': 5}, tries=1)
+                    hit = next((r for r in j.get('data', []) if _fold(r.get('title')).startswith(_fold(re.split(r' [(]', x['titulo'])[0]))), None)
+                    if hit and (hit.get('album') or {}).get('cover_xl'):
+                        x['portada'] = hit['album']['cover_xl']
+                        n_dz += 1
+                    time.sleep(0.15)
+                except Exception:  # noqa: BLE001
+                    pass
+            HECHO.append(f'fotos ({n_ok} de Spotify, {n_dz} de Deezer)')
         except Exception as e:  # noqa: BLE001
             fallo('Fotos de Spotify', e)
 
@@ -1405,7 +1525,7 @@ def main():
                 data.setdefault('albumes', []).append(a)
                 alb_by[r['titulo'].lower()] = a
                 log(f'  + nuevo álbum: {r["titulo"]}')
-            if a.get('tracks') and a.get('portada') and a.get('apple_id') == r['id']:
+            if a.get('tracks') and a.get('portada') and a.get('apple_id') == r['id'] and '1400x1400' in a['portada']:
                 continue
             try:
                 _, tr = itunes_tracks(r['id'])
@@ -1422,6 +1542,9 @@ def main():
                         by_norm[norm(x['titulo'])] = s
                     if s:
                         s['album'] = a['album']
+                        if x.get('portada'):
+                            s['portada_hd'] = x['portada']
+                            s.setdefault('portada', x['portada'])
                         s['pista'] = x['n']
                         s['duracion_ms'] = x['duracion_ms']
                         s['lanzamiento'] = s.get('lanzamiento') or a.get('fecha_lanzamiento')
@@ -1664,6 +1787,7 @@ def main():
     if not RAPIDO:
         data['completa'] = data['generado']
     data['estado'] = {'hecho': HECHO, 'fallos': FALLOS, 'en': data['generado'], 'modo': 'rapido' if RAPIDO else 'completo', 'completa': data.get('completa')}
+    data = fix_all(data)
     DATA_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding='utf8')
     log(f'\nListo: {len(HECHO)} fuentes bien, {len(FALLOS)} fallos.')
     for f in FALLOS:

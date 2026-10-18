@@ -183,7 +183,7 @@
     if (PAL[url]) apply(PAL[url]); else { apply(null); palette(url).then(c => { if (c) apply(c); }); }
     return el;
   }
-  const coverOf = (s) => s && (s.portada || (s.yt && s.yt.video_id ? `https://i.ytimg.com/vi/${s.yt.video_id}/hqdefault.jpg` : null));
+  const coverOf = (s) => s && (s.portada ? hd(s.portada_hd || s.portada, 640) : (s.yt && s.yt.video_id ? `https://i.ytimg.com/vi/${s.yt.video_id}/hqdefault.jpg` : null));
 
   // ---------- datos ----------
   let DATA = null;
@@ -191,7 +191,10 @@
   const AN = () => (DATA && DATA.artista && DATA.artista.nombre) || 'Artista';
   const AU = () => (DATA && DATA.artista && DATA.artista.instagram) || AN().toLowerCase().replace(/\s+/g, '');
   const AH = () => (DATA && DATA.artista && DATA.artista.hashtag) || AN().replace(/\s+/g, '');
-  const MK = () => store.get('yc.marca', '') || (DATA && DATA.sitio && DATA.sitio.marca) || 'charts';
+  const MK = () => { const m = store.get('yc.marca', '') || (DATA && DATA.sitio && DATA.sitio.marca) || ''; return m === 'lvcifercharts' ? '' : m; };
+  const CREADOR = 'chechodev';
+  const mkTag = () => MK() ? ` #${MK()}` : '';
+  const mkSig = () => MK() ? `\n🎨 @${MK()}` : '';
   const SITE = () => (DATA && DATA.sitio && DATA.sitio.nombre) || (AN() + ' Charts');
   const initials = () => AN().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   const artRx = () => { try { return new RegExp((DATA && DATA.artista && DATA.artista.alias_regex) || AN().replace(/\s+/g, '\\s*'), 'i'); } catch (e) { return new RegExp(AN(), 'i'); } };
@@ -291,6 +294,21 @@
     return { hito: m, faltan: m - total, dias: Math.ceil((m - total) / daily) };
   }
 
+  // ---------- imágenes en la máxima calidad disponible ----------
+  // Apple Music da hasta 3000 px, Deezer 1000 px, Spotify 640 px y YouTube 1280×720 (maxres)
+  function hd(url, size) {
+    if (!url) return url;
+    size = size || 1200;
+    if (/mzstatic\.com/.test(url)) return url.replace(/\/\d+x\d+(?:bb|cc|bf)?(?:-\d+)?\.(jpg|jpeg|png|webp)$/i, `/${size}x${size}bb.jpg`);
+    if (/dzcdn\.net|deezer/.test(url)) return url.replace(/\/\d+x\d+-/, `/${Math.min(size, 1000)}x${Math.min(size, 1000)}-`);
+    if (/scdn\.co|spotifycdn\.com/.test(url)) {
+      if (size > 300) return url.replace('ab67616d00001e02', 'ab67616d0000b273').replace('ab67616d00004851', 'ab67616d0000b273').replace('ab6761610000f178', 'ab6761610000e5eb').replace('ab67616100005174', 'ab6761610000e5eb');
+      return url;
+    }
+    return url;
+  }
+  const bigCover = (s) => s && (s.portada_hd ? hd(s.portada_hd, 1400) : s.portada ? hd(s.portada, 1400) : null);
+
   // ---------- componentes ----------
   // miniatura de YouTube en la mejor calidad disponible (maxres → sd → hq)
   function ytThumb(id, sizes, attrs) {
@@ -305,7 +323,7 @@
   function art(s, size) {
     const box = h('div', { class: 'yc-art', style: `background:linear-gradient(135deg,hsl(${hue(s.titulo)} 80% 55%),hsl(${(hue(s.titulo) + 60) % 360} 70% 40%))${size ? `;width:${size}px;height:${size}px` : ''}` }, s.titulo.replace(/[^A-Za-z0-9ÁÉÍÓÚÑ]/g, '').slice(0, 2).toUpperCase());
     if (s.portada) {
-      const img = h('img', { src: s.portada, alt: '', loading: 'lazy', decoding: 'async', class: 'cover' });
+      const img = h('img', { src: hd(s.portada_hd || s.portada, size && size > 100 ? 800 : 300), alt: '', loading: 'lazy', decoding: 'async', class: 'cover' });
       img.addEventListener('error', () => img.remove());
       img.addEventListener('load', () => { box.firstChild && box.firstChild.nodeType === 3 && box.firstChild.remove(); });
       box.append(img);
@@ -479,6 +497,14 @@
     const P = DATA.perfil, el = $('#p-inicio'); el.replaceChildren();
     const sp = P.spotify || {}, yt = P.youtube || {};
     const lastRel = releases()[0];
+    el.append(h('div', { class: 'lg-searchrow' },
+      h('button', { class: 'lg-search', type: 'button', onclick: () => openSearch(), 'aria-label': 'Buscar' }, icon('search'), h('span', { text: 'Busca una canción, disco, país o lista…' }), h('kbd', { text: '/' })),
+      h('div', { class: 'lg-quick' },
+        h('button', { type: 'button', onclick: () => go('canciones') }, icon('flame'), 'Lo más escuchado'),
+        h('button', { type: 'button', onclick: () => go('listas') }, icon('chart'), 'Listas de hoy'),
+        h('button', { type: 'button', onclick: () => go('records') }, icon('star'), 'Récords'),
+        h('button', { type: 'button', onclick: () => go('albumes') }, icon('disc'), 'Discos'),
+        h('button', { type: 'button', onclick: () => go('comparar') }, icon('bolt'), 'Comparar'))));
     el.append(bento(sp, yt, lastRel));
     if (!SONGS.length) el.append(h('div', { class: 'yc-card', style: 'margin-top:14px' }, h('b', { text: 'Preparando la primera actualización' }), h('p', { class: 'yc-note', style: 'margin:4px 0 0', text: 'En unos minutos aparecerán todas sus canciones, listas, playlists y cifras. La web se recarga sola.' })));
     renderFavs(el);
@@ -559,7 +585,7 @@
   function deltaTag(v) { return isNum(v) && v !== 0 ? h('span', { class: 'lg-delta ' + (v > 0 ? 'up' : 'down'), text: (v > 0 ? '▲ ' : '▼ ') + short(Math.abs(v)) }) : null; }
   function bento(sp, yt, lastRel) {
     const g = h('div', { class: 'lg-bento' });
-    const img = DATA.artista.imagen ? DATA.artista.imagen.replace('ab6761610000f178', 'ab6761610000e5eb') : null;
+    const img = DATA.artista.imagen ? hd(DATA.artista.imagen, 1400) : null;
     // portada del artista
     const hero = tile('hero', [
       img ? h('img', { class: 'lg-hero-img', src: img, alt: '', decoding: 'async', fetchpriority: 'high' }) : null,
@@ -786,12 +812,12 @@
       hbars(albums, { label: a => a.album, value: a => a.comb, color: a => String(a.tipo).startsWith('Álbum propio') ? '#1db954' : '#0a84ff' })));
     for (const a of albums) {
       const c = h('div', { class: 'yc-card reveal', style: 'margin-top:12px;scroll-margin-top:90px', 'data-alb': a.album });
-      c.append(h('div', { style: 'display:flex;gap:12px;align-items:center;margin-bottom:12px' },
+      c.append(h('div', { style: 'display:flex;gap:12px;align-items:center;margin-bottom:12px;cursor:pointer', role: 'button', tabindex: '0', onclick: () => openAlbum(a.album) },
         albumCover(a, 96),
         h('div', { style: 'min-width:0' }, h('b', { style: 'font-size:19px;display:block', text: a.album }), h('small', { style: 'color:var(--text2)', text: `${a.artista_principal || '—'} · ${a.tipo}${a.fecha_lanzamiento ? ' · ' + dfmt(a.fecha_lanzamiento) : ''}` }))));
       c.append(h('div', { class: 'yc-stats' },
         stat('Spotify total', full(a.spotify_streams), `dato ${dfmt(a.fecha_dato)}`), stat('Spotify hoy', full(a.spotify_diarios), 'streams/día'),
-        stat('YouTube', a.ytv ? full(a.ytv) : '—', `${a.tracks.filter(t => t.yt).length} videos`), stat('Canciones', a.canciones || (a.tracks.length || '—'), a.tracks.length ? `${a.tracks.length} en el catálogo` : '')));
+        stat('YouTube', a.ytv ? full(a.ytv) : '—', `${a.tracks.filter(t => t.yt).length} de ${a.canciones || a.tracks.length} con vídeo`), stat('Canciones', a.canciones || (a.tracks.length || '—'), a.tracks.length ? `${a.tracks.length} en el catálogo` : '')));
       if ((a.disco || []).length) {
         const totMs = a.disco.reduce((t, x) => t + (x.duracion_ms || 0), 0);
         c.append(h('div', { class: 'yc-tl-head' }, h('b', { text: 'Disco completo' }), h('small', { text: `${a.disco.length} canciones${totMs ? ' · ' + Math.round(totMs / 60000) + ' min' : ''}` })));
@@ -805,6 +831,7 @@
             s ? icon('chev', 'yc-chev') : null);
         })));
       } else if (a.tracks.length) c.append(h('div', { class: 'yc-list', style: 'margin-top:12px;box-shadow:none' }, a.tracks.sort((x, y) => (y.combinado || 0) - (x.combinado || 0)).map(s => songRow(s, { metric: 'comb' }))));
+      c.append(h('button', { class: 'yc-btn sec', type: 'button', style: 'margin-top:12px', onclick: () => openAlbum(a.album), text: 'Ver ficha completa del disco' }));
       if (a.apple_url) c.append(h('a', { class: 'yc-linkbtn', href: a.apple_url, target: '_blank', rel: 'noopener', text: 'Escuchar en Apple Music ↗' }));
       c.append(h('p', { class: 'yc-src', text: 'Fuente: ' + (a.fuente || 'kworb.net') + '. Apple Music y Deezer no publican reproducciones.' }));
       el.append(c); reveal(c);
@@ -936,8 +963,88 @@
     el.append(h('p', { class: 'yc-src', text: `Datos del ${dfmt(DATA.generado)}. Fuentes: kworb.net (Spotify), YouTube, Shazam.` }));
   }
 
+  // ---------- ficha de disco (detallada y fácil de leer) ----------
+  function openAlbum(name, push = true) {
+    const a = albumsAgg().find(x => x.album === name); if (!a) return;
+    const disco = (a.tracks && a.tracks.length ? a.tracks : []).slice();
+    const rows = (a.disco || []).length ? a.disco.map(x => ({ x, s: SONGS.find(z => normT(z.titulo) === normT(x.titulo)) })) : disco.map(s => ({ x: { titulo: s.titulo, artistas: s.artistas, n: s.pista, duracion_ms: s.duracion_ms }, s }));
+    const totMs = rows.reduce((t, r) => t + (r.x.duracion_ms || 0), 0);
+    const sp = rows.reduce((t, r) => t + (r.s && isNum(r.s.sp.total) ? r.s.sp.total : 0), 0);
+    const spTot = isNum(a.spotify_streams) ? a.spotify_streams : sp || null;
+    const ytv = rows.reduce((t, r) => t + (r.s && r.s.yt && isNum(r.s.yt.vistas) ? r.s.yt.vistas : 0), 0) || a.ytv || null;
+    const top = rows.filter(r => r.s && isNum(r.s.sp.total)).sort((p, q) => q.s.sp.total - p.s.sp.total);
+    const dias = a.fecha_lanzamiento ? days(a.fecha_lanzamiento, today()) : null;
+    const body = h('div');
+    const cov = hd(a.portada || (top[0] && top[0].s.portada), 1400);
+    body.append(h('div', { class: 'lg-song-head' },
+      h('div', { class: 'lg-song-bg' }, cov ? h('img', { src: cov, alt: '', decoding: 'async', onerror: (e) => e.target.remove() }) : null),
+      h('div', { class: 'lg-song-cov' }, albumCover(Object.assign({}, a, { portada: a.portada || (top[0] && top[0].s.portada) }), 400)),
+      h('div', { class: 'lg-song-info' },
+        h('span', { class: 'lg-kicker' }, h('i'), a.tipo || 'Disco'),
+        h('h2', { class: 'lg-song-t', text: a.album }),
+        h('p', { class: 'lg-song-a', text: [a.artista_principal && a.artista_principal !== '—' ? a.artista_principal : AN(), a.fecha_lanzamiento ? dfmt(a.fecha_lanzamiento) : '', rows.length ? `${rows.length} canciones` : '', totMs ? `${Math.round(totMs / 60000)} min` : ''].filter(Boolean).join(' · ') }),
+        h('div', { class: 'lg-song-act' },
+          a.apple_url ? h('a', { class: 'yc-btn sec', href: a.apple_url, target: '_blank', rel: 'noopener' }, icon('apple'), 'Apple Music') : null,
+          h('a', { class: 'yc-btn sec', href: `https://open.spotify.com/search/${encodeURIComponent(a.album + ' ' + AN())}`, target: '_blank', rel: 'noopener' }, icon('spotify'), 'Spotify'),
+          h('button', { class: 'yc-btn sec', type: 'button', onclick: () => { closeSheet(); setTimeout(() => toStudio({ plantilla: 'portada', titular: a.album, etiqueta: (a.tipo || 'DISCO').toUpperCase(), subtitulo: spTot ? `${short(spTot)} STREAMS EN SPOTIFY` : '', imagen: hd(a.portada, 1400) }), 250); } }, icon('pen'), 'Hacer post'),
+          h('button', { class: 'yc-btn sec', type: 'button', onclick: () => openCompare('alb:' + a.album) }, icon('bolt'), 'Comparar')))));
+    // en pocas palabras
+    const frase = [
+      spTot ? `«${a.album}» suma ${full(spTot)} streams en Spotify` : `«${a.album}» aún no tiene dato de streams`,
+      isNum(a.spotify_diarios) ? ` y hoy lleva ${full(a.spotify_diarios)}` : '', '.',
+      ytv ? ` Sus vídeos tienen ${full(ytv)} vistas en YouTube.` : '',
+      top[0] ? ` La más escuchada es «${top[0].s.titulo}» (${short(top[0].s.sp.total)}).` : '',
+      dias != null && dias >= 0 ? ` Salió hace ${full(dias)} ${dias === 1 ? 'día' : 'días'}.` : ''
+    ].join('');
+    body.append(h('div', { class: 'lg-sum' }, h('b', { text: 'En pocas palabras' }), h('p', { text: frase })));
+    const kb = (label, v, sub) => { const b = h('b', { class: 'lg-mid num', text: '—' }); countUp(b, isNum(v) ? v : null); return h('div', { class: 'lg-tile lg-k' }, h('span', { class: 'lg-lab', text: label }), b, sub ? h('small', { class: 'lg-clip', text: sub }) : null); };
+    body.append(h('div', { class: 'lg-kpis' },
+      kb('Spotify total', spTot, a.fecha_dato ? `dato del ${dfmt(a.fecha_dato)}` : 'suma de sus canciones'),
+      kb('Spotify hoy', a.spotify_diarios, 'streams al día'),
+      kb('YouTube', ytv, `${rows.filter(r => r.s && r.s.yt).length} de ${rows.length} con vídeo`),
+      kb('Media por canción', spTot && rows.length ? spTot / rows.length : null, 'streams en Spotify')));
+    // reparto: qué canciones pesan más
+    if (top.length) {
+      const mx = top[0].s.sp.total;
+      body.append(h('h3', { class: 'lg-sh', text: 'Las más escuchadas del disco' }));
+      body.append(h('div', { class: 'yc-card lg-share' }, top.slice(0, 8).map(r => h('div', { class: 'lg-share-r', role: 'button', tabindex: '0', onclick: () => openSong(r.s.id) },
+        h('span', { class: 'lg-clip', text: r.s.titulo }), h('i', null, h('i', { 'data-w': (r.s.sp.total / mx * 100).toFixed(1) })),
+        h('b', { text: short(r.s.sp.total) }), h('small', { text: spTot ? Math.round(r.s.sp.total / spTot * 100) + '%' : '' })))));
+    }
+    // tracklist completo
+    body.append(h('h3', { class: 'lg-sh', text: `Disco completo · ${rows.length} canciones` }));
+    body.append(h('div', { class: 'yc-list' }, rows.map((r, i) => {
+      const s2 = r.s, dur = r.x.duracion_ms ? Math.floor(r.x.duracion_ms / 60000) + ':' + String(Math.round(r.x.duracion_ms / 1000) % 60).padStart(2, '0') : '';
+      return h('div', { class: 'yc-row', style: s2 ? null : 'cursor:default', onclick: s2 ? () => openSong(s2.id) : null },
+        h('span', { class: 'yc-rank', text: r.x.n || i + 1 }),
+        h('div', { class: 'yc-row-main' }, h('b', { text: r.x.titulo }), h('small', { text: [r.x.artistas, dur].filter(Boolean).join(' · ') })),
+        h('div', { class: 'yc-row-meta' }, h('b', { text: s2 && isNum(s2.sp.total) ? short(s2.sp.total) : '—' }),
+          h('small', { text: [s2 && isNum(s2.sp.diarios) ? `${short(s2.sp.diarios)}/día` : '', s2 && s2.yt && isNum(s2.yt.vistas) ? `▶ ${short(s2.yt.vistas)}` : ''].filter(Boolean).join(' · ') || 'Spotify' })),
+        s2 ? icon('chev', 'yc-chev') : null);
+    })));
+    body.append(h('p', { class: 'yc-src', text: `Fuentes: ${a.fuente || 'kworb.net'} (Spotify), Apple Music (canciones y duración), YouTube. Apple Music y Deezer no publican reproducciones.` }));
+    openSheet(a.album, body);
+    $('#sheet').classList.add('song'); tint($('#sheet'), hd(a.portada, 640), a.album);
+    animateBars(body);
+    if (push) history.replaceState(null, '', '#disco/' + encodeURIComponent(a.album));
+  }
+  // en pocas palabras (canción)
+  function songSummary(s) {
+    const L = [];
+    L.push(isNum(s.sp.total) ? `«${s.titulo}» suma ${full(s.sp.total)} streams en Spotify` : `«${s.titulo}» aún no tiene dato de Spotify`);
+    if (isNum(s.sp.diarios)) L.push(` y hoy lleva ${full(s.sp.diarios)}${s.rank_spd ? ` (la nº ${s.rank_spd} de sus canciones hoy)` : ''}`);
+    L.push('.');
+    if (s.yt && isNum(s.yt.vistas)) { const d = ytDaily(s); L.push(` En YouTube tiene ${full(s.yt.vistas)} vistas${isNum(d) ? ` (+${full(d)} al día)` : ''}.`); }
+    if (s.hoy.length) L.push(` Hoy está en ${s.hoy.length} ${s.hoy.length === 1 ? 'lista' : 'listas'}${s.best ? `, su mejor puesto: ${s.best.t}` : ''}.`);
+    else if (s.best) L.push(` Su mejor puesto: ${s.best.t}.`);
+    const nx = nextHito(s.sp.total), d2 = s.sp.diarios || s.spMedia;
+    if (nx && d2) L.push(` Le faltan ${short(nx - s.sp.total)} para los ${short(nx)} (≈ ${Math.ceil((nx - s.sp.total) / d2)} días).`);
+    return L.join('');
+  }
+
   // ---------- trayectoria: su carrera año a año ----------
   function goAlbum(name) {
+    if ((DATA.albumes || []).some(x => x.album === name)) { openAlbum(name); return; }
     go('albumes');
     setTimeout(() => { const c = [...document.querySelectorAll('#p-albumes [data-alb]')].find(x => x.dataset.alb === name); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 450);
   }
@@ -987,9 +1094,9 @@
   }
   const normT = (x) => String(x || '').toLowerCase().replace(/\s*[\(\[](with|feat\.?|ft\.?)[^\)\]]*[\)\]]/g, '').replace(/\s+/g, ' ').trim();
   function albumCover(a, size) {
-    const src = a.portada || (SONGS.find(s => s.album === a.album && s.portada) || {}).portada;
+    const src0 = a.portada || (SONGS.find(s => s.album === a.album && s.portada) || {}).portada, src = hd(src0, size > 120 ? 1000 : 400);
     const box = h('div', { class: 'yc-art yc-albumart', style: `width:${size}px;height:${size}px;background:linear-gradient(135deg,hsl(${hue(a.album)} 80% 55%),hsl(${(hue(a.album) + 80) % 360} 70% 35%))` }, src ? null : a.album.slice(0, 2).toUpperCase());
-    if (src) { const im = h('img', { src, alt: a.album, loading: 'lazy', class: 'cover' }); im.addEventListener('error', () => { im.remove(); box.textContent = a.album.slice(0, 2).toUpperCase(); }); box.append(im); }
+    if (src) { const im = h('img', { src, alt: a.album, loading: 'lazy', decoding: 'async', class: 'cover' }); im.addEventListener('error', () => { im.remove(); box.textContent = a.album.slice(0, 2).toUpperCase(); }); box.append(im); }
     return box;
   }
   const stat = (label, value, sub) => h('div', { class: 'yc-stat' }, h('span', { text: label }), h('b', { text: value }), sub ? h('small', { text: sub }) : null);
@@ -1045,7 +1152,7 @@
   }
   function logroCaption(n) {
     const em = { aniversario: '🎂', playlist: '📋', mundial: '🌍', numero1: '🥇', top10: '🔟', debut: '🚀', pico: '📈', record: '💥', cifra: '🏆' }[n.cat] || '🏆';
-    return `${em} ${String(n.titulo).toUpperCase()}\n\n${n.texto || ''}${n.fuente ? `\n\nFuente: ${n.fuente}` : ''}\n\n#${AH()} #${MK()} #charts #musicaurbana\n🎨 @${MK()}`;
+    return `${em} ${String(n.titulo).toUpperCase()}\n\n${n.texto || ''}${n.fuente ? `\n\nFuente: ${n.fuente}` : ''}\n\n#${AH()}${mkTag()} #charts #musicaurbana${mkSig()}`;
   }
   function logroPost(n) {
     const s = n.cancion ? songById(n.cancion) : null;
@@ -1261,7 +1368,7 @@
     if (t.mover) L.push(`🚀 La que más sube: ${String(t.mover.c.cancion).split(' (')[0]} (${t.mover.c.cambio}) en ${t.mover.c.plataforma} ${t.mover.c.pais}`);
     if (sgn(t.dIg) || sgn(t.dTt)) L.push(`📱 Redes: ${[sgn(t.dIg) ? `Instagram ${sgn(t.dIg)}` : '', sgn(t.dTt) ? `TikTok ${sgn(t.dTt)}` : ''].filter(Boolean).join(' · ')}`);
     if (t.lgs.length) { L.push('', '🏆 Logros de hoy:'); t.lgs.slice(0, 5).forEach(n => L.push(`• ${n.titulo}`)); }
-    L.push('', `#${AH()} #${MK()} #charts`, `🎨 @${MK()}`);
+    L.push('', `#${AH()}${mkTag()} #charts`); if (MK()) L.push(`🎨 @${MK()}`);
     return L.join('\n');
   }
   function renderToday(el) {
@@ -1307,7 +1414,7 @@
     const pk = (s.picos || []).slice().sort((x, y) => x.pico - y.pico)[0];
     if (pk) L.push(`📈 Su mejor puesto en Spotify: #${pk.pico} en ${pk.pais} ${flagEmoji(pk.codigo)}`);
     if (b) L.push(`📍 Hoy sigue en el #${b.p} de ${b.plat} ${b.pais} ${flagEmoji(b.cc)}`);
-    L.push('', `#${AH()} #${MK()}`, `🎨 @${MK()}`);
+    L.push('', `#${AH()}${mkTag()}`); if (MK()) L.push(`🎨 @${MK()}`);
     return L.join('\n');
   }
   function renderAnivs(el) {
@@ -1337,7 +1444,7 @@
     for (const c of DATA.charts || []) { const x = paises[c.pais] = paises[c.pais] || { n: 0, best: null, cc: ccOf(c.pais, c.codigo) }; if (c.posicion != null) { x.n++; if (!x.best || c.posicion < x.best) x.best = c.posicion; } }
     for (const [pais, x] of Object.entries(paises)) out.push({ k: 'Países y listas', t: pais, sub: x.n ? `En ${x.n} lista${x.n > 1 ? 's' : ''} · mejor #${x.best}` : 'Fuera de sus listas hoy', q: fold(pais), lead: () => flagEl(x.cc), go: () => goChartsQuery(pais) });
     for (const pl of ['Spotify', 'Apple Music', 'YouTube', 'Shazam', 'Deezer', 'iTunes']) out.push({ k: 'Países y listas', t: pl, sub: 'Todas sus listas', q: fold(pl), lead: () => pico(PLAT_BY_NAME[pl]), go: () => { LF.plat = pl; goChartsQuery(''); } });
-    for (const a of DATA.albumes || []) out.push({ k: 'Álbumes', t: a.album, sub: a.artista_principal || a.tipo || 'Álbum', q: fold(a.album), lead: () => h('span', { class: 'yc-moreic' }, icon('disc')), go: () => go('albumes') });
+    for (const a of DATA.albumes || []) out.push({ k: 'Discos', t: a.album, sub: [a.tipo, a.fecha_lanzamiento ? dfmt(a.fecha_lanzamiento) : '', isNum(a.spotify_streams) ? short(a.spotify_streams) + ' streams' : ''].filter(Boolean).join(' · ') || 'Disco', q: fold(a.album + ' disco album'), lead: () => albumCover(a, 36), go: () => openAlbum(a.album) });
     for (const n of logrosList().slice(0, 80)) out.push({ k: 'Logros', t: n.titulo, sub: dfmt(n.fecha), q: fold(n.titulo), lead: () => h('span', { class: 'yc-moreic' }, icon('trophy')), go: () => openLogro(n) });
     for (const [id, label, ic] of PAGES) out.push({ k: 'Secciones', t: label, sub: 'Ir a la sección', q: fold(label), lead: () => h('span', { class: 'yc-moreic' }, icon(ic)), go: () => go(id) });
     return out;
@@ -1501,7 +1608,7 @@
   const flagEmoji = (cc) => { cc = String(cc || '').toUpperCase().replace('UK', 'GB'); return /^[A-Z]{2}$/.test(cc) && cc !== 'WW' ? String.fromCodePoint(...[...cc].map(c => 0x1F1E6 + c.charCodeAt(0) - 65)) : '🌍'; };
   function ytDaily(s) {
     const hs = ((s.yt && s.yt.hist) || []).filter(x => isNum(x.v));
-    if (hs.length < 2) return null;
+    if (hs.length < 2) return s.yt && isNum(s.yt.ayer) ? s.yt.ayer : null;
     const a = hs[hs.length - 1], b = hs[hs.length - 2];
     const days = (new Date(a.t) - new Date(b.t)) / 864e5;
     return days > 0.3 && a.v >= b.v ? Math.round((a.v - b.v) / days) : null;
@@ -1682,16 +1789,16 @@
     const holder = h('div', { id: 'studio' }, h('div', { class: 'yc-loading' }, h('i', { style: 'height:420px' }), h('i', { style: 'height:180px' })));
     el.append(holder);
     loadStudio().then(() => { holder.replaceChildren(); window.YCStudio.mount(holder, { toast, copy, store, events: studioEvents, pre: studioPending,
-      defaults: { marca: MK(), titular: `${AN().toUpperCase()} LA ROMPE EN *SPOTIFY*`, autor: '@' + AU(), imagen: DATA.artista.imagen },
+      defaults: { marca: MK(), titular: `${AN().toUpperCase()} LA ROMPE EN *SPOTIFY*`, autor: '@' + AU(), imagen: hd(DATA.artista.imagen, 1400) },
       datos: studioDatos, carousel: studioCarousel,
       top5: () => { const L = SONGS.filter(x => isNum(x.sp.diarios)).sort((a, b) => b.sp.diarios - a.sp.diarios).slice(0, 5); return L.length ? { titulo: 'LO MÁS ESCUCHADO HOY', lista: L.map(x => `${x.titulo} | ${short(x.sp.diarios)}`).join('\n') } : null; } }); studioPending = null; glideSoon(); })
       .catch(() => holder.replaceChildren(h('p', { class: 'yc-empty', text: 'No se pudo cargar el editor. Revisa la conexión.' })));
     const capH = section('Caption de logros de una canción', ''); capH.id = 'cap-song'; el.append(capH, captionBlock());
     const posts = buildPosts();
     el.append(section('Captions listos', `${posts.length} textos con las cifras de ahora`));
-    const firma = `\n\n📊 Datos: ${'{F}'}\n🎨 @${MK()}`;
+    const firma = `\n\n📊 Datos: ${'{F}'}${mkSig()}`;
     el.append(h('div', { class: 'yc-list' }, posts.map(p => {
-      const tags = '\n\n#${AH()} #${MK()} #trap #musicaurbana #charts';
+      const tags = `\n\n#${AH()}${mkTag()} #trap #musicaurbana #charts`;
       const full_ = p.t + firma.replace('{F}', p.f) + tags;
       return h('div', { class: 'yc-post' }, h('p', null, p.t, h('small', { text: 'Fuente: ' + p.f })),
         h('div', { class: 'yc-post-btns' }, h('button', { class: 'yc-copy', onclick: () => copy(full_), text: 'Copiar caption' }), h('button', { class: 'yc-copy sec', onclick: () => toStudio({ titular: p.t.replace(/^\S+\s/, ''), etiqueta: SITE().toUpperCase(), texto: p.t }), text: 'Hacer imagen' })));
@@ -1801,7 +1908,7 @@
     const s = songById(id); if (!s) return;
     const body = h('div');
     // cabecera deluxe: portada grande sobre su propio color
-    const bigCov = s.portada ? s.portada.replace('ab67616d00001e02', 'ab67616d0000b273').replace('ab67616d00004851', 'ab67616d0000b273') : (s.yt ? `https://i.ytimg.com/vi/${s.yt.video_id}/hqdefault.jpg` : null);
+    const bigCov = bigCover(s) || (s.yt ? `https://i.ytimg.com/vi/${s.yt.video_id}/maxresdefault.jpg` : null);
     const favB = h('button', { class: 'yc-pill yc-favbtn', type: 'button', 'aria-pressed': String(isFav(s.id)), onclick: () => { toggleFav(s.id); favB.setAttribute('aria-pressed', String(isFav(s.id))); favB.lastChild.textContent = isFav(s.id) ? 'En favoritas' : 'Seguir'; } }, icon('star'), h('span', { text: isFav(s.id) ? 'En favoritas' : 'Seguir' }));
     const hero = h('div', { class: 'yc-detail-hero' });
     if (s.yt) hero.append(ytThumb(s.yt.video_id, ['maxresdefault', 'sddefault', 'hqdefault']));
@@ -1834,6 +1941,7 @@
       kb('Spotify', s.sp.total, s.rank_sp ? `#${s.rank_sp} de ${SONGS.nSp} en su catálogo` : ''),
       kb('Streams hoy', s.sp.diarios, s.rank_spd ? `#${s.rank_spd} hoy` : 'sin dato diario'),
       kb('YouTube', s.yt && s.yt.vistas, s.yt ? `${short(s.yt.likes)} likes` : 'sin video')));
+    body.append(h('div', { class: 'lg-sum' }, h('b', { text: 'En pocas palabras' }), h('p', { text: songSummary(s) })));
     // hitos de la canción
     if (isNum(s.sp.total)) {
       const past = HITOS.filter(x => x <= s.sp.total).slice(-4), nx = nextHito(s.sp.total), daily = s.sp.diarios || s.spMedia;
@@ -1904,7 +2012,7 @@
     $('#sheet').classList.add('on'); $('#sheet-bg').classList.add('on'); document.body.style.overflow = 'hidden'; sheetOpen = true; haptic();
     animateBars(b); glideSoon();
   }
-  function closeSheet() { setTimeout(() => { if (AUTO.pending && !busyNow()) applyData(AUTO.pending); }, 450); $('#sheet').classList.remove('on'); $('#sheet-bg').classList.remove('on'); document.body.style.overflow = ''; sheetOpen = false; $('#sheet').style.transform = ''; if (location.hash.startsWith('#cancion/') || location.hash === '#actualizar') history.replaceState(null, '', '#' + current); }
+  function closeSheet() { setTimeout(() => { if (AUTO.pending && !busyNow()) applyData(AUTO.pending); }, 450); $('#sheet').classList.remove('on'); $('#sheet-bg').classList.remove('on'); document.body.style.overflow = ''; sheetOpen = false; $('#sheet').style.transform = ''; if (location.hash.startsWith('#cancion/') || location.hash.startsWith('#disco/') || location.hash === '#actualizar') history.replaceState(null, '', '#' + current); }
   function sheetDrag() {
     const g = $('#sheet-grab'), sh = $('#sheet'); let y0 = null, dy = 0;
     g.addEventListener('pointerdown', (e) => { y0 = e.clientY; dy = 0; sh.style.transition = 'none'; g.setPointerCapture(e.pointerId); });
@@ -2148,7 +2256,7 @@
       h('p', { class: 'yc-foot-txt small', text: 'Página no oficial, sin afiliación con el artista, su sello ni las plataformas. La música, las imágenes y las marcas pertenecen a sus respectivos propietarios.' }),
       h('details', { class: 'yc-foot-src' }, h('summary', { text: 'Fuentes de datos' }),
         h('p', { text: 'Spotify, YouTube, Apple Music, Shazam, Deezer, iTunes, kworb.net, Chartmetric y Social Blade. Cada cifra indica su fuente y su fecha.' })),
-      h('div', { class: 'yc-foot-bottom' }, h('span', null, `© ${new Date().getFullYear()} `, ig(MK()), ' · Todos los derechos reservados'), h('span', null, 'Diseño y desarrollo: ', ig(MK()))));
+      h('div', { class: 'yc-foot-bottom' }, h('span', null, `© ${new Date().getFullYear()} `, ig(CREADOR), ' · Todos los derechos reservados'), h('span', null, 'Página creada por ', ig(CREADOR))));
     const logo = $('.yc-logo'); if (logo && DATA.artista.imagen && !logo.querySelector('img')) logo.replaceChildren(artistPhoto('yc-logo-in'));
     if (first) go(current, false); else { $$('.yc-page').forEach(p => p.classList.toggle('on', p.dataset.page === current)); if (current === 'inicio') drawHist(); }
   }
@@ -2264,6 +2372,7 @@
     renderAll(true);
     autoStart();
     if (hash.startsWith('cancion/')) openSong(hash.slice(8), false);
+    else if (hash.startsWith('disco/')) openAlbum(decodeURIComponent(hash.slice(6)), false);
     addEventListener('hashchange', () => {
       const hs = location.hash.slice(1);
       if (PAGES.some(p => p[0] === hs) && hs !== current) go(hs, false);

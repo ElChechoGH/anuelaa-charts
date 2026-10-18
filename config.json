@@ -1,26 +1,26 @@
 {
-  "artista": {
-    "nombre": "Anuel AA",
-    "nombre_corto": "Anuel",
-    "origen": "Carolina, Puerto Rico",
-    "alias_regex": "\\banuel(\\s*aa)?\\b",
-    "spotify": "2R21vXR83lH98kGeO99Y66",
-    "youtube_canal": "UCRI7hheejBbWS6etTNwMT0g",
-    "youtube_handle": "anuelaa",
-    "apple": "996166916",
-    "deezer": "7961888",
-    "instagram": "anuel",
-    "tiktok": "anuel",
-    "x": "Anuel",
-    "chartmetric": null,
-    "buscar": "Anuel AA",
-    "hashtag": "AnuelAA",
-    "lema": "Real Hasta La Muerte"
-  },
-  "sitio": {
-    "nombre": "Anuel AA Charts",
-    "corto": "AA Charts",
-    "marca": "lvcifercharts",
-    "acento": "#ff2b3d"
-  }
+ "artista": {
+  "nombre": "Anuel AA",
+  "nombre_corto": "Anuel",
+  "origen": "Carolina, Puerto Rico",
+  "alias_regex": "\\banuel(\\s*aa)?\\b",
+  "spotify": "2R21vXR83lH98kGeO99Y66",
+  "youtube_canal": "UCRI7hheejBbWS6etTNwMT0g",
+  "youtube_handle": "anuelaa",
+  "apple": "996166916",
+  "deezer": "7961888",
+  "instagram": "anuel",
+  "tiktok": "anuel",
+  "x": "Anuel",
+  "chartmetric": 158474,
+  "buscar": "Anuel AA",
+  "hashtag": "AnuelAA",
+  "lema": "Real Hasta La Muerte"
+ },
+ "sitio": {
+  "nombre": "Anuel AA Charts",
+  "corto": "AA Charts",
+  "marca": "",
+  "acento": "#ff2b3d"
+ }
 }
