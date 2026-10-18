@@ -25,6 +25,11 @@
  },
  "videos": {
   "VAMO A VEL": "https://www.youtube.com/watch?v=ivX_Bule86Q",
-  "Del Kilo": "https://www.youtube.com/watch?v=tTQHVseaH8A"
- }
+  "Del Kilo": "https://www.youtube.com/watch?v=tTQHVseaH8A",
+  "Bubalu": "https://www.youtube.com/watch?v=atNGFSCjwuc"
+ },
+ "canales_oficiales": [
+  "Hear This Music",
+  "Real Hasta La Muerte"
+ ]
 }

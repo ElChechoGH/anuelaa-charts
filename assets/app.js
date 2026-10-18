@@ -2171,7 +2171,7 @@
         past.length ? h('div', { class: 'lg-chips' }, h('small', { class: 'lg-lab', text: 'Ya superó' }), past.reverse().map(x => h('span', { class: 'lg-chip', text: '✓ ' + short(x) }))) : null));
     }
     body.append(songPostKit(s));
-    if (s.yt) { body.append(h('h3', { class: 'lg-sh', text: 'Videoclip' })); body.append(hero); }
+    if (s.yt) { const tt = String(s.yt.titulo || ''); const tipo = /visuali[sz]er/i.test(tt) ? 'Visualizer oficial' : (/audio/i.test(tt) && !/video|v[ií]deo/i.test(tt.replace(/audio/ig, '')) ? 'Audio oficial' : 'Videoclip'); body.append(h('h3', { class: 'lg-sh', text: tipo })); body.append(hero); }
 
     // Spotify
     const ms = nextMilestone(s.sp.total, s.sp.diarios || s.spMedia);

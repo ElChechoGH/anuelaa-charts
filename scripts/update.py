@@ -703,8 +703,9 @@ def canal_oficial(r, song):
     comp = _compacto(re.sub(r'\s*-\s*topic$', '', can, flags=re.I))
     if (cid and cid in ofi_ids) or (comp and comp in ofi_nombres):
         return True
-    if re.search(r'\b(?:y|and)\s+\d+\s+(?:m[aá]s|more)\b', can, re.I):
-        return nombra_anuel or any(_compacto(p) in cred_otros for p in re.split(r'\s+(?:y|and)\s+\d+', can))
+    if re.search(r'\b(?:y|and)\s+\d+\s+(?:m[aá]s|more)\b', can, re.I):  # «Chris Jedi y 2 más»: vale si el primer canal es de un acreditado
+        primero = _compacto(re.split(r'\s+(?:y|and)\s+\d+', can)[0])
+        return bool(primero) and (primero in cred_otros or primero in ofi_nombres or primero.startswith('anuel'))
     partes = [p.strip() for p in re.split(r'\s+(?:and|y)\s+|\s*&\s*|\s*,\s*', can) if p.strip()]
     if len(partes) >= 2 and (any(p.casefold() == ARTISTA.casefold() for p in partes) or any(_compacto(p) in cred_otros for p in partes)):
         return True
