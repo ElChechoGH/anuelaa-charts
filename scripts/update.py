@@ -282,13 +282,40 @@ def ryd(video_id):
 
 def yt_watch(video_id):
     """Vistas exactas que muestra YouTube en la página del vídeo (sin clave)."""
-    html = get(f'https://www.youtube.com/watch?v={video_id}', headers={'Cookie': 'CONSENT=YES+1; SOCS=CAI', 'Accept-Language': 'es-ES,es;q=0.9'}, tries=2)
+    html = get(f'https://www.youtube.com/watch?v={video_id}&gl=ES&hl=es', headers={'Cookie': 'CONSENT=YES+1; SOCS=CAI', 'Accept-Language': 'es-ES,es;q=0.9'}, tries=2)
     m = re.search(r'"videoDetails":\{.*?"viewCount":"(\d+)"', html, re.S) or re.search(r'"viewCount":\{"videoViewCountRenderer":\{"viewCount":\{"simpleText":"([\d.,\s]+)', html)
     if not m:
         raise ValueError('sin contador')
     v = int(re.sub(r'\D', '', m.group(1)))
     lk = re.search(r'"likeCount":"?(\d+)', html)
-    return {'vistas': v, 'likes': int(lk.group(1)) if lk else None}
+    out = {'vistas': v, 'likes': int(lk.group(1)) if lk else None}
+    tt = re.search(r'"videoDetails":\{.*?"title":"((?:[^"\\]|\\.)*)"', html, re.S)
+    au = re.search(r'"videoDetails":\{.*?"author":"((?:[^"\\]|\\.)*)"', html, re.S)
+    pd = re.search(r'"(?:publishDate|uploadDate)":"(\d{4}-\d{2}-\d{2})', html)
+    if tt:
+        out['titulo'] = json.loads('"' + tt.group(1) + '"')
+    if au:
+        out['canal'] = json.loads('"' + au.group(1) + '"')
+    if pd:
+        out['publicado'] = pd.group(1)
+    # insignia en directo de YouTube (España): «N.º 29 en el top de vídeos musicales» / «#29 en tendencias para música»
+    bd = re.search(r'(?:#|N\.?\s?º\s?)(\d{1,3})\s+(?:en|on|in)\s+(?:el\s+)?(?:top de v[ií]deos musicales|tendencias(?:\s+(?:para|de)\s+m[uú]sica)?|trending(?:\s+for\s+music)?)', html, re.I)
+    out['tendencia_es'] = {'puesto': int(bd.group(1)), 'fecha': HOY, 'hora': NOW.strftime('%H:%M')} if bd else {}
+    return out
+
+
+BADGE_CC = list(dict.fromkeys(YT_TREND_CC + ['ve', 'ca', 'br', 'ie', 'se', 'pl', 'gr']))
+BADGE_RE = re.compile(r'(?:#|N\.?\s?º\s?)(\d{1,3})\s+(?:en|on|in)\s+(?:el\s+)?(?:top de v[ií]deos musicales|tendencias(?:\s+(?:para|de)\s+m[uú]sica)?|trending(?:\s+for\s+music)?)', re.I)
+
+
+def yt_badge(video_id, cc):
+    """Puesto en tendencias de música que YouTube muestra AHORA MISMO en ese país (insignia del vídeo). None si no sale."""
+    gl = 'GB' if cc == 'uk' else cc.upper()
+    html = get(f'https://www.youtube.com/watch?v={video_id}&gl={gl}&hl=es', headers={'Cookie': 'CONSENT=YES+1; SOCS=CAI', 'Accept-Language': 'es-ES,es;q=0.9'}, tries=1)
+    if '"videoDetails"' not in html:
+        raise ValueError('página bloqueada')
+    m = BADGE_RE.search(html)
+    return int(m.group(1)) if m else None
 
 
 def spotify_playcount(track_id):
@@ -336,7 +363,7 @@ def yt_channel_api(key):
 
 
 def yt_search_api(key, query):
-    j = get('https://www.googleapis.com/youtube/v3/search', as_json=True, params={'part': 'snippet', 'q': query, 'type': 'video', 'maxResults': 5, 'key': key})
+    j = get('https://www.googleapis.com/youtube/v3/search', as_json=True, params={'part': 'snippet', 'q': query, 'type': 'video', 'maxResults': 10, 'key': key})
     return [{'video_id': x['id']['videoId'], 'titulo': x['snippet']['title'], 'canal': x['snippet']['channelTitle'], 'publicado': x['snippet']['publishedAt'][:10]} for x in j.get('items', [])]
 
 
@@ -540,16 +567,72 @@ def rel_days(txt):
 
 
 def yt_search_scrape(query):
-    html = get('https://www.youtube.com/results', params={'search_query': query, 'sp': 'CAI='}, headers={'Cookie': 'CONSENT=YES+1; SOCS=CAI'})
-    out = []
-    for vr in walk(yt_initial(html), 'videoRenderer'):
+    """Busca en YouTube (por relevancia). Si YouTube bloquea a GitHub, prueba espejos públicos (Piped / Invidious)."""
+    try:
+        html = get('https://www.youtube.com/results', params={'search_query': query, 'hl': 'es', 'gl': 'US'},
+                   headers={'Cookie': 'CONSENT=YES+1; SOCS=CAI', 'Accept-Language': 'es-ES,es;q=0.9'}, tries=2)
+        out = []
+        for vr in walk(yt_initial(html), 'videoRenderer'):
+            try:
+                out.append({'video_id': vr['videoId'], 'titulo': ''.join(r.get('text', '') for r in vr['title']['runs']),
+                            'canal': ''.join(r.get('text', '') for r in (vr.get('ownerText') or {}).get('runs', [])),
+                            'hace': (vr.get('publishedTimeText') or {}).get('simpleText', ''), 'vistas_txt': (vr.get('viewCountText') or {}).get('simpleText', '')})
+            except (KeyError, TypeError):
+                continue
+        if out:
+            return out
+    except Exception:  # noqa: BLE001
+        pass
+    q = requests.utils.quote(query)
+    for url in (f'https://pipedapi.kavin.rocks/search?q={q}&filter=videos', f'https://pipedapi.adminforge.de/search?q={q}&filter=videos'):
         try:
-            out.append({'video_id': vr['videoId'], 'titulo': ''.join(r.get('text', '') for r in vr['title']['runs']),
-                        'canal': ''.join(r.get('text', '') for r in (vr.get('ownerText') or {}).get('runs', [])),
-                        'hace': (vr.get('publishedTimeText') or {}).get('simpleText', ''), 'vistas_txt': (vr.get('viewCountText') or {}).get('simpleText', '')})
-        except (KeyError, TypeError):
+            j = get(url, as_json=True, tries=1)
+            out = [{'video_id': (it.get('url') or '').split('v=')[-1], 'titulo': it.get('title') or '', 'canal': it.get('uploaderName') or '',
+                    'vistas': it.get('views'), 'hace': it.get('uploadedDate') or '', 'vistas_txt': str(it.get('views') or '')} for it in (j.get('items') or []) if 'watch?v=' in (it.get('url') or '')]
+            if out:
+                return out
+        except Exception:  # noqa: BLE001
             continue
-    return out
+    for host in ('https://inv.nadeko.net', 'https://invidious.nerdvpn.de', 'https://yewtu.be'):
+        try:
+            j = get(f'{host}/api/v1/search', as_json=True, params={'q': query, 'type': 'video'}, tries=1)
+            out = [{'video_id': it['videoId'], 'titulo': it.get('title') or '', 'canal': it.get('author') or '', 'vistas': it.get('viewCount'),
+                    'hace': it.get('publishedText') or '', 'vistas_txt': str(it.get('viewCount') or '')}
+                   for it in (j or []) if it.get('videoId')]
+            if out:
+                return out
+        except Exception:  # noqa: BLE001
+            continue
+    raise RuntimeError('YouTube y los espejos no devolvieron resultados')
+
+
+NO_OFICIAL = re.compile(r'lyric|letra|audio|visualizer|reaccion|reacción|reaction|cover|karaoke|slowed|speed|8d|instrumental|en vivo|live|preview|extended|clean|nightcore|tiktok', re.I)
+
+
+def yt_pick(song_title, res):
+    """El videoclip oficial entre los resultados: título con la canción + el artista, «Official Video/Video Oficial» primero,
+    luego canales oficiales; audios «- Topic», letras y subidas de fans al final."""
+    import unicodedata
+
+    def f(t):
+        return re.sub(r'[^a-z0-9 ]', '', unicodedata.normalize('NFD', str(t or '').lower()).encode('ascii', 'ignore').decode())
+    t_ = f(base(song_title))
+    if len(t_) < 2:
+        return None
+    cand = [r for r in res[:15] if t_ in f(r['titulo']) and NAME_RE.search(r['titulo'] + ' ' + r['canal'])]
+    if not cand:
+        return None
+
+    def rank(r):
+        tit, can = r['titulo'], r['canal'] or ''
+        oficial = bool(re.search(r'official\s*(music\s*)?video|video\s*oficial|videoclip', tit, re.I))
+        return (bool(NO_OFICIAL.search(tit)), can.endswith('- Topic'), not oficial, not re.search(r'vevo|official|oficial', can, re.I))
+    cand.sort(key=rank)
+    return cand[0]
+
+
+def es_oficial(y):
+    return bool(y) and not NO_OFICIAL.search(y.get('titulo') or '') and not (y.get('canal') or '').endswith('- Topic')
 
 
 def news_rss(query):
@@ -1212,6 +1295,18 @@ def main():
         HECHO.append(f'kworb YouTube ({len(kw_vids)} vídeos)')
     except Exception as e:  # noqa: BLE001
         fallo('kworb YouTube artista', e)
+    manual = {norm(k): re.sub(r'^.*(?:v=|youtu\.be/|shorts/)([\w-]{11}).*$', r'\1', str(v).strip()) for k, v in (CFG.get('videos') or {}).items()}
+    for s in songs:
+        vid_ = manual.get(norm(s['titulo']))
+        if vid_ and re.fullmatch(r'[\w-]{11}', vid_) and (s.get('youtube') or {}).get('video_id') != vid_:
+            s['youtube'] = {'video_id': vid_, 'titulo': s['titulo'], 'canal': None, 'vistas': None, 'likes': None, 'publicado': None, 'fecha': HOY, 'fuente': 'videoclip fijado (config.json)', 'fijo': True}
+            log(f'  = vídeo fijado para {s["titulo"]}: {vid_}')
+        if vid_ and (s.get('youtube') or {}).get('fijo') and not s['youtube'].get('canal'):
+            try:
+                oe = get('https://www.youtube.com/oembed', as_json=True, params={'url': f'https://www.youtube.com/watch?v={vid_}', 'format': 'json'}, tries=2)
+                s['youtube'].update(titulo=oe.get('title') or s['youtube']['titulo'], canal=oe.get('author_name'))
+            except Exception:  # noqa: BLE001
+                pass
     if kw_vids:
         by_id = {v['video_id']: v for v in kw_vids}
         lyric = re.compile(r'lyric|letra|audio|visualizer|en vivo|live|remix', re.I)
@@ -1251,46 +1346,49 @@ def main():
                 s['youtube'] = {'video_id': v['video_id'], 'titulo': v['titulo'], 'canal': ARTISTA, 'vistas': v.get('vistas'), 'likes': None,
                                 'publicado': v.get('publicado'), 'fecha': HOY, 'fuente': 'YouTube RSS'}
                 log(f'  + video para {s["titulo"]}: {v["video_id"]}')
-    if not yt_key and not RAPIDO:  # sin clave: busca en YouTube el vídeo de los temas que aún no tienen (poco a poco, 30 por vez)
-        def fold_(t):
-            import unicodedata
-            return re.sub(r'[^a-z0-9 ]', '', unicodedata.normalize('NFD', str(t or '').lower()).encode('ascii', 'ignore').decode())
+    if not yt_key:  # sin clave: busca en YouTube el videoclip de los temas que aún no tienen (poco a poco)
         hace7 = (NOW - dt.timedelta(days=7)).strftime('%Y-%m-%d')
+        hace1 = (NOW - dt.timedelta(days=1)).strftime('%Y-%m-%d')
         lim120 = (NOW - dt.timedelta(days=120)).strftime('%Y-%m-%d')
-        recientes = [x for x in songs if not x.get('youtube') and (x.get('lanzamiento') or '') >= lim120]
-        viejos = sorted([x for x in songs if not x.get('youtube') and (x.get('lanzamiento') or '') < lim120 and (x.get('yt_buscado') or '') < hace7],
-                        key=lambda x: -((x.get('spotify') or {}).get('total') or 0))
-        cola = (sorted(recientes, key=lambda x: x.get('lanzamiento') or '', reverse=True) + viejos)[:70]
-        hallados = 0
+        flojo = lambda x: not x.get('youtube') or (not x['youtube'].get('fijo') and not es_oficial(x['youtube']))  # sin vídeo o con audio/letra
+        # recientes SIN vídeo: en cada actualización (cada 30 min) hasta encontrarlo; con audio/letra: se intenta mejorar una vez al día
+        recientes = [x for x in songs if flojo(x) and (x.get('lanzamiento') or '') >= lim120 and (not x.get('youtube') or (x.get('yt_buscado') or '') < hace1)]
+        viejos = sorted([x for x in songs if flojo(x) and (x.get('lanzamiento') or '') < lim120 and (x.get('yt_buscado') or '') < hace7],
+                        key=lambda x: (bool(x.get('youtube')), -((x.get('spotify') or {}).get('total') or 0)))
+        cola = (sorted(recientes, key=lambda x: x.get('lanzamiento') or '', reverse=True)[:(12 if RAPIDO else 40)] + viejos[:(6 if RAPIDO else 40)])
+        hallados = errores = 0
         for x in cola:
             x['yt_buscado'] = HOY
-            t_ = fold_(base(x['titulo']))
-            if len(t_) < 2:
-                continue
-            try:
-                res = yt_search_scrape(f"{base(x['titulo'])} {BUSCAR}")
-            except Exception:  # noqa: BLE001
-                continue
-            cand = [r for r in res[:8] if t_ in fold_(r['titulo']) and NAME_RE.search(r['titulo'] + ' ' + r['canal'])]
-            cand.sort(key=lambda r: (bool(re.search(r'lyric|letra|audio|visualizer|reaccion|reaction|cover|karaoke|slowed|speed', r['titulo'], re.I)),
-                                     not re.search(r'official|oficial|video', r['titulo'], re.I)))
-            if cand:
-                r = cand[0]
-                x['youtube'] = {'video_id': r['video_id'], 'titulo': r['titulo'], 'canal': r['canal'], 'vistas': None, 'likes': None, 'publicado': None, 'fecha': HOY, 'fuente': 'YouTube (búsqueda)'}
+            r = None
+            for q_ in (f"{base(x['titulo'])} {BUSCAR} video oficial", f"{base(x['titulo'])} {BUSCAR}"):
+                try:
+                    r = yt_pick(x['titulo'], yt_search_scrape(q_))
+                except Exception:  # noqa: BLE001
+                    errores += 1
+                    r = None
+                if r and es_oficial(r):
+                    break
+                time.sleep(0.4)
+            if r and (not x.get('youtube') or es_oficial(r)) and r['video_id'] != (x.get('youtube') or {}).get('video_id'):
+                x['youtube'] = {'video_id': r['video_id'], 'titulo': r['titulo'], 'canal': r['canal'], 'vistas': r.get('vistas') if isinstance(r.get('vistas'), int) else None,
+                                'likes': None, 'publicado': None, 'fecha': HOY, 'fuente': 'YouTube (búsqueda)'}
                 hallados += 1
+                log(f'  + videoclip para {x["titulo"]}: {r["video_id"]} ({r["canal"]})')
             time.sleep(0.6)
         if cola:
-            HECHO.append(f'vídeos encontrados en YouTube ({hallados}/{len(cola)})')
+            HECHO.append(f'videoclips encontrados en YouTube ({hallados}/{len(cola)}' + (f', {errores} búsquedas bloqueadas' if errores else '') + ')')
     if yt_key:  # busca video de temas nuevos sin video
         _hace7 = (NOW - dt.timedelta(days=7)).strftime('%Y-%m-%d')
-        _sin = sorted([x for x in songs if not x.get('youtube') and (x.get('yt_buscado') or '') < _hace7],
+        _lim = (NOW - dt.timedelta(days=120)).strftime('%Y-%m-%d')
+        _sin = sorted([x for x in songs if (not x.get('youtube') or (not x['youtube'].get('fijo') and not es_oficial(x['youtube'])))
+                       and ((x.get('yt_buscado') or '') < _hace7 or (not x.get('youtube') and (x.get('lanzamiento') or '') >= _lim))],
                       key=lambda x: ((x.get('lanzamiento') or '') < (NOW - dt.timedelta(days=60)).strftime('%Y-%m-%d'), -((x.get('spotify') or {}).get('total') or 0)))
-        for s in (_sin[:15] if not RAPIDO else []):
+        for s in (_sin[:15] if not RAPIDO else [x for x in _sin if not x.get('youtube') and (x.get('lanzamiento') or '') >= _lim][:5]):
             s['yt_buscado'] = HOY
             try:
                 res = yt_search_api(yt_key, f"{base(s['titulo'])} {BUSCAR}")
-                hit = next((r for r in res if base(s['titulo']) in r['titulo'].lower() and NAME_RE.search(r['titulo'] + ' ' + r['canal'])), None)
-                if hit:
+                hit = yt_pick(s['titulo'], res)
+                if hit and (not s.get('youtube') or es_oficial(hit)) and hit['video_id'] != (s.get('youtube') or {}).get('video_id'):
                     s['youtube'] = dict(hit, vistas=None, likes=None, fecha=HOY, fuente='YouTube Data API')
             except Exception as e:  # noqa: BLE001
                 fallo(f'búsqueda YouTube {s["titulo"]}', e)
@@ -1352,6 +1450,41 @@ def main():
                 hh = [x for x in y.get('hist', []) if x.get('d') != HOY]
                 hh.append({'d': HOY, 't': NOW.strftime('%Y-%m-%dT%H:%M:%SZ'), 'v': y['vistas']})
                 y['hist'] = hh[-10:]
+
+    # --- Tendencias de música EN DIRECTO en cada país (la insignia «N.º X en el top de vídeos musicales» de cada vídeo)
+    try:
+        lim_b = (NOW - dt.timedelta(days=45 if RAPIDO else 120)).strftime('%Y-%m-%d')
+        cand_b = [x for x in songs if (x.get('youtube') or {}).get('video_id') and not (x['youtube'].get('canal') or '').endswith('- Topic')
+                  and ((x.get('lanzamiento') or '') >= lim_b or (x['youtube'].get('tendencias') or {}).get('paises'))]
+        cand_b = sorted(cand_b, key=lambda x: -((x['youtube'].get('ayer') or 0)))[:(8 if RAPIDO else 20)]
+        pares = [(x, cc) for x in cand_b for cc in BADGE_CC]
+
+        def _bd(par):
+            x, cc = par
+            try:
+                return x, cc, yt_badge(x['youtube']['video_id'], cc), True
+            except Exception:  # noqa: BLE001
+                return x, cc, None, False
+        res_b, leidos = {}, 0
+        if pares:
+            with cf.ThreadPoolExecutor(8) as ex:
+                for x, cc, pos, ok_ in ex.map(_bd, pares):
+                    if ok_:
+                        leidos += 1
+                        res_b.setdefault(x['id'], (x, {}))[1][cc] = pos
+        for x, paises in res_b.values():
+            dentro = {cc: p for cc, p in paises.items() if p}
+            # si YouTube devolviera el mismo puesto en todos los países, no es por país: se queda solo España
+            if len(dentro) >= 6 and len(set(dentro.values())) == 1:
+                dentro = {k: v for k, v in dentro.items() if k == 'es'}
+            x['youtube']['tendencias'] = {'paises': {cc.upper(): p for cc, p in sorted(dentro.items(), key=lambda kv: kv[1])},
+                                          'fecha': HOY, 'hora': NOW.strftime('%H:%M'), 'revisados': len(paises)}
+        if pares:
+            HECHO.append(f'tendencias YouTube en directo ({len(res_b)} vídeos, {leidos}/{len(pares)} páginas)')
+            if leidos < len(pares) * 0.5:
+                fallo('tendencias YouTube en directo', f'YouTube bloqueó {len(pares) - leidos} de {len(pares)} consultas (se usan las de kworb)')
+    except Exception as e:  # noqa: BLE001
+        fallo('tendencias YouTube en directo', e)
 
     if not RAPIDO:
         # --- Social Blade (canal, Instagram, TikTok)
@@ -1511,6 +1644,34 @@ def main():
         for res in ex.map(run, jobs):
             charts += res
     if charts:
+        # insignias en directo de YouTube → «Tendencias de música» de cada país (más actual que la foto de kworb)
+        n_live = 0
+        for x in songs:
+            y = x.get('youtube') or {}
+            tb = y.get('tendencias') or {}
+            live = dict(tb.get('paises') or {}) if tb.get('fecha') == HOY else {}
+            te = y.get('tendencia_es') or {}
+            if te.get('puesto') and te.get('fecha') == HOY:
+                live.setdefault('ES', te['puesto'])
+            for code, pos in live.items():
+                cc = code.lower()
+                pais_ = PAIS.get(cc, code)
+                rows_c = [c for c in charts if c['plataforma'] == 'YouTube' and c['lista'] == 'Tendencias de música' and c.get('pais') == pais_]
+                if not rows_c:  # país que kworb no publica o que no se leyó en esta vuelta: se usa la última lectura guardada
+                    rows_c = [c for c in data.get('charts', []) if c['plataforma'] == 'YouTube' and c['lista'] == 'Tendencias de música' and c.get('pais') == pais_]
+                    charts += rows_c
+                fuente_ = 'YouTube en directo (' + (tb.get('hora') or te.get('hora') or '') + ' UTC)'
+                mine = [c for c in rows_c if c.get('cancion') and base(c['cancion']) == base(x['titulo'])]
+                if mine:
+                    for c in mine:
+                        c.update(posicion=pos, fecha_lista=HOY, consultado=HOY, fuente=fuente_)
+                else:
+                    charts = [c for c in charts if not (c in rows_c and c.get('estado') == 'Fuera')]
+                    base_c = rows_c[0] if rows_c else {'plataforma': 'YouTube', 'pais': pais_, 'codigo': code, 'lista': 'Tendencias de música', 'revisado_hasta': None}
+                    charts.append(dict(base_c, cancion=x['titulo'], posicion=pos, cambio=None, estado='Dentro', fecha_lista=HOY, consultado=HOY, fuente=fuente_))
+                n_live += 1
+        if n_live:
+            HECHO.append(f'tendencias en directo añadidas a las listas ({n_live})')
         nuevos = {(c['plataforma'], c['lista'], c['pais']) for c in charts}
         # las listas que hoy fallaron (o que no tocaban en la rápida) conservan su última lectura (con su fecha de consulta)
         charts += [c for c in data.get('charts', []) if (c['plataforma'], c['lista'], c['pais']) not in nuevos]
