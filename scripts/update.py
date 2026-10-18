@@ -296,6 +296,9 @@ def yt_watch(video_id):
         out['titulo'] = json.loads('"' + tt.group(1) + '"')
     if au:
         out['canal'] = json.loads('"' + au.group(1) + '"')
+    io = html.find('"videoOwnerRenderer"')
+    if io >= 0:
+        out['verificado'] = 'BADGE_STYLE_TYPE_VERIFIED' in html[io:io + 4000]
     ci = re.search(r'"videoDetails":\{.*?"channelId":"(UC[\w-]{22})"', html, re.S)
     if ci:
         out['canal_id'] = ci.group(1)
@@ -632,21 +635,37 @@ def creditos(song):
 
 
 def canal_oficial(r, song):
-    """¿Es un canal oficial? El de Anuel (por su ID), uno VEVO, o el canal del artista acreditado (verificado o con su nombre exacto).
-    Descarta canales de fans aunque se llamen «Anuel AA …»."""
-    cid, can = r.get('canal_id'), r.get('canal') or ''
-    ofi_ids = {YT_CHANNEL} | set((CFG.get('canales_oficiales') or {}).values() if isinstance(CFG.get('canales_oficiales'), dict) else (CFG.get('canales_oficiales') or []))
+    """¿Es un canal oficial? True / False / None (no se sabe).
+    Oficiales: el canal de Anuel (por su ID), cualquier VEVO o «- Topic», un vídeo compartido «X and Anuel AA»,
+    un canal verificado por YouTube o el de un artista acreditado. Canales de fans con «Anuel» en el nombre: no."""
+    cid, can = r.get('canal_id'), (r.get('canal') or '').strip()
+    ofi = CFG.get('canales_oficiales') or []
+    ofi_ids = {YT_CHANNEL} | set(ofi.values() if isinstance(ofi, dict) else ofi)
     if cid and cid in ofi_ids:
         return True
-    limpio = _f(re.sub(r'\s*-\s*topic$|vevo$|\bofficial\b|\boficial\b|\bmusic\b|\btv\b', '', can, flags=re.I))
-    if NAME_RE.search(can) or re.match(r'anuel', can, re.I):  # dice «Anuel»: solo vale el canal oficial (ID) o su VEVO / Topic verificados
-        return bool(re.search(r'vevo$|\s-\s*topic$', can, re.I))
+    if re.search(r'vevo$|\s-\s*topic$', can, re.I):
+        return True
+    partes = [p.strip() for p in re.split(r'\s+(?:and|y)\s+|\s*&\s*|\s*,\s*', can) if p.strip()]
+    if len(partes) >= 2 and (any(p.casefold() == ARTISTA.casefold() for p in partes) or any(_f(p) in creditos(song) for p in partes)) \
+            and not (cid and NAME_RE.search(can) and cid not in ofi_ids and len(partes) < 2):
+        return True  # vídeo publicado a la vez en varios canales («ROA and Anuel AA»)
+    if NAME_RE.search(can) or re.match(r'anuel', can, re.I):
+        return False  # se llama «Anuel …» pero no es su canal: fan
+    if r.get('verificado'):
+        return True
+    limpio = _f(re.sub(r'\bofficial\b|\boficial\b|\bmusic\b|\btv\b', '', can, flags=re.I))
     if limpio and limpio in creditos(song):
-        return r.get('verificado') is not False or bool(re.search(r'vevo$|- topic$', can, re.I))
-    if re.search(r'vevo$', can, re.I):  # los VEVO son siempre oficiales: vale si es de Anuel o de un acreditado
-        base_v = _f(re.sub(r'vevo$', '', can, flags=re.I)).replace(' ', '')
-        return bool(base_v) and (base_v.startswith('anuel') or any(c.replace(' ', '') == base_v or c.replace(' ', '').startswith(base_v) for c in creditos(song)))
-    return False
+        return True
+    return False if r.get('verificado') is False else None
+
+
+def yt_owner_verified(video_id):
+    """¿El canal que subió el vídeo está verificado? (insignia junto al nombre del canal)."""
+    html = get(f'https://www.youtube.com/watch?v={video_id}&hl=es', headers={'Cookie': 'CONSENT=YES+1; SOCS=CAI'}, tries=1)
+    i = html.find('"videoOwnerRenderer"')
+    if i < 0:
+        raise ValueError('sin datos del canal')
+    return 'BADGE_STYLE_TYPE_VERIFIED' in html[i:i + 4000]
 
 
 def yt_pick(song, res):
@@ -654,7 +673,19 @@ def yt_pick(song, res):
     t_ = _f(base(song['titulo']))
     if len(t_) < 2:
         return None
-    cand = [r for r in res[:15] if t_ in _f(r['titulo']) and canal_oficial(r, song)]
+    cand = []
+    for r in res[:15]:
+        if t_ not in _f(r['titulo']):
+            continue
+        ok = canal_oficial(r, song)
+        if ok is None and not NO_OFICIAL.search(r['titulo']):  # no se sabe: se mira si el canal está verificado
+            try:
+                r['verificado'] = yt_owner_verified(r['video_id'])
+                ok = r['verificado']
+            except Exception:  # noqa: BLE001
+                ok = False
+        if ok:
+            cand.append(r)
     if not cand:
         return None
 
@@ -1337,7 +1368,7 @@ def main():
             continue
         if y.get('origen') is None and (y.get('canal') == ARTISTA or y.get('canal_id') == YT_CHANNEL):  # antiguos del canal oficial
             continue
-        if not canal_oficial({'canal': y.get('canal'), 'canal_id': y.get('canal_id'), 'verificado': None}, s):
+        if canal_oficial({'canal': y.get('canal'), 'canal_id': y.get('canal_id'), 'verificado': y.get('verificado')}, s) is False:
             log(f'  - vídeo no oficial quitado de {s["titulo"]}: {y.get("canal")}')
             s.pop('youtube', None)
             s.pop('yt_buscado', None)
@@ -1419,7 +1450,7 @@ def main():
                     break
                 time.sleep(0.4)
             if r and (not x.get('youtube') or es_oficial(r)) and r['video_id'] != (x.get('youtube') or {}).get('video_id'):
-                x['youtube'] = {'video_id': r['video_id'], 'titulo': r['titulo'], 'canal': r['canal'], 'canal_id': r.get('canal_id'), 'vistas': r.get('vistas') if isinstance(r.get('vistas'), int) else None,
+                x['youtube'] = {'video_id': r['video_id'], 'titulo': r['titulo'], 'canal': r['canal'], 'canal_id': r.get('canal_id'), 'verificado': r.get('verificado'), 'vistas': r.get('vistas') if isinstance(r.get('vistas'), int) else None,
                                 'likes': None, 'publicado': None, 'fecha': HOY, 'fuente': 'YouTube (búsqueda)', 'origen': 'busqueda'}
                 hallados += 1
                 log(f'  + videoclip para {x["titulo"]}: {r["video_id"]} ({r["canal"]})')
