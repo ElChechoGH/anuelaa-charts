@@ -418,8 +418,51 @@ def yt_api(key, video_ids):
         for it in j.get('items', []):
             st, sn = it.get('statistics', {}), it.get('snippet', {})
             out[it['id']] = {'vistas': to_int(st.get('viewCount')), 'likes': to_int(st.get('likeCount')), 'comentarios': to_int(st.get('commentCount')),
-                             'publicado': (sn.get('publishedAt') or '')[:10] or None, 'canal': sn.get('channelTitle'), 'canal_id': sn.get('channelId'), 'titulo': sn.get('title')}
+                             'publicado': (sn.get('publishedAt') or '')[:10] or None, 'publicado_ts': sn.get('publishedAt') or None,
+                             'canal': sn.get('channelTitle'), 'canal_id': sn.get('channelId'), 'titulo': sn.get('title')}
     return out
+
+
+MARCAS_H = (1, 3, 6, 12, 24, 48, 72, 168)
+
+
+def yt_horas(y):
+    """Vistas de un estreno hora a hora (lecturas reales de la API de YouTube cada ~30 min, primeros 8 días)
+    y sus marcas: 1 h, 3 h, 6 h, 12 h, 24 h, 48 h, 72 h y 7 días (interpolando entre las dos lecturas más cercanas)."""
+    ts = y.get('publicado_ts')
+    if not ts or not y.get('vistas'):
+        return
+    try:
+        t0 = dt.datetime.strptime(ts[:19], '%Y-%m-%dT%H:%M:%S').replace(tzinfo=dt.timezone.utc)
+    except ValueError:
+        return
+    hh = (NOW - t0).total_seconds() / 3600
+    if hh < 0 or hh > 24 * 8:
+        return
+    if y.get('horas_vid') != y.get('video_id'):  # cambió el vídeo enlazado: se empieza de cero
+        y['horas'], y['marcas'], y['horas_vid'] = [], {}, y.get('video_id')
+    pts = y.setdefault('horas', [])
+    if not pts or hh - pts[-1]['h'] >= 0.3:
+        pts.append({'h': round(hh, 2), 'v': y['vistas']})
+    y['horas'] = pts[-500:]
+    marcas = y.setdefault('marcas', {})
+    for m in MARCAS_H:
+        if str(m) in marcas:
+            continue
+        antes = [p_ for p_ in pts if p_['h'] <= m]
+        despues = [p_ for p_ in pts if p_['h'] >= m]
+        if not despues:
+            continue
+        b = despues[0]
+        if antes:
+            a = antes[-1]
+            v = a['v'] if b['h'] == a['h'] else round(a['v'] + (b['v'] - a['v']) * (m - a['h']) / (b['h'] - a['h']))
+            hueco = b['h'] - a['h']
+        elif b['h'] - m <= 1:
+            v, hueco = b['v'], b['h'] - m
+        else:
+            continue  # la primera lectura llegó tarde: no se inventa la marca
+        marcas[str(m)] = {'v': v, 'exacto': hueco <= 1.5}
 
 
 def yt_channel_api(key):
@@ -502,7 +545,7 @@ def _num_kw(t):
         return None
 
 
-GEN_LATINO = re.compile(r'reggaet|latin|urbano|bachata|salsa|merengue|dembow|cumbia|corrido|regional mexican|ranchera|mariachi|banda|norte[ñn]o|vallenato|tango|bolero|sertanejo|funk carioca|bossa nova|tropical', re.I)
+GEN_LATINO = re.compile(r'reggaet|latin trap|latin hip.?hop|urbano|bachata|salsa|merengue|dembow|cumbia|corrido|regional mexican|ranchera|mariachi|\bbanda\b|norte[ñn]o|vallenato|sertanejo|funk carioca', re.I)
 LATAM_QID = {'Q96': 'México', 'Q1183': 'Puerto Rico', 'Q739': 'Colombia', 'Q414': 'Argentina', 'Q717': 'Venezuela', 'Q786': 'Rep. Dominicana',
              'Q241': 'Cuba', 'Q298': 'Chile', 'Q419': 'Perú', 'Q736': 'Ecuador', 'Q804': 'Panamá', 'Q155': 'Brasil', 'Q77': 'Uruguay', 'Q733': 'Paraguay',
              'Q750': 'Bolivia', 'Q774': 'Guatemala', 'Q783': 'Honduras', 'Q792': 'El Salvador', 'Q811': 'Nicaragua', 'Q800': 'Costa Rica',
@@ -549,7 +592,10 @@ def lat_de(entry):
         return True, hit[0]
     # nacido fuera (p. ej. Arcángel: Nueva York, nacionalidad EE. UU.) pero su género es latino → cuenta como latino
     espanol = 'Q29' in entry['ps'] and not CFG.get('latinos_incluye_espana')
-    if not espanol and any(GEN_LATINO.search(g) for g in entry.get('gen') or []):
+    gens = entry.get('gen') or []
+    lat_g = [g for g in gens if GEN_LATINO.search(g)]
+    # solo si lo latino es lo principal de su música (Justin Bieber tiene algún género latino por «Despacito», pero no es latino)
+    if not espanol and lat_g and len(lat_g) * 2 >= len(gens):
         return True, 'música latina'
     return False, None
 
@@ -633,10 +679,10 @@ def spotify_mundo(lat_cache=None):
 
 BB_CHARTS = [('latin-songs', 'Hot Latin Songs'), ('hot-100', 'Billboard Hot 100'), ('billboard-global-200', 'Billboard Global 200'),
              ('billboard-global-excl-us', 'Global Excl. US'), ('latin-streaming-songs', 'Latin Streaming Songs'), ('latin-airplay', 'Latin Airplay'),
-             ('latin-rhythm-airplay', 'Latin Rhythm Airplay'), ('latin-digital-song-sales', 'Latin Digital Song Sales'), ('bubbling-under-hot-100', 'Bubbling Under Hot 100'),
+             ('latin-rhythm-airplay', 'Latin Rhythm Airplay'), ('latin-digital-song-sales|latin-digital-songs|latin-digital-song-sales-chart', 'Latin Digital Song Sales'), ('bubbling-under-hot-100', 'Bubbling Under Hot 100'),
              ('latin-albums', 'Top Latin Albums'), ('latin-rhythm-albums', 'Latin Rhythm Albums'), ('billboard-200', 'Billboard 200'),
-             ('latin-artists', 'Top Latin Artists'), ('artist-100', 'Billboard Artist 100')]
-BB_TIPO = {'latin-albums': 'album', 'latin-rhythm-albums': 'album', 'billboard-200': 'album', 'latin-artists': 'artista', 'artist-100': 'artista'}
+             ('latin-artists|top-latin-artists|latin-artists-chart', 'Top Latin Artists'), ('artist-100', 'Billboard Artist 100')]
+BB_TIPO = {'latin-artists|top-latin-artists|latin-artists-chart': 'artista', 'latin-albums': 'album', 'latin-rhythm-albums': 'album', 'billboard-200': 'album', 'latin-artists': 'artista', 'artist-100': 'artista'}
 
 
 def billboard_chart(slug_):
@@ -685,18 +731,41 @@ def billboard_chart(slug_):
     return semana, sorted(out, key=lambda x: x['pos'] or 999)
 
 
+def _fecha_any(t):
+    t = (t or '').strip()
+    for f in ('%Y/%m/%d', '%Y-%m-%d', '%Y/%m/%d %H:%M', '%d/%m/%Y', '%m/%d/%Y', '%b %d, %Y', '%d %b %Y', '%Y.%m.%d'):
+        try:
+            return dt.datetime.strptime(t, f).strftime('%Y-%m-%d')
+        except ValueError:
+            pass
+    m = re.match(r'(\d{4})[/-](\d{1,2})[/-](\d{1,2})', t)
+    return f'{m.group(1)}-{int(m.group(2)):02d}-{int(m.group(3)):02d}' if m else None
+
+
 def kworb_video_dias(video_id):
-    """Vistas totales por fecha de un vídeo (tabla «Most recent data» de kworb) → vistas de cada día."""
+    """Vistas por día de un vídeo (tabla de kworb). Acepta que la columna sea total acumulado o vistas del día:
+    si los valores crecen siempre es acumulado (se resta día a día); si no, ya son vistas diarias."""
     tbs, _ = tables(get(f'https://kworb.net/youtube/video/{video_id}.html', tries=2))
     for heads, rows in tbs:
         idt, iv = col(heads, 'Date'), col(heads, 'Views')
         if idt is None or iv is None:
             continue
-        serie = [(r[idt][0].replace('/', '-'), to_int(r[iv][0])) for r in rows if to_int(r[iv][0])]
-        serie.sort()
+        por_dia = {}
+        for r in rows:
+            d_, v_ = _fecha_any(r[idt][0]), to_int(r[iv][0])
+            if d_ and v_:
+                por_dia[d_] = max(v_, por_dia.get(d_) or 0)
+        serie = sorted(por_dia.items())
+        if len(serie) < 2:
+            return []
+        acumulado = all(b[1] >= a[1] for a, b in zip(serie, serie[1:]))
         out = []
         for i, (d_, v_) in enumerate(serie):
-            out.append({'d': d_, 't': v_, 'v': v_ - serie[i - 1][1] if i else None})
+            if acumulado:
+                dv = v_ - serie[i - 1][1] if i else None
+                out.append({'d': d_, 't': v_, 'v': dv if dv else None})  # 0 = kworb no actualizó ese día → sin dato
+            else:
+                out.append({'d': d_, 't': None, 'v': v_})
         return out
     return []
 
@@ -1389,6 +1458,14 @@ def logros(data, songs, P, prev_perfil, prev_sp, prev_yt, add):
                 L(f'dia:{k}:{int(d_)}', 2 if d_ >= 500000 else 1, 'record', f'{s["titulo"]} bate su récord: {MILES(int(d_))} streams en un día', f'Antes su mejor día era {MILES(int(bd[k]))}',
                   corto(d_), 'STREAMS EN UN DÍA', 'MEJOR DÍA', None, s, 'Spotify vía kworb.net')
             bd[k] = max(d_, bd.get(k) or 0)
+    # 5b) estreno en YouTube: vistas en sus primeras 24 h (lecturas reales de la API)
+    for s in songs:
+        y = s.get('youtube') or {}
+        m24 = (y.get('marcas') or {}).get('24')
+        if m24 and m24.get('exacto') and y.get('video_id'):
+            L(f'yt24:{y["video_id"]}', 3 if m24['v'] >= 1e6 else 2, 'debut', f'«{s["titulo"]}» consigue {MILES(m24["v"])} views en sus primeras 24 h en YouTube',
+              ' · '.join(f'{k} h: {MILES(v_["v"])}' for k, v_ in sorted((y.get('marcas') or {}).items(), key=lambda kv: int(kv[0])) if int(k) <= 24),
+              corto(m24['v']), 'PRIMERAS 24 H EN YOUTUBE', 'ESTRENO', None, s, 'YouTube Data API')
     # 6) Billboard: debuts y nuevos picos
     cur_ref[0] = None
     for slug_, b in (data.get('billboard') or {}).items():
@@ -1687,15 +1764,32 @@ def main():
         try:
             bb = data.setdefault('billboard', {})
             n_bb = 0
+            no_existe = data.setdefault('bb_no_existe', {})
             for slug_, nombre_ in BB_CHARTS:
+                if (no_existe.get(slug_) or '') > (NOW - dt.timedelta(days=14)).strftime('%Y-%m-%d'):
+                    continue  # esa lista no existe en Billboard ahora mismo; se vuelve a probar cada 2 semanas
                 try:
-                    semana, filas = billboard_chart(slug_)
+                    semana = filas = None
+                    for cand in slug_.split('|'):
+                        try:
+                            semana, filas = billboard_chart(cand)
+                            url_ok = f'https://www.billboard.com/charts/{cand}/'
+                            break
+                        except Exception as e404:  # noqa: BLE001
+                            if '404' not in str(e404):
+                                raise
+                    if filas is None:
+                        no_existe[slug_] = HOY
+                        log(f'  · Billboard {nombre_}: esa lista no está publicada ahora (se reintenta en 2 semanas)')
+                        continue
+                    no_existe.pop(slug_, None)
+                    slug_ = slug_.split('|')[0]
                     vistos = set((bb.get(slug_) or {}).get('vistos') or [])
                     for f in filas:
                         f['primera_vez'] = f['titulo'] not in vistos and bool(vistos)  # entra por primera vez desde que se sigue
                         vistos.add(f['titulo'])
                     bb[slug_] = {'nombre': nombre_, 'tipo': BB_TIPO.get(slug_, 'cancion'), 'semana': semana, 'consultado': HOY, 'entradas': filas, 'vistos': sorted(vistos),
-                                 'url': f'https://www.billboard.com/charts/{slug_}/'}
+                                 'url': url_ok}
                     n_bb += 1
                     time.sleep(1.5)
                 except Exception as e:  # noqa: BLE001
@@ -2170,6 +2264,8 @@ def main():
                     y[k] = v
             y['fecha'] = HOY
             y['fuente'] = 'YouTube Data API' if 'comentarios' in g else g.get('fuente', 'returnyoutubedislikeapi.com')
+            if 'comentarios' in g:
+                yt_horas(y)
             if y.get('vistas'):  # historial: último valor de cada día (para calcular las vistas diarias)
                 hh = [x for x in y.get('hist', []) if x.get('d') != HOY]
                 hh.append({'d': HOY, 't': NOW.strftime('%Y-%m-%dT%H:%M:%SZ'), 'v': y['vistas']})
