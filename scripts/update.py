@@ -106,10 +106,26 @@ def fallo(fuente, err):
     log('  ✗ ' + msg)
 
 
+SOFT_S, HARD_S = 14 * 60, 18 * 60  # tiempo máximo: a los 14 min se acelera todo; a los 18 min no se piden más datos y se guarda lo que haya
+_aviso_tiempo = [False]
+
+
+def tarde(seg=SOFT_S):
+    return time.time() - T0 > seg
+
+
 def get(url, *, as_json=False, headers=None, params=None, tries=3):
+    if tarde(HARD_S):
+        if not _aviso_tiempo[0]:
+            _aviso_tiempo[0] = True
+            log('  · Tiempo máximo alcanzado: se guardan los datos ya leídos (lo que falta queda con su último dato)')
+        raise RuntimeError('sin tiempo en esta actualización')
+    if tarde():
+        tries = 1  # ya va justo de tiempo: un solo intento por petición
+    err = None
     for i in range(tries):
         try:
-            r = S.get(url, timeout=30, headers=headers, params=params)
+            r = S.get(url, timeout=(10, 25), headers=headers, params=params)
             if r.status_code == 200:
                 if as_json:
                     return r.json()
@@ -119,7 +135,7 @@ def get(url, *, as_json=False, headers=None, params=None, tries=3):
                     return r.text
             if r.status_code in (403, 404, 410):
                 raise RuntimeError(f'HTTP {r.status_code}')
-            if r.status_code == 429 and i < tries - 1:  # «demasiadas peticiones»: se espera lo que pide el servidor (máx. 20 s)
+            if r.status_code == 429 and i < tries - 1 and not tarde():  # «demasiadas peticiones»: se espera lo que pide el servidor (máx. 20 s)
                 try:
                     time.sleep(min(20, max(3, int(r.headers.get('Retry-After') or 5))))
                 except ValueError:
@@ -127,7 +143,8 @@ def get(url, *, as_json=False, headers=None, params=None, tries=3):
             raise RuntimeError(f'HTTP {r.status_code}')
         except Exception as e:  # noqa: BLE001
             err = e
-            time.sleep(1.5 * (i + 1))
+            if i < tries - 1:
+                time.sleep(1.5 * (i + 1))
     raise RuntimeError(str(err))
 
 
@@ -2679,7 +2696,7 @@ def main():
                     return playlist_read(*item), None
                 except Exception as e_:  # noqa: BLE001
                     e = e_
-                    if '429' not in str(e_):
+                    if '429' not in str(e_) or tarde():
                         break
                     time.sleep(8 * (intento + 1))
             return None, (item, e)
@@ -2687,9 +2704,11 @@ def main():
             resultados = list(ex.map(runp, lst))
         # las que Spotify frenó (429): segunda vuelta al final, de una en una y con pausa
         fallidas = [i for i, (res, err) in enumerate(resultados) if err and '429' in str(err[1])]
-        if fallidas:
+        if fallidas and not tarde(SOFT_S - 120):
             time.sleep(45)
             for i in fallidas:
+                if tarde():
+                    break
                 res, err = runp(lst[i])
                 if not err:
                     resultados[i] = (res, None)
