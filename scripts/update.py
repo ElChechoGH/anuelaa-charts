@@ -315,6 +315,10 @@ def chart_scan(url, plataforma, pais, codigo, lista, date_re=r'(\d{4}/\d{2}/\d{2
                 rows_out.append({'cancion': f'{title} ({artists})' if artists and '(' not in title else title, 'posicion': pos,
                                  'cambio': cambio if cambio and cambio not in ('=', '') else None})
     base_row = {'plataforma': plataforma, 'pais': pais, 'codigo': codigo, 'lista': lista, 'fecha_lista': fecha, 'revisado_hasta': revisado or None, 'consultado': HOY}
+    # lista que la fuente dejó de actualizar (p. ej. kworb con YouTube por país): no se muestra como «ahora»
+    max_dias = 4 if 'diario' in (lista or '').lower() else 10
+    if fecha and fecha < (NOW - dt.timedelta(days=max_dias)).strftime('%Y-%m-%d'):
+        return [dict(base_row, cancion=None, posicion=None, cambio=None, estado='Sin actualizar')]
     if not rows_out:
         return [dict(base_row, cancion=None, posicion=None, cambio=None, estado='Fuera')]
     return [dict(base_row, **r, estado='Dentro') for r in rows_out]
