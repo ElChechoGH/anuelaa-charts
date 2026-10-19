@@ -448,9 +448,12 @@
   }
   const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const haptic = () => { try { if (navigator.vibrate) navigator.vibrate(6); } catch (e) { /* nada */ } };
+  // transición entre páginas: View Transitions solo en ordenador (Chrome/Edge); en iPhone/Android y Safari
+  // hacen una foto de toda la página y provocan un parpadeo negro → ahí se usa una animación CSS ligera
+  const VT_OK = !!document.startViewTransition && !REDUCED && matchMedia('(hover: hover) and (pointer: fine)').matches && !/^((?!chrome|chromium|android|crios|edg).)*safari/i.test(navigator.userAgent);
   function go(id, push = true) {
     if (!PAGES.some(p => p[0] === id)) id = 'inicio';
-    if (document.startViewTransition && !REDUCED && current !== id && RENDERED.size) {
+    if (VT_OK && current !== id && RENDERED.size) {
       haptic();
       const t = document.startViewTransition(() => goNow(id, push));
       t.finished.finally(() => glideAll());
@@ -462,10 +465,10 @@
     current = id;
     $$('.yc-tab[data-id]').forEach(t => t.setAttribute('aria-selected', String(t.dataset.id === id)));
     const mb = $('.more-btn'); if (mb) mb.setAttribute('aria-selected', String(!MOBILE_MAIN.includes(id)));
-    $$('.yc-page').forEach(p => p.classList.toggle('on', p.dataset.page === id));
-    renderPage(id);
-    if (push) history.replaceState(null, '', '#' + id);
+    renderPage(id);  // normalmente ya está preparada en segundo plano
     window.scrollTo({ top: 0, behavior: 'auto' });
+    $$('.yc-page').forEach(p => p.classList.toggle('on', p.dataset.page === id));
+    if (push) history.replaceState(null, '', '#' + id);
     if (id === 'inicio') drawHist();
     watchTitle(); requestAnimationFrame(glideAll);
   }
@@ -2800,6 +2803,19 @@
   const RENDERED = new Set();
   const RENDER = { inicio: () => renderInicio(), canciones: () => renderCanciones(), novedades: () => renderNovedades(), logros: () => renderLogros(), trayectoria: () => renderTrayectoria(), records: () => renderRecords(), comparar: () => renderComparar(), lanzamientos: () => renderLanz(), listas: () => renderListas(), albumes: () => renderAlbumes(), redes: () => renderRedes(), estudio: () => renderPosts() };
   function renderPage(id) { if (RENDERED.has(id) || !RENDER[id]) return; RENDERED.add(id); RENDER[id](); if (typeof glideSoon === 'function') glideSoon(); }
+  // prepara en segundo plano las páginas principales para que al tocar una pestaña aparezca al instante
+  let preTimer = 0;
+  function prerender() {
+    clearTimeout(preTimer);
+    const cola = ['canciones', 'listas', 'novedades', 'logros', 'redes', 'records', 'lanzamientos', 'albumes'].filter(id => RENDER[id]);
+    const idle = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 1500 }) : (f) => setTimeout(() => f({ timeRemaining: () => 8 }), 120);
+    const paso = () => {
+      const id = cola.shift(); if (!id) return;
+      if (!RENDERED.has(id) && id !== current) { try { renderPage(id); } catch (e) { /* se hará al abrirla */ } }
+      if (cola.length) preTimer = setTimeout(() => idle(paso), 60);
+    };
+    preTimer = setTimeout(() => idle(paso), 1800);
+  }
   function renderAll(first) {
     $('#updated-label').textContent = !DATA.generado ? 'Preparando la primera actualización…' : `Datos ${ago(DATA.generado)} · ${new Date(DATA.generado).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${LIVE.at && (!DATA.generado || LIVE.at > DATA.generado) ? ' · YouTube en vivo ' + ago(LIVE.at) : ''}`;
     RENDERED.clear(); renderPage(current);
@@ -2812,6 +2828,7 @@
         h('p', { text: 'Spotify, YouTube, Apple Music, Shazam, Deezer, iTunes, kworb.net, Chartmetric y Social Blade. Cada cifra indica su fuente y su fecha.' })),
       h('div', { class: 'yc-foot-bottom' }, h('span', null, `© ${new Date().getFullYear()} `, ig(CREADOR), ' · Todos los derechos reservados'), h('span', null, 'Página creada por ', ig(CREADOR))));
     const logo = $('.yc-logo'); if (logo && DATA.artista.imagen && !logo.querySelector('img')) logo.replaceChildren(artistPhoto('yc-logo-in'));
+    prerender();
     if (first) { go(current, false); setTimeout(liveBackground, 4000); setTimeout(celebrar, 1200); } else { $$('.yc-page').forEach(p => p.classList.toggle('on', p.dataset.page === current)); if (current === 'inicio') drawHist(); }
   }
   // ---------- auto-actualización: isla de estado estilo iOS ----------
@@ -2841,10 +2858,23 @@
     AUTO.pending = null;
     islandSet('done', 'Datos actualizados', 'hace un momento', { hide: 3500 });
   }
+  // copia directa del repositorio: si GitHub Pages tarda en publicar, los datos nuevos llegan igual
+  async function loadRaw() {
+    if (!GH.owner || !GH.repo) throw new Error('sin repo');
+    const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 8000);
+    try { return await fetchJSON(`https://raw.githubusercontent.com/${GH.owner}/${GH.repo}/${encodeURIComponent(GH.branch)}/data/data.json?t=${Math.floor(Date.now() / 60000)}`, { cache: 'no-store', signal: ctl.signal }); }
+    finally { clearTimeout(t); }
+  }
   async function checkData(fresh) {
     AUTO.lastDataCheck = Date.now();
     let nd;
-    try { nd = await loadData(!!fresh); } catch (e) { try { nd = await loadData(false); } catch (e2) { return false; } }
+    if (fresh) { try { nd = await loadData(true); } catch (e) { /* sigue con las copias públicas */ } }
+    if (!nd) {
+      const [a, b] = await Promise.allSettled([loadData(false), loadRaw()]);
+      const ok = [a, b].filter(x => x.status === 'fulfilled' && x.value && x.value.generado).map(x => x.value);
+      if (!ok.length) return false;
+      nd = ok.sort((x, y) => String(y.generado).localeCompare(String(x.generado)))[0];  // la más reciente de las dos
+    }
     if (!nd || !DATA || nd.generado === DATA.generado || (nd.generado || '') < (DATA.generado || '')) return false;
     if (busyNow()) {
       AUTO.pending = nd;
@@ -2907,7 +2937,7 @@
     apply();
   }
   async function init() {
-    if (document.startViewTransition && !REDUCED) document.documentElement.classList.add('vt');
+    if (VT_OK) document.documentElement.classList.add('vt');
     const sk = $('#p-inicio'); if (sk && !sk.children.length) { sk.classList.add('on'); sk.append(h('div', { class: 'yc-loading' }, h('i', { style: 'height:210px' }), h('i', { style: 'height:22px;width:40%;border-radius:8px' }), h('div', { style: 'display:grid;grid-template-columns:1fr 1fr;gap:12px' }, h('i', { style: 'height:120px' }), h('i', { style: 'height:120px' }), h('i', { style: 'height:120px' }), h('i', { style: 'height:120px' })))); }
     themeBtn(); buildTabs(); sheetDrag();
     $('#sheet-close').addEventListener('click', closeSheet); $('#sheet-bg').addEventListener('click', closeSheet);

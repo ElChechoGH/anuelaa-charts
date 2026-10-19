@@ -932,3 +932,9 @@ html.noblur .yc-hero.noir .yc-hero-stat { backdrop-filter: none; -webkit-backdro
 .st-logo-up .yc-btn { flex: 1; }
 .st-tpl:focus-visible, .st-word:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .st-tpl, .st-word { transition: none; } }
+
+/* ---------- fluidez: cambio de página estilo iOS y toques sin retardo ---------- */
+html:not(.vt) .yc-page.on { animation: pageInIOS .38s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes pageInIOS { from { opacity: 0; transform: translate3d(0, 10px, 0); } to { opacity: 1; transform: none; } }
+button, a, [role="button"], .yc-tab, .yc-row, .lg-tile { touch-action: manipulation; }
+@media (prefers-reduced-motion: reduce) { html:not(.vt) .yc-page.on { animation: none; } }
