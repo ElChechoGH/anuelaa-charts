@@ -197,5 +197,8 @@
   "latinos_forzar": [],
   "no_latinos": [
     "Justin Bieber"
+  ],
+  "logros_borrar": [
+    "logro:latino:5"
   ]
 }
