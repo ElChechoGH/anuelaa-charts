@@ -195,5 +195,7 @@
   ],
   "latinos_incluye_espana": false,
   "latinos_forzar": [],
-  "no_latinos": []
+  "no_latinos": [
+    "Justin Bieber"
+  ]
 }
