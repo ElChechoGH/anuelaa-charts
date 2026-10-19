@@ -2149,14 +2149,15 @@
       h('span', null, h('b', { text: 'Ficha de ' + DATA.artista.nombre + ' al día' }), h('small', { text: sub || 'Rankings mundiales, Billboard, récords y debuts' })), icon('chev', 'yc-chev'));
   }
   // escalera: quién tiene arriba y abajo
-  function ladder(arriba, abajo, yo, key, unit) {
+  function ladder(arriba, abajo, yo, key, unit, fmt = short) {
     const rows = [...(arriba || []).slice().reverse().map(x => ({ ...x, pos: 'up' })), { nombre: DATA.artista.nombre, rank: yo.rank, [key]: yo.v, yo: true }, ...(abajo || []).map(x => ({ ...x, pos: 'dn' }))];
     return h('div', { class: 'ax-ladder' }, rows.map(r => h('div', { class: 'ax-step' + (r.yo ? ' me' : '') },
       h('span', { class: 'ax-rk num', text: r.rank ? '#' + r.rank : '' }),
       h('b', { class: 'ax-nm', text: r.nombre }),
-      h('span', { class: 'ax-v num', text: short(r[key]) }),
-      h('small', { class: 'ax-gap', text: r.yo ? unit : isNum(r[key]) && isNum(yo.v) ? (r.pos === 'up' ? `le faltan ${short(r[key] - yo.v)}` : `le saca ${short(yo.v - r[key])}`) : '' }))));
+      h('span', { class: 'ax-v num', text: fmt(r[key]) }),
+      h('small', { class: 'ax-gap', text: r.yo ? unit : isNum(r[key]) && isNum(yo.v) ? (r.pos === 'up' ? `le faltan ${fmt(r[key] - yo.v)}` : `le saca ${fmt(yo.v - r[key])}`) : '' }))));
   }
+  const srcLink = (u, t) => h('a', { class: 'ax-src', href: u, target: '_blank', rel: 'noopener', text: t + ' ↗' });
   function axCard(kicker, big, sub, extra) {
     return h('div', { class: 'ax-card' }, h('span', { class: 'ax-k', text: kicker }), h('b', { class: 'ax-big num', text: big }), sub ? h('small', { class: 'ax-sub', text: sub }) : null, extra || null);
   }
@@ -2184,17 +2185,22 @@
       h('p', { class: 'yc-note', text: `Toca una cifra para ver qué temas la han pasado. Cuando otra llega, sale como logro: «es la canción Nª en lograrlo» (${unit}).` }));
   }
   function bbBlock() {
-    const bb = Object.entries(DATA.billboard || {}).filter(([, b]) => (b.entradas || []).length);
+    const ORD = { artista: 0, cancion: 1, album: 2 }, TIT = { artista: 'Como artista', cancion: 'Canciones', album: 'Álbumes' };
+    const bb = Object.entries(DATA.billboard || {}).filter(([, b]) => (b.entradas || []).length).sort((a, b) => (ORD[a[1].tipo || 'cancion'] - ORD[b[1].tipo || 'cancion']));
     if (!bb.length) return null;
-    return h('div', { class: 'ax-bb' }, bb.map(([slug, b]) => h('div', { class: 'ax-bb-card' },
+    let last = null;
+    const kids = [];
+    for (const it of bb) { const tp = it[1].tipo || 'cancion'; if (tp !== last) { kids.push(h('span', { class: 'ax-k ax-bb-grp', text: TIT[tp] })); last = tp; } kids.push(it); }
+    return h('div', { class: 'ax-bb' }, kids.map(k => !Array.isArray(k) ? k : (([slug, b]) => h('div', { class: 'ax-bb-card' },
       h('div', { class: 'ax-bb-h' }, h('b', { text: b.nombre }), h('small', { text: b.semana ? `semana del ${dfmt(b.semana)}` : '' }), b.url ? h('a', { href: b.url, target: '_blank', rel: 'noopener', text: '↗' }) : null),
       (b.entradas || []).slice().sort((x, y) => x.pos - y.pos).map(f => {
         const s = SONGS.find(x => x.b === base(f.titulo));
         const mov = f.nuevo ? h('span', { class: 'ax-tag new', text: f.reentrada ? 'RE' : 'NEW' }) : isNum(f.lw) ? h('span', { class: 'ax-tag ' + (f.lw > f.pos ? 'up' : f.lw < f.pos ? 'dn' : ''), text: f.lw > f.pos ? '▲' + (f.lw - f.pos) : f.lw < f.pos ? '▼' + (f.pos - f.lw) : '=' }) : null;
         return h('div', { class: 'ax-bb-row', onclick: s ? () => openSong(s.id) : null, style: s ? '' : 'cursor:default' },
           h('b', { class: 'ax-bb-pos num', text: f.pos }), s ? h('div', { class: 'ax-bb-cov' }, art(s)) : null,
-          h('div', { class: 'ax-bb-main' }, h('b', { text: f.titulo }), h('small', { text: [f.artistas, f.pico ? `pico ${f.pico}` : '', f.semanas ? `${f.semanas} sem.` : ''].filter(Boolean).join(' · ') })), mov);
-      }))),
+          h('div', { class: 'ax-bb-main' }, h('b', { text: f.titulo }), h('small', { text: [f.artistas, f.semanas ? `${f.semanas} ${f.semanas === 1 ? 'semana' : 'semanas'}` : ''].filter(Boolean).join(' · ') }),
+            (f.debut_pos || f.pico) ? h('small', { class: 'ax-bb-hist', text: f.debut_pos && f.debut_pos === (f.pico_pos || f.pico) && f.debut_fecha && f.debut_fecha === f.pico_fecha ? `Debutó en el Top ${f.debut_pos} el ${dfmt(f.debut_fecha, { year: undefined })}, su pico` : [f.debut_pos ? `Debutó en el Top ${f.debut_pos}${f.debut_fecha ? ' el ' + dfmt(f.debut_fecha, { year: undefined }) : ''}` : '', (f.pico_pos || f.pico) ? `pico Top ${f.pico_pos || f.pico}${f.pico_fecha ? ' el ' + dfmt(f.pico_fecha, { year: undefined }) : ''}` : ''].filter(Boolean).join(' · ') }) : null), mov);
+      })))(k)),
       h('p', { class: 'yc-note', text: 'Billboard publica las listas cada martes. Las entradas se cuentan desde que la web las lee.' }));
   }
   function openArtist() {
@@ -2210,6 +2216,7 @@
       t.rank ? [`#${t.rank}`, 'artista más escuchado de la historia'] : null,
       oy.rank ? [`#${oy.rank}`, 'en oyentes mensuales del mundo'] : null,
       di.rank ? [`#${di.rank}`, 'en streams del día'] : null,
+      ...Object.values(DATA.billboard || {}).filter(b => b.tipo === 'artista' && (b.entradas || [])[0]).map(b => [`#${b.entradas[0].pos}`, 'en ' + b.nombre]),
     ].filter(Boolean);
     if (chips.length) body.append(h('div', { class: 'ax-glance' }, chips.map(([a, b]) => h('div', { class: 'ax-gl' }, h('b', { class: 'num', text: a }), h('small', { text: b })))));
     // streams totales
@@ -2221,7 +2228,7 @@
       body.append(h('div', { class: 'ax-card ax-row' }, rb, h('div', null, h('b', { class: 'ax-big num', text: bigN(tot) }),
         h('small', { class: 'ax-sub', text: `${full(tot)} streams` }),
         h('small', { class: 'ax-sub' + (dias != null && dias <= 3 ? ' hot' : '') }, `Próxima: ${bigN(meta)} · faltan ${short(meta - tot)}${dias != null ? ` · ≈ ${dias} ${dias === 1 ? 'día' : 'días'}` : ''}${dias != null && dias <= 1 ? ' · ¡A punto!' : ''}`))));
-      if ((t.arriba || []).length || (t.abajo || []).length) body.append(ladder(t.arriba, t.abajo, { rank: t.rank, v: tot }, 'total', 'él'));
+      if ((t.arriba || []).length || (t.abajo || []).length) body.append(ladder(t.arriba, t.abajo, { rank: t.rank, v: tot }, 'total', 'él', bigN)); body.append(srcLink('https://kworb.net/spotify/artists.html', 'Comprobar en kworb (ordena por «Streams»)'));
       if (t.rank_latino) {
         const latR = (x, me) => h('div', { class: 'ax-lat-r' + (me ? ' me' : '') }, h('span', { class: 'num', text: x.rank }), h('div', { class: 'ax-lat-n' }, h('b', { text: x.nombre }), h('small', { text: [x.pais, x.rank_global ? `#${x.rank_global} mundial` : ''].filter(Boolean).join(' · ') })),
           h('em', { class: 'num', text: bigN(x.total) }), h('small', { text: me ? '' : x.total >= tot ? `+${bigN(x.total - tot)}` : `−${bigN(tot - x.total)}` }));
@@ -2236,7 +2243,7 @@
       body.append(h('div', { class: 'ax-duo' },
         axCard('Puesto mundial', '#' + oy.rank, `${full(oy.oyentes)} oyentes${isNum(oy.cambio) && oy.cambio ? ` · ${signed(oy.cambio)} hoy` : ''}`),
         axCard('Su pico', oy.pico_rank ? '#' + oy.pico_rank : '—', oy.pico_oyentes ? `máximo: ${short(oy.pico_oyentes)} oyentes${oy.oyentes >= oy.pico_oyentes ? ' · ¡ahora mismo!' : ''}` : '')));
-      body.append(ladder(oy.arriba, oy.abajo, { rank: oy.rank, v: oy.oyentes }, 'oyentes', 'él'));
+      body.append(ladder(oy.arriba, oy.abajo, { rank: oy.rank, v: oy.oyentes }, 'oyentes', 'él')); body.append(srcLink('https://kworb.net/spotify/listeners.html', 'Comprobar en kworb · oyentes mensuales'));
       const hs = hist.filter(x => isNum(x.oy_rank));
       if (hs.length > 1) { const ch = bigChart(hs.map(x => -x.oy_rank), hs.map(x => x.d), 'var(--green)'); if (ch) body.append(h('small', { class: 'ax-sub', text: 'Evolución de su puesto (arriba = mejor)' }), ch); }
     }
@@ -2246,7 +2253,7 @@
       body.append(h('div', { class: 'ax-duo' },
         axCard('Último día', short(di.streams), `#${di.rank} entre todos los artistas`),
         axCard('Mejor día registrado', mu.mejor_dia && mu.mejor_dia.v ? short(mu.mejor_dia.v) : '—', mu.mejor_dia && mu.mejor_dia.d ? dfmt(mu.mejor_dia.d) : '')));
-      body.append(ladder(di.arriba, di.abajo, { rank: di.rank, v: di.streams }, 'streams', 'él'));
+      body.append(ladder(di.arriba, di.abajo, { rank: di.rank, v: di.streams }, 'streams', 'él')); body.append(srcLink('https://kworb.net/spotify/artists.html', 'Comprobar en kworb (ordena por «Daily»)'));
       const hs = hist.filter(x => isNum(x.dia));
       if (hs.length > 1) { const ch = bigChart(hs.map(x => x.dia), hs.map(x => x.d), 'var(--accent)'); if (ch) body.append(ch); }
     }

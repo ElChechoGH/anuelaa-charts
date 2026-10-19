@@ -632,7 +632,11 @@ def spotify_mundo(lat_cache=None):
 
 
 BB_CHARTS = [('latin-songs', 'Hot Latin Songs'), ('hot-100', 'Billboard Hot 100'), ('billboard-global-200', 'Billboard Global 200'),
-             ('billboard-global-excl-us', 'Global Excl. US'), ('latin-streaming-songs', 'Latin Streaming Songs'), ('latin-airplay', 'Latin Airplay')]
+             ('billboard-global-excl-us', 'Global Excl. US'), ('latin-streaming-songs', 'Latin Streaming Songs'), ('latin-airplay', 'Latin Airplay'),
+             ('latin-rhythm-airplay', 'Latin Rhythm Airplay'), ('latin-digital-song-sales', 'Latin Digital Song Sales'), ('bubbling-under-hot-100', 'Bubbling Under Hot 100'),
+             ('latin-albums', 'Top Latin Albums'), ('latin-rhythm-albums', 'Latin Rhythm Albums'), ('billboard-200', 'Billboard 200'),
+             ('latin-artists', 'Top Latin Artists'), ('artist-100', 'Billboard Artist 100')]
+BB_TIPO = {'latin-albums': 'album', 'latin-rhythm-albums': 'album', 'billboard-200': 'album', 'latin-artists': 'artista', 'artist-100': 'artista'}
 
 
 def billboard_chart(slug_):
@@ -662,6 +666,22 @@ def billboard_chart(slug_):
                     'nuevo': nuevo, 'reentrada': bool(re.search(r'RE-? ?ENTRY', ' '.join(etiquetas), re.I))})
     if not filas:
         raise RuntimeError('Billboard no devolvió la lista')
+    # detalle de cada puesto: posición y fecha de debut, fecha del pico
+    det = {}
+    for dv in soup.select('div.charts-result-detail[data-detail]'):
+        info = {}
+        for cls, k in (('o-chart-position-stats__debut', 'debut'), ('o-chart-position-stats__peak', 'pico')):
+            bx = dv.select_one('.' + cls)
+            if not bx:
+                continue
+            n_ = bx.select_one('.o-chart-position-stats__number span.c-label') or bx.select_one('span.c-label')
+            a_ = bx.select_one('a[href*="/charts/"]')
+            fm = re.search(r'(\d{4}-\d{2}-\d{2})', a_['href']) if a_ and a_.get('href') else None
+            info[k + '_pos'] = to_int(n_.get_text(strip=True)) if n_ else None
+            info[k + '_fecha'] = fm.group(1) if fm else None
+        det[to_int(dv['data-detail'])] = info
+    for f in out:
+        f.update({k: v for k, v in (det.get(f['pos']) or {}).items() if v})
     return semana, sorted(out, key=lambda x: x['pos'] or 999)
 
 
@@ -1375,6 +1395,14 @@ def logros(data, songs, P, prev_perfil, prev_sp, prev_yt, add):
         for f in b.get('entradas') or []:
             s = song_of(f['titulo'])
             sem = b.get('semana') or HOY
+            tipo_ = BB_TIPO.get(slug_, 'cancion')
+            if tipo_ == 'artista':
+                if not ((f.get('pos') or 99) <= 25 or (f.get('lw') and f['pos'] < f['lw']) or f.get('nuevo')):
+                    continue
+                L(f'bbart:{slug_}:{sem}', 3 if (f.get('pos') or 99) <= 10 else 2, 'billboard', f'{ARTISTA} está en el Top {f["pos"]} de {b["nombre"]}',
+                  (f'Sube desde el Top {f["lw"]}' if f.get('lw') and f['lw'] > f['pos'] else f'Semana anterior: Top {f["lw"]}' if f.get('lw') else 'Entra esta semana') + f' · pico Top {f.get("pico") or f["pos"]} · {f.get("semanas") or "?"} semanas',
+                  f'#{f["pos"]}', b['nombre'].upper(), 'BILLBOARD', sem, None, 'Billboard', b.get('url'))
+                continue
             if f.get('nuevo') and not f.get('reentrada'):
                 L(f'bb:{slug_}:{sem}:{base(f["titulo"])}', 3 if f['pos'] and f['pos'] <= 10 else 2, 'billboard', f'«{f["titulo"]}» debuta en el Top {f["pos"]} de {b["nombre"]}',
                   f'{f["artistas"]} · semana del {sem}', f'#{f["pos"]}', b['nombre'].upper(), 'DEBUT EN BILLBOARD', sem, s, 'Billboard', b.get('url'))
@@ -1666,7 +1694,7 @@ def main():
                     for f in filas:
                         f['primera_vez'] = f['titulo'] not in vistos and bool(vistos)  # entra por primera vez desde que se sigue
                         vistos.add(f['titulo'])
-                    bb[slug_] = {'nombre': nombre_, 'semana': semana, 'consultado': HOY, 'entradas': filas, 'vistos': sorted(vistos),
+                    bb[slug_] = {'nombre': nombre_, 'tipo': BB_TIPO.get(slug_, 'cancion'), 'semana': semana, 'consultado': HOY, 'entradas': filas, 'vistos': sorted(vistos),
                                  'url': f'https://www.billboard.com/charts/{slug_}/'}
                     n_bb += 1
                     time.sleep(1.5)
@@ -2557,7 +2585,18 @@ def main():
                     time.sleep(8 * (intento + 1))
             return None, (item, e)
         with cf.ThreadPoolExecutor(2) as ex:
-            for res, err in ex.map(runp, lst):
+            resultados = list(ex.map(runp, lst))
+        # las que Spotify frenó (429): segunda vuelta al final, de una en una y con pausa
+        fallidas = [i for i, (res, err) in enumerate(resultados) if err and '429' in str(err[1])]
+        if fallidas:
+            time.sleep(45)
+            for i in fallidas:
+                res, err = runp(lst[i])
+                if not err:
+                    resultados[i] = (res, None)
+                time.sleep(12)
+        if True:
+            for res, err in resultados:
                 if err:
                     (n_, u_), e = err
                     fallo(f'playlist {n_}', e)
