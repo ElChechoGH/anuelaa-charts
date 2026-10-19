@@ -611,3 +611,7 @@ img.yc-logo-in { object-fit: cover; display: block; border-radius: 50%; }
 .ax-bb-main small.ax-bb-hist { color: var(--text3); font-size: 11.5px; }
 .ax-bb-main small.ax-bb-hist { white-space: normal; line-height: 1.3; }
 .ax-bb-grp { margin: 6px 2px -2px; }
+.ax-club summary { grid-template-columns: 112px 1fr; } .ax-club-m { font-size: 18px; white-space: nowrap; }
+.ax-hrs { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; }
+.ax-hr { border-radius: 12px; padding: 8px 6px; text-align: center; background: color-mix(in srgb, var(--text) 6%, transparent); }
+.ax-hr b { display: block; font-size: 15px; font-weight: 700; letter-spacing: -.02em; } .ax-hr small { color: var(--text3); font-size: 11px; }

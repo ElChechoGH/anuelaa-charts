@@ -2179,7 +2179,7 @@
     const cl = clubs(plat).filter(c => c.dentro.length || (c.cerca && c.cerca.dias != null && c.cerca.dias <= 90)); if (!cl.length) return null;
     const unit = plat === 'sp' ? 'streams' : 'views';
     return h('div', { class: 'ax-clubs' }, cl.slice(0, 8).map(c => h('details', { class: 'ax-club' },
-      h('summary', null, h('b', { class: 'ax-club-m num', text: short(c.m) }), h('span', { class: 'ax-club-n', text: c.dentro.length ? `${c.dentro.length} ${c.dentro.length === 1 ? 'canción' : 'canciones'}` : 'ninguna aún' }),
+      h('summary', null, h('b', { class: 'ax-club-m num', text: bigN(c.m) }), h('span', { class: 'ax-club-n', text: c.dentro.length ? `${c.dentro.length} ${c.dentro.length === 1 ? 'canción' : 'canciones'}` : 'ninguna aún' }),
         c.cerca ? h('small', { class: 'ax-club-next' + (c.cerca.dias != null && c.cerca.dias <= 7 ? ' hot' : '') }, `Próxima: ${c.cerca.s.titulo}${c.cerca.dias != null ? ` · ≈ ${c.cerca.dias} ${c.cerca.dias === 1 ? 'día' : 'días'}` : ''}${c.cerca.dias != null && c.cerca.dias <= 7 ? ` · sería la ${ordN(c.dentro.length + 1)}` : ''}`) : null),
       h('div', { class: 'ax-club-list' }, c.dentro.map((s, i) => h('button', { type: 'button', class: 'ax-club-row', onclick: () => openSong(s.id) }, h('span', { class: 'num', text: i + 1 }), h('b', { text: s.titulo }), h('em', { class: 'num', text: short(plat === 'sp' ? s.sp.total : s.yt.vistas) })))))),
       h('p', { class: 'yc-note', text: `Toca una cifra para ver qué temas la han pasado. Cuando otra llega, sale como logro: «es la canción Nª en lograrlo» (${unit}).` }));
@@ -2270,7 +2270,7 @@
     if (nuevos.length) {
       body.append(h('h3', { class: 'lg-sh', text: 'Debuts recientes' }));
       body.append(h('div', { class: 'yc-list' }, nuevos.slice(0, 8).map(s => { const d = debutStats(s); return h('div', { class: 'yc-row', onclick: () => openSong(s.id) }, h('div', { class: 'ax-bb-cov' }, art(s)),
-        h('div', { class: 'yc-row-main' }, h('b', { text: s.titulo }), h('small', { text: [d.yt1 ? `YouTube 24 h: ${short(d.yt1)}` : '', d.sp1 ? `Spotify día 1: ${short(d.sp1)}` : '', `hace ${s.diasPublicado} días`].filter(Boolean).join(' · ') })),
+        h('div', { class: 'yc-row-main' }, h('b', { text: s.titulo }), h('small', { text: [d.h24 ? `YouTube 24 h: ${short(d.h24)}` : d.yt1 ? `YouTube día 1: ${short(d.yt1)}` : '', d.sp1 ? `Spotify día 1: ${short(d.sp1)}` : '', `hace ${s.diasPublicado} días`].filter(Boolean).join(' · ') })),
         h('div', { class: 'yc-row-meta' }, h('b', { class: 'num', text: short(d.spSem || d.ytSem) }), h('small', { text: d.spSem ? (d.spN >= 7 ? '1ª semana SP' : `${d.spN} días SP`) : d.ytSem ? (d.ytN >= 7 ? '1ª semana YT' : `${d.ytN} días YT`) : '' }))); })));
     }
     // logros de este tipo
@@ -2285,24 +2285,28 @@
     const sp = prim(s.sp.dias), yt = prim(s.yt && s.yt.dias);
     const lan = s.lanzamiento ? s.lanzamiento.slice(0, 10) : null;
     const dayN = (d) => lan ? Math.round((new Date(d) - new Date(lan)) / 864e5) + 1 : null;
-    const sem = (a) => { const w = a.filter(x => dayN(x.d) != null && dayN(x.d) <= 7); return w.length ? (w[w.length - 1].t || w.reduce((t, x) => t + (x.v || 0), 0)) : null; };
+    const sem = (a) => { const w = a.filter(x => dayN(x.d) != null && dayN(x.d) >= 1 && dayN(x.d) <= 7); if (!w.length || dayN(w[0].d) > 1) return null; return w[w.length - 1].t || w.reduce((t, x) => t + (x.v > 0 ? x.v : 0), 0); };
     const nd = (a) => Math.min(7, Math.max(0, ...a.map(x => dayN(x.d) || 0)));
-    const d1 = (a) => { const x = a.find(x => dayN(x.d) === 1) || (a[0] && dayN(a[0].d) <= 2 ? a[0] : null); return x ? (x.v || x.t) : null; };
-    return { sp, yt, dayN, sp1: d1(sp), yt1: d1(yt), spSem: sem(sp), ytSem: sem(yt), spN: nd(sp), ytN: nd(yt) };
+    const d1 = (a) => { const x = a.find(x => dayN(x.d) === 1) || (a[0] && dayN(a[0].d) <= 2 ? a[0] : null); const v = x ? (isNum(x.v) ? x.v : x.t) : null; return isNum(v) && v > 0 ? v : null; };
+    const mk = (s.yt && s.yt.marcas) || {}; const h24 = mk['24'] && mk['24'].exacto ? mk['24'].v : null;
+    return { mk, h24, sp, yt, dayN, sp1: d1(sp), yt1: d1(yt), spSem: sem(sp), ytSem: sem(yt), spN: nd(sp), ytN: nd(yt) };
   }
   function debutBlock(s) {
     if (s.diasPublicado == null || s.diasPublicado > 60) return null;
-    const d = debutStats(s); if (!d.sp.length && !d.yt.length) return null;
+    const d = debutStats(s); if (!d.sp.length && !d.yt.length && !Object.keys(d.mk).length) return null;
     const box = h('div', { class: 'yc-card ax-debut' }, h('span', { class: 'ax-k', text: 'Debut · día a día' }));
-    const kp = [[d.yt1, 'YouTube · primeras 24 h'], [d.sp1, 'Spotify · día 1'], [d.ytN > 1 ? d.ytSem : null, d.ytN >= 7 ? 'YouTube · 1ª semana' : `YouTube · primeros ${d.ytN} días`], [d.spN > 1 ? d.spSem : null, d.spN >= 7 ? 'Spotify · 1ª semana' : `Spotify · primeros ${d.spN} días`]].filter(([v]) => isNum(v));
+    const kp = [d.h24 ? [d.h24, 'YouTube · primeras 24 h'] : [d.yt1, 'YouTube · día 1'], [d.sp1, 'Spotify · día 1'], [d.ytN > 1 ? d.ytSem : null, d.ytN >= 7 ? 'YouTube · 1ª semana' : `YouTube · primeros ${d.ytN} días`], [d.spN > 1 ? d.spSem : null, d.spN >= 7 ? 'Spotify · 1ª semana' : `Spotify · primeros ${d.spN} días`]].filter(([v]) => isNum(v));
     if (kp.length) box.append(h('div', { class: 'ax-glance' }, kp.map(([v, l]) => h('div', { class: 'ax-gl' }, h('b', { class: 'num', text: short(v) }), h('small', { text: l })))));
+    const mks = Object.entries(d.mk).map(([k, x]) => [Number(k), x]).sort((a, b) => a[0] - b[0]);
+    if (mks.length) box.append(h('small', { class: 'ax-sub', text: 'YouTube hora a hora desde el estreno' }),
+      h('div', { class: 'ax-hrs' }, mks.map(([k, x]) => h('div', { class: 'ax-hr' }, h('b', { class: 'num', text: short(x.v) }), h('small', { text: k >= 168 ? '7 días' : k >= 48 ? (k / 24) + ' días' : k + ' h' }))) ));
     for (const [arr, name, color] of [[d.sp, 'Spotify', 'var(--green)'], [d.yt, 'YouTube', '#ff3b30']]) {
-      const a = arr.map(x => ({ ...x, v: isNum(x.v) ? x.v : d.dayN(x.d) === 1 ? x.t : null })).filter(x => isNum(x.v)).slice(0, 14); if (!a.length) continue;
+      const a = arr.map(x => ({ ...x, v: isNum(x.v) ? x.v : d.dayN(x.d) === 1 ? x.t : null })).filter(x => isNum(x.v) && x.v > 0).slice(0, 14); if (!a.length) continue;
       const mx = Math.max(...a.map(x => x.v));
       box.append(h('small', { class: 'ax-sub', text: name + ' · streams/views por día' }),
         h('div', { class: 'ax-days' }, a.map(x => h('div', { class: 'ax-day' }, h('em', { class: 'num', text: short(x.v) }), h('i', null, h('i', { style: `height:${Math.max(4, x.v / mx * 100).toFixed(0)}%;background:${color}` })), h('small', { text: d.dayN(x.d) ? 'Día ' + d.dayN(x.d) : dfmt(x.d, { year: undefined }) })))));
     }
-    box.append(h('small', { class: 'ax-sub', text: 'Fuente: kworb.net. Cada día suma lo contado ese día.' }));
+    box.append(h('small', { class: 'ax-sub', text: 'Hora a hora: lecturas reales de la API de YouTube cada ~30 min desde el estreno. Barras por día: kworb.net (día natural). Días sin barra = sin dato.' }));
     return box;
   }
   function renderRedes() {
