@@ -1511,9 +1511,11 @@ def logros(data, songs, P, prev_perfil, prev_sp, prev_yt, add):
         if nom in abajo_t:
             L(f'rival_total:{nom}', 3, 'rival', f'{ARTISTA} supera a {nom} en streams totales de Spotify',
               f'Ahora es el artista #{tt.get("rank")} más escuchado de la historia en Spotify ({corto(tt.get("total") or 0)})', f'#{tt.get("rank")}', 'STREAMS TOTALES', 'SUPERA A ' + nom.upper(), None, None, 'kworb.net')
-    if tt.get('rank_latino') and ant.get('latino_rank') and tt['rank_latino'] < ant['latino_rank']:
+    # solo si de verdad adelanta a alguien (no por cambiar quién cuenta como latino)
+    adelantados = [n_ for n_ in (ant.get('latinos_arriba') or []) if n_ in {x['nombre'] for x in tt.get('latinos_abajo') or []}]
+    if tt.get('rank_latino') and ant.get('latino_rank') and tt['rank_latino'] < ant['latino_rank'] and adelantados:
         L(f'latino:{tt["rank_latino"]}', 3, 'mundial', f'{ARTISTA} ya es el #{tt["rank_latino"]} latino más escuchado de la historia en Spotify',
-          f'{MILES(int(tt.get("total") or 0))} streams en total', f'#{tt["rank_latino"]}', 'LATINOS MÁS ESCUCHADOS', 'SUBE EN LA HISTORIA', None, None, 'kworb.net')
+          f'Supera a {", ".join(adelantados)} · {MILES(int(tt.get("total") or 0))} streams en total', f'#{tt["rank_latino"]}', 'LATINOS MÁS ESCUCHADOS', 'SUBE EN LA HISTORIA', None, None, 'kworb.net')
     md = mu.get('mejor_dia') or {}
     if md.get('d') == HOY and (md.get('v') or 0) > 0 and len(mu.get('hist') or []) >= 7:
         L(f'mejor_dia:{HOY}', 3, 'record', f'Mejor día de streams de {ARTISTA} desde que se registra: {corto(md["v"])}',
@@ -1750,6 +1752,7 @@ def main():
                 mundo['_antes'] = {'oyentes_arriba': [a['nombre'] for a in ((prev_mundo.get('oyentes') or {}).get('arriba') or [])],
                                    'total_arriba': [a['nombre'] for a in ((prev_mundo.get('total') or {}).get('arriba') or [])],
                                    'total_rank': (prev_mundo.get('total') or {}).get('rank'), 'latino_rank': (prev_mundo.get('total') or {}).get('rank_latino'),
+                                   'latinos_arriba': [a['nombre'] for a in ((prev_mundo.get('total') or {}).get('latinos_arriba') or [])],
                                    'oyentes_rank': (prev_mundo.get('oyentes') or {}).get('rank'), 'diarios_rank': (prev_mundo.get('diarios') or {}).get('rank')}
                 hist_m = [x for x in (prev_mundo.get('hist') or []) if x.get('d') != HOY]
                 hist_m.append({'d': HOY, 'oy_rank': (mundo.get('oyentes') or {}).get('rank'), 'oy': (mundo.get('oyentes') or {}).get('oyentes'),
@@ -2884,6 +2887,8 @@ def main():
         cuenta_t[t_] = cuenta_t.get(t_, 0) + 1
         if cuenta_t[t_] <= TOPE_T.get(t_, 80):
             rest_.append(n)
+    borrar = set(CFG.get('logros_borrar') or [])  # logros detectados por error (config.json → logros_borrar)
+    keep, rest_ = [n for n in keep if n.get('id') not in borrar], [n for n in rest_ if n.get('id') not in borrar]
     data['novedades'] = sorted(keep + rest_, key=lambda n: (n.get('fecha') or '', n.get('detectado') or ''), reverse=True)
     first_run = not data.get('config', {}).get('alertas_iniciadas')
     cfg['alertas_iniciadas'] = True
