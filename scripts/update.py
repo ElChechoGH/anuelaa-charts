@@ -324,6 +324,46 @@ def chart_scan(url, plataforma, pais, codigo, lista, date_re=r'(\d{4}/\d{2}/\d{2
     return [dict(base_row, **r, estado='Dentro') for r in rows_out]
 
 
+def yt_charts_oficial(cc, periodo='WEEKLY'):
+    """Top canciones de YouTube Charts (charts.youtube.com, la web oficial) de un país: los temas del artista con su puesto."""
+    code = {'uk': 'gb'}.get(cc, cc)
+    body = {'context': {'client': {'clientName': 'WEB_MUSIC_ANALYTICS', 'clientVersion': '2.0', 'hl': 'es', 'gl': code.upper(), 'theme': 'MUSIC'},
+                        'capabilities': {}, 'request': {'internalExperimentFlags': []}},
+            'browseId': 'FEmusic_analytics_charts_home',
+            'query': f'perspective=CHART_DETAILS&chart_params_country_code={code}&chart_params_chart_type=TRACKS&chart_params_period_type={periodo}'}
+    if tarde(HARD_S):
+        raise RuntimeError('sin tiempo en esta actualización')
+    r = S.post('https://charts.youtube.com/youtubei/v1/browse?alt=json', json=body, timeout=(10, 25),
+               headers={'Content-Type': 'application/json', 'Origin': 'https://charts.youtube.com', 'Referer': 'https://charts.youtube.com/'})
+    if r.status_code != 200:
+        raise RuntimeError(f'HTTP {r.status_code}')
+    j = r.json()
+    vistas = [v for v in walk(j, 'trackViews') if isinstance(v, list)]
+    filas = max(vistas, key=len) if vistas else []
+    if len(filas) < 5:
+        raise RuntimeError('YouTube Charts no devolvió la lista')
+    fechas = sorted({m for m in re.findall(r'20\d\d-\d\d-\d\d', json.dumps(j)[:200000])})
+    fecha = fechas[-1] if fechas else HOY
+    lista = 'Top canciones semanal' if periodo == 'WEEKLY' else 'Top canciones diario'
+    base_row = {'plataforma': 'YouTube', 'pais': PAIS.get(cc, cc.upper()), 'codigo': cc.upper(), 'lista': lista, 'fecha_lista': min(fecha, HOY),
+                'revisado_hasta': len(filas), 'consultado': HOY, 'fuente': 'YouTube Charts (charts.youtube.com)'}
+    out = []
+    for i, t in enumerate(filas):
+        if not isinstance(t, dict):
+            continue
+        nombre = t.get('name') or ''
+        arts = ', '.join(a.get('name', '') for a in (t.get('artists') or []) if isinstance(a, dict))
+        if not NAME_RE.search(nombre + ' ' + arts):
+            continue
+        meta = t.get('chartEntryMetadata') or {}
+        pos = to_int(meta.get('currentPosition')) or i + 1
+        prev = to_int(meta.get('previousPosition'))
+        cambio = 'NEW' if not prev else (f'+{prev - pos}' if prev > pos else (f'-{pos - prev}' if prev < pos else None))
+        out.append(dict(base_row, cancion=f'{nombre} ({arts})' if arts else nombre, posicion=pos, cambio=cambio, estado='Dentro',
+                        semanas=to_int(meta.get('periodsOnChart'))))
+    return out or [dict(base_row, cancion=None, posicion=None, cambio=None, estado='Fuera')]
+
+
 # ---------------------------------------------------------------- YouTube
 def ryd(video_id):
     j = get(f'https://returnyoutubedislikeapi.com/votes?videoId={video_id}', as_json=True, tries=2)
@@ -2548,6 +2588,26 @@ def main():
         except Exception as e:  # noqa: BLE001
             fallo(f'lista {pl} {pa}', e)
             return []
+    # YouTube Charts por país: primero la web oficial; si responde, sustituye a la copia de kworb (que dejó de actualizarse)
+    if not RAPIDO:
+        def run_yt(cc):
+            try:
+                return cc, yt_charts_oficial(cc)
+            except Exception as e:  # noqa: BLE001
+                return cc, e
+        ok_yt, err_yt = set(), None
+        with cf.ThreadPoolExecutor(4) as ex:
+            for cc, res in ex.map(run_yt, YT_CHART_CC):
+                if isinstance(res, Exception):
+                    err_yt = res
+                else:
+                    ok_yt.add(cc.upper())
+                    charts += res
+        if ok_yt:
+            jobs = [j for j in jobs if not (j[1] == 'YouTube' and j[4] == 'Top canciones diario' and j[3] in ok_yt)]
+            HECHO.append(f'YouTube Charts oficial ({len(ok_yt)} países)')
+        elif err_yt:
+            log(f'  · YouTube Charts oficial no disponible ({err_yt}); se usa kworb')
     with cf.ThreadPoolExecutor(6) as ex:
         for res in ex.map(run, jobs):
             charts += res
@@ -2779,18 +2839,26 @@ def main():
             add('rel:' + norm(s['titulo']), 'lanzamiento', f'Nuevo tema: {s["titulo"]}', s.get('artistas'), s['lanzamiento'],
                 f'https://open.spotify.com/track/{s["spotify"]["id"]}' if (s.get('spotify') or {}).get('id') else (s.get('apple') or {}).get('url'), s.get('lanzamiento_fuente') or 'Spotify / Apple Music', s.get('portada'), s.get('id'))
     pk = {(plat_of(c), c['pais'], base(c['cancion'] or '')): c for c in prev_charts if c.get('posicion') is not None}
+    prev_caducas = {(plat_of(c), c['pais']) for c in prev_charts if c.get('estado') == 'Sin actualizar'}
     nk = {(plat_of(c), c['pais'], base(c['cancion'] or '')): c for c in data.get('charts', []) if c.get('posicion') is not None}
     for k, c in nk.items():
         o = pk.get(k)
         s = next((x for x in songs if base(x['titulo']) == k[2]), None)
         sid = s.get('id') if s else None
+        if not o and k[:2] in prev_caducas:
+            continue  # la lista vuelve a leerse (o cambia de fuente): no es una entrada nueva
         if not o:
             add(f'in:{k[0]}:{k[1]}:{k[2]}:{c.get("fecha_lista") or HOY}', 'listas', f'{c["cancion"]} entra en {c["lista"]} de {c["plataforma"]} {c["pais"]} (#{c["posicion"]})',
                 f'Puesto #{c["posicion"]}', c.get('fecha_lista') or HOY, None, f'{c["plataforma"]} vía kworb.net', (s or {}).get('portada'), sid)
         elif o['posicion'] - c['posicion'] >= 10:
             add(f'up:{k[0]}:{k[1]}:{k[2]}:{c["posicion"]}', 'listas', f'{c["cancion"]} sube al #{c["posicion"]} en {c["plataforma"]} {c["pais"]}',
                 f'Antes #{o["posicion"]}', c.get('fecha_lista') or HOY, None, f'{c["plataforma"]} vía kworb.net', (s or {}).get('portada'), sid)
+    caducas = {(plat_of(c), c['pais']) for c in data.get('charts', []) if c.get('estado') == 'Sin actualizar'}
+    # si la fuente dejó de actualizar esa lista, no es que «salga»: se borran esos avisos falsos
+    nov[:] = [n for n in nov if not (str(n.get('id', '')).startswith('out:') and tuple(str(n['id']).split(':')[1:3]) in caducas)]
     for k, o in pk.items():
+        if k[:2] in caducas:
+            continue
         if k not in nk and any((plat_of(c), c['pais']) == k[:2] for c in data.get('charts', []) if c.get('consultado') == HOY):
             add(f'out:{k[0]}:{k[1]}:{k[2]}:{HOY}', 'listas', f'{o["cancion"]} sale de {o["lista"]} de {o["plataforma"]} {o["pais"]}', f'Estaba en el #{o["posicion"]}', HOY, None, f'{o["plataforma"]} vía kworb.net')
     for pl in data.get('playlists', []):
