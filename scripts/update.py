@@ -1116,8 +1116,10 @@ def logros(data, songs, P, prev_perfil, prev_sp, prev_yt, add):
     MARKS = [1e6, 5e6, 10e6, 25e6, 50e6, 100e6, 200e6, 300e6, 400e6, 500e6, 750e6, 1e9, 1.5e9, 2e9]
     for s in songs:
         k = norm(s['titulo'])
-        for plat, old, new, unit in (('Spotify', prev_sp.get(k), (s.get('spotify') or {}).get('total'), 'STREAMS'), ('YouTube', prev_yt.get(k), (s.get('youtube') or {}).get('vistas'), 'VISTAS')):
-            if old and new and new > old:
+        pyt = prev_yt.get(k) or (None, None)
+        yt_old = pyt[0] if pyt[1] and pyt[1] == (s.get('youtube') or {}).get('video_id') else None  # si cambió el vídeo enlazado, no es un logro
+        for plat, old, new, unit in (('Spotify', prev_sp.get(k), (s.get('spotify') or {}).get('total'), 'STREAMS'), ('YouTube', yt_old, (s.get('youtube') or {}).get('vistas'), 'VISTAS')):
+            if old and new and new > old and not (old >= 1e6 and new > old * 1.5):  # un salto enorme de golpe no es crecimiento real
                 for m in MARKS:
                     if old < m <= new:
                         L(f'cifra:{plat}:{k}:{int(m)}', 3 if m >= 100e6 else 2 if m >= 10e6 else 1, 'cifra', (f'{s["titulo"]} supera el millón de {unit.lower()} en {plat}' if m == 1e6 else f'{s["titulo"]} supera los {corto(m)} de {unit.lower()} en {plat}'),
@@ -1300,7 +1302,7 @@ def main():
     by_norm = {norm(s['titulo']): s for s in songs}
     prev_charts = copy.deepcopy(data.get('charts', []))
     prev_sp = {norm(s['titulo']): (s.get('spotify') or {}).get('total') for s in songs}
-    prev_yt = {norm(s['titulo']): (s.get('youtube') or {}).get('vistas') for s in songs}
+    prev_yt = {norm(s['titulo']): ((s.get('youtube') or {}).get('vistas'), (s.get('youtube') or {}).get('video_id')) for s in songs}
     prev_perfil = copy.deepcopy(data['perfil'])
     cfg = data.setdefault('config', {})
     yt_key = os.environ.get('YT_API_KEY')
@@ -2408,6 +2410,21 @@ def main():
         HECHO.append(f'logros ({nl} nuevos)')
     except Exception as e:  # noqa: BLE001
         fallo('Logros', e)
+    by_id_s = {x.get('id'): x for x in songs}
+    def _cifra_vieja(n):
+        if n.get('tipo') != 'logro' or n.get('cat') != 'cifra' or not str(n.get('id', '')).startswith('cifra:'):
+            return False
+        p_ = str(n['id']).split(':')
+        try:
+            marca = float(p_[-1])
+        except ValueError:
+            return False
+        x = by_id_s.get(n.get('cancion')) or by_norm.get(p_[2] if len(p_) > 3 else '')
+        if not x:
+            return False
+        actual = (x.get('youtube') or {}).get('vistas') if p_[1] == 'YouTube' else (x.get('spotify') or {}).get('total')
+        return bool(actual) and actual > marca * 1.5
+    nov[:] = [n for n in nov if not _cifra_vieja(n)]
     nov.sort(key=lambda n: (n.get('fecha') or '', n.get('detectado') or ''), reverse=True)
     keep = [n for n in nov if n.get('tipo') == 'logro'][:150]
     # tope por tipo: las listas (muchas al día) no pueden tapar estrenos, Instagram, TikTok, vídeos o noticias
