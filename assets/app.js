@@ -804,7 +804,7 @@
     el.append(h('h1', { class: 'yc-h1', text: 'Listas' }), h('p', { class: 'yc-sub', text: 'Spotify, Apple Music, YouTube, Shazam, Deezer e iTunes en Latinoamérica, España, EE. UU. y Europa, más las playlists oficiales.' }));
     const plats = ['Spotify', 'Apple Music', 'YouTube', 'Shazam', 'Deezer', 'iTunes'];
     el.append(h('div', { class: 'yc-widgets' }, plats.map(p => {
-      const rows = C.filter(c => c.plataforma === p); const inn = rows.filter(c => c.posicion != null);
+      const rows = C.filter(c => c.plataforma === p && c.estado !== 'Sin actualizar'); const inn = rows.filter(c => c.posicion != null);
       const k = PLAT_BY_NAME[p];
       return h('div', { class: 'yc-widget', 'data-go': '1', onclick: () => { LF.plat = p; drawCharts(); } },
         h('div', { class: 'yc-widget-head' }, pico(k), h('span', { text: p })),
@@ -844,7 +844,7 @@
       return h('div', { class: 'yc-row', onclick: s ? () => openSong(s.id) : null, style: s ? null : 'cursor:default' },
         flagEl(ccOf(c.pais, c.codigo)),
         h('div', { class: 'yc-row-main' }, h('b', { text: `${c.pais} · ${c.plataforma}` }), h('small', { text: `${c.lista} · ${c.cancion || 'No aparece'} · ${c.fecha_lista ? dfmt(c.fecha_lista) : 'consultada ' + dfmt(c.consultado)}${c.revisado_hasta ? ' · revisado hasta #' + c.revisado_hasta : ''}` })),
-        h('div', { class: 'yc-row-meta' }, c.posicion != null ? h('b', { style: 'color:var(--up)', text: '#' + c.posicion }) : h('b', { style: 'color:var(--text3)', text: 'Fuera' }), h('small', { text: c.cambio || '' })));
+        h('div', { class: 'yc-row-meta' }, c.posicion != null ? h('b', { style: 'color:var(--up)', text: '#' + c.posicion }) : h('b', { style: 'color:var(--text3)', text: c.estado === 'Sin actualizar' ? 'Sin datos nuevos' : 'Fuera' }), h('small', { text: c.cambio || '' })));
     }));
     if (!rows.length) list.append(h('p', { class: 'yc-empty', text: 'Nada coincide.' }));
   }
