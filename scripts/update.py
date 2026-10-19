@@ -494,6 +494,187 @@ def kworb_yt_artist():
     return out
 
 
+def _num_kw(t):
+    t = str(t or '').strip().replace(',', '')
+    try:
+        return float(t)
+    except ValueError:
+        return None
+
+
+LATAM_QID = {'Q96': 'México', 'Q1183': 'Puerto Rico', 'Q739': 'Colombia', 'Q414': 'Argentina', 'Q717': 'Venezuela', 'Q786': 'Rep. Dominicana',
+             'Q241': 'Cuba', 'Q298': 'Chile', 'Q419': 'Perú', 'Q736': 'Ecuador', 'Q804': 'Panamá', 'Q155': 'Brasil', 'Q77': 'Uruguay', 'Q733': 'Paraguay',
+             'Q750': 'Bolivia', 'Q774': 'Guatemala', 'Q783': 'Honduras', 'Q792': 'El Salvador', 'Q811': 'Nicaragua', 'Q800': 'Costa Rica',
+             'Q484464': 'latino de EE. UU.'}
+
+
+def latinos_wikidata(ids, cache):
+    """Quién es latino según Wikidata (base de datos abierta de Wikipedia), buscando por su ID de artista de Spotify (P1902):
+    nacionalidad (P27), país de origen del grupo (P495), país de nacimiento (P19→P17), nacido en Puerto Rico, o etnia latina de EE. UU. (P172).
+    Se guarda en caché 30 días por artista para no repetir consultas."""
+    lim = (NOW - dt.timedelta(days=30)).strftime('%Y-%m-%d')
+    faltan = [i for i in ids if i and (i not in cache or (cache[i].get('f') or '') < lim)]
+    for k in range(0, len(faltan), 60):
+        lote = faltan[k:k + 60]
+        q = ('SELECT ?sid (SAMPLE(?lab) AS ?nombre) (GROUP_CONCAT(DISTINCT STRAFTER(STR(?p), "entity/"); separator="|") AS ?ps) WHERE { '
+             'VALUES ?sid {' + ' '.join(f'"{x}"' for x in lote) + '} ?item wdt:P1902 ?sid . '
+             'OPTIONAL { ?item rdfs:label ?lab FILTER(LANG(?lab) = "es") } '
+             'OPTIONAL { { ?item wdt:P27 ?p } UNION { ?item wdt:P495 ?p } UNION { ?item wdt:P19/wdt:P17 ?p } UNION { ?item wdt:P172 ?p } '
+             'UNION { ?item wdt:P19/wdt:P131* wd:Q1183 . BIND(wd:Q1183 AS ?p) } } } GROUP BY ?sid')
+        j = get('https://query.wikidata.org/sparql', as_json=True, params={'query': q, 'format': 'json'},
+                headers={'Accept': 'application/sparql-results+json', 'User-Agent': 'anuelaa-charts/1.0 (https://github.com/ElChechoGH/anuelaa-charts)'}, tries=2)
+        vistos = set()
+        for b in j['results']['bindings']:
+            sid = b['sid']['value']; vistos.add(sid)
+            ps = [x for x in (b.get('ps', {}).get('value') or '').split('|') if x]
+            cache[sid] = {'ps': ps, 'f': HOY}
+        for sid in lote:
+            if sid not in vistos:
+                cache[sid] = {'ps': None, 'f': HOY}  # no está en Wikidata: decide la lista manual
+    return cache
+
+
+def lat_de(entry):
+    """(es_latino, país) a partir de lo guardado de Wikidata; None si Wikidata no conoce al artista."""
+    if not entry or entry.get('ps') is None:
+        return None, None
+    paises = dict(LATAM_QID)
+    if CFG.get('latinos_incluye_espana'):
+        paises['Q29'] = 'España'
+    hit = [paises[x] for x in entry['ps'] if x in paises]
+    hit.sort(key=lambda x: x == 'latino de EE. UU.')
+    return bool(hit), (hit[0] if hit else None)
+
+
+def spotify_mundo(lat_cache=None):
+    """Su sitio en Spotify frente a otros artistas (kworb): ranking de oyentes mensuales con quién tiene arriba y abajo,
+    y streams diarios del artista con su puesto entre todos."""
+    out = {'fecha': HOY, 'fuente': 'kworb.net'}
+    tbs, _ = tables(get('https://kworb.net/spotify/listeners.html'))
+    for heads, rows in tbs:
+        il = col(heads, 'Listeners')
+        if il is None:
+            continue
+        ipk, ipkl, idl = col(heads, 'Peak'), col(heads, 'PkListeners'), col(heads, 'Daily')
+        filas = []
+        for i, r in enumerate(rows):
+            nombre = r[1][0] if len(r) > 1 else r[0][0]
+            href = next((h_ for _, h_ in r if h_), '') or ''
+            filas.append({'rank': to_int(r[0][0]) or i + 1, 'nombre': nombre, 'oyentes': to_int(r[il][0]), 'yo': SP_ARTIST in href,
+                          'pico_rank': to_int(r[ipk][0]) if ipk is not None and ipk != il else None,
+                          'pico_oyentes': to_int(r[ipkl][0]) if ipkl is not None else None,
+                          'cambio': (to_int(r[idl][0]) or 0) * (-1 if str(r[idl][0]).strip().startswith('-') else 1) if idl is not None else None})
+        k = next((i for i, f in enumerate(filas) if f['yo']), None)
+        if k is not None:
+            yo = filas[k]
+            out['oyentes'] = dict(rank=yo['rank'], oyentes=yo['oyentes'], cambio=yo['cambio'], pico_rank=yo['pico_rank'], pico_oyentes=yo['pico_oyentes'],
+                                  arriba=[{'nombre': f['nombre'], 'oyentes': f['oyentes'], 'rank': f['rank']} for f in filas[max(0, k - 3):k]][::-1],
+                                  abajo=[{'nombre': f['nombre'], 'oyentes': f['oyentes'], 'rank': f['rank']} for f in filas[k + 1:k + 4]])
+        break
+    try:
+        tbs, _ = tables(get('https://kworb.net/spotify/artists.html'))
+        for heads, rows in tbs:
+            idy, ist = col(heads, 'Daily'), col(heads, 'Streams')
+            if idy is None:
+                continue
+            filas = []
+            for r in rows:
+                href = next((h_ for _, h_ in r if h_), '') or ''
+                d_, t_ = _num_kw(r[idy][0]), _num_kw(r[ist][0]) if ist is not None else None
+                if d_ is not None:
+                    m_ = re.search(r'([A-Za-z0-9]{22})', href)
+                    filas.append({'nombre': r[0][0], 'diarios': int(d_ * 1e6), 'total': int(t_ * 1e6) if t_ else None, 'yo': SP_ARTIST in href, 'sid': m_.group(1) if m_ else None})
+            filas.sort(key=lambda f: -f['diarios'])
+            k = next((i for i, f in enumerate(filas) if f['yo']), None)
+            por_total = sorted([f for f in filas if f['total']], key=lambda f: -f['total'])
+            kt = next((i for i, f in enumerate(por_total) if f['yo']), None)
+            if kt is not None:
+                lat = {norm(x) for x in (CFG.get('latinos') or [])}
+                no_lat = {norm(x) for x in (CFG.get('no_latinos') or [])}
+                fuente_lat = 'lista manual'
+                if lat_cache is not None:
+                    try:
+                        latinos_wikidata([f['sid'] for f in por_total[:kt + 25]], lat_cache)
+                        fuente_lat = 'Wikidata + lista manual'
+                    except Exception as e:  # noqa: BLE001
+                        log(f'Wikidata (latinos) falló: {e}')
+                def es_lat(f):
+                    if norm(f['nombre']) in no_lat:
+                        return False
+                    l_, _ = lat_de((lat_cache or {}).get(f['sid']))
+                    if l_ is not None:  # Wikidata manda; la lista manual solo decide si Wikidata no conoce al artista
+                        return l_ or norm(f['nombre']) in {norm(x) for x in (CFG.get('latinos_forzar') or [])}
+                    return norm(f['nombre']) in lat
+                lats = [f for f in por_total if f['yo'] or es_lat(f)]
+                kl = next(i for i, f in enumerate(lats) if f['yo'])
+                out['total'] = dict(rank=kt + 1, total=por_total[kt]['total'], rank_latino=kl + 1 if lat else None,
+                                    arriba=[{'nombre': f['nombre'], 'total': f['total'], 'rank': i + 1} for i, f in list(enumerate(por_total))[max(0, kt - 2):kt]][::-1],
+                                    abajo=[{'nombre': f['nombre'], 'total': f['total'], 'rank': i + 1} for i, f in list(enumerate(por_total))[kt + 1:kt + 3]],
+                                    latinos_fuente=fuente_lat,
+                                    latinos_arriba=[{'nombre': f['nombre'], 'total': f['total'], 'rank': i + 1, 'rank_global': por_total.index(f) + 1,
+                                                     'pais': lat_de((lat_cache or {}).get(f['sid']))[1]} for i, f in enumerate(lats[:kl])],
+                                    latinos_abajo=[{'nombre': f['nombre'], 'total': f['total'], 'rank': kl + 2 + i, 'rank_global': por_total.index(f) + 1,
+                                                    'pais': lat_de((lat_cache or {}).get(f['sid']))[1]} for i, f in enumerate(lats[kl + 1:kl + 3])])
+            if k is not None:
+                out['diarios'] = dict(rank=k + 1, streams=filas[k]['diarios'], total=filas[k]['total'],
+                                      arriba=[{'nombre': f['nombre'], 'streams': f['diarios'], 'rank': i + 1} for i, f in list(enumerate(filas))[max(0, k - 2):k]][::-1],
+                                      abajo=[{'nombre': f['nombre'], 'streams': f['diarios'], 'rank': i + 1} for i, f in list(enumerate(filas))[k + 1:k + 3]])
+            break
+    except Exception:  # noqa: BLE001
+        pass
+    return out
+
+
+BB_CHARTS = [('latin-songs', 'Hot Latin Songs'), ('hot-100', 'Billboard Hot 100'), ('billboard-global-200', 'Billboard Global 200'),
+             ('billboard-global-excl-us', 'Global Excl. US'), ('latin-streaming-songs', 'Latin Streaming Songs'), ('latin-airplay', 'Latin Airplay')]
+
+
+def billboard_chart(slug_):
+    """Sus canciones en una lista de Billboard (puesto, semana anterior, pico, semanas y si es debut)."""
+    html = get(f'https://www.billboard.com/charts/{slug_}/', tries=2, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36', 'Accept-Language': 'en-US,en;q=0.9'})
+    soup = BeautifulSoup(html, 'lxml')
+    txt = soup.get_text(' ')
+    m = re.search(r'Week of ([A-Z][a-z]+ \d{1,2}, \d{4})', txt)
+    semana = dt.datetime.strptime(m.group(1), '%B %d, %Y').strftime('%Y-%m-%d') if m else None
+    out = []
+    filas = soup.select('div.o-chart-results-list-row-container') or soup.select('ul.o-chart-results-list-row')
+    for fr in filas:
+        h3 = fr.select_one('h3#title-of-a-story') or fr.find('h3')
+        if not h3:
+            continue
+        titulo = h3.get_text(' ', strip=True)
+        etiquetas = [x.get_text(' ', strip=True) for x in fr.select('span.c-label')]
+        art = next((e for e in etiquetas if e and not re.fullmatch(r'[\d\-–]+|NEW|RE-? ?ENTRY|New|Re-Entry', e, re.I)), '')
+        if not NAME_RE.search(art + ' ' + titulo):
+            continue
+        nums = [e for e in etiquetas if re.fullmatch(r'\d+|-|–', e)]
+        pos = to_int(nums[0]) if nums else None
+        rest = nums[1:]
+        lw, pico, sem = (rest + [None, None, None])[:3] if len(rest) >= 3 else (None, None, None)
+        nuevo = bool(re.search(r'\bNEW\b', ' '.join(etiquetas))) or lw in ('-', '–')
+        out.append({'pos': pos, 'titulo': titulo, 'artistas': art, 'lw': to_int(lw) if lw not in (None, '-', '–') else None, 'pico': to_int(pico), 'semanas': to_int(sem),
+                    'nuevo': nuevo, 'reentrada': bool(re.search(r'RE-? ?ENTRY', ' '.join(etiquetas), re.I))})
+    if not filas:
+        raise RuntimeError('Billboard no devolvió la lista')
+    return semana, sorted(out, key=lambda x: x['pos'] or 999)
+
+
+def kworb_video_dias(video_id):
+    """Vistas totales por fecha de un vídeo (tabla «Most recent data» de kworb) → vistas de cada día."""
+    tbs, _ = tables(get(f'https://kworb.net/youtube/video/{video_id}.html', tries=2))
+    for heads, rows in tbs:
+        idt, iv = col(heads, 'Date'), col(heads, 'Views')
+        if idt is None or iv is None:
+            continue
+        serie = [(r[idt][0].replace('/', '-'), to_int(r[iv][0])) for r in rows if to_int(r[iv][0])]
+        serie.sort()
+        out = []
+        for i, (d_, v_) in enumerate(serie):
+            out.append({'d': d_, 't': v_, 'v': v_ - serie[i - 1][1] if i else None})
+        return out
+    return []
+
+
 def _fold(t):
     import unicodedata
     return re.sub(r'\s+', ' ', re.sub(r'[^a-z0-9 ]', ' ', unicodedata.normalize('NFD', str(t or '').lower()).encode('ascii', 'ignore').decode())).strip()
@@ -1113,7 +1294,12 @@ def logros(data, songs, P, prev_perfil, prev_sp, prev_yt, add):
     st['max_paises_spotify'] = max(np_, rec_p)
 
     # 2) cifras redondas por canción (streams y vistas)
-    MARKS = [1e6, 5e6, 10e6, 25e6, 50e6, 100e6, 200e6, 300e6, 400e6, 500e6, 750e6, 1e9, 1.5e9, 2e9]
+    MARKS = [1e6, 5e6, 10e6, 25e6, 50e6] + [m * 1e6 for m in range(100, 1000, 100)] + [1e9, 1.25e9, 1.5e9, 1.75e9, 2e9, 2.5e9, 3e9]
+    def cuantas(plat, m):  # cuántas canciones suyas han llegado ya a esa cifra (para «es la canción Nª en lograrlo»)
+        return sum(1 for x in songs if ((((x.get('spotify') or {}).get('total')) if plat == 'Spotify' else ((x.get('youtube') or {}).get('vistas'))) or 0) >= m)
+    def orden(plat):  # su ranking de canciones por streams / vistas
+        v = lambda x: ((x.get('spotify') or {}).get('total') if plat == 'Spotify' else (x.get('youtube') or {}).get('vistas')) or 0
+        return sorted([x for x in songs if v(x)], key=lambda x: -v(x))
     for s in songs:
         k = norm(s['titulo'])
         pyt = prev_yt.get(k) or (None, None)
@@ -1123,7 +1309,21 @@ def logros(data, songs, P, prev_perfil, prev_sp, prev_yt, add):
                 for m in MARKS:
                     if old < m <= new:
                         L(f'cifra:{plat}:{k}:{int(m)}', 3 if m >= 100e6 else 2 if m >= 10e6 else 1, 'cifra', (f'{s["titulo"]} supera el millón de {unit.lower()} en {plat}' if m == 1e6 else f'{s["titulo"]} supera los {corto(m)} de {unit.lower()} en {plat}'),
-                          f'Ahora {MILES(new)}', corto(m), f'{unit} EN {plat.upper()}', 'NUEVA CIFRA', None, s, plat)
+                          f'Ahora {MILES(new)} · Es la {cuantas(plat, m)}ª canción de {ARTISTA} en lograrlo', corto(m), f'{unit} EN {plat.upper()}', 'NUEVA CIFRA', None, s, plat)
+    # 2b) una canción suya adelanta a otra de él en su ranking (Spotify / YouTube)
+    for plat, prev_ in (('Spotify', prev_sp), ('YouTube', {k_: v_[0] for k_, v_ in prev_yt.items() if v_ and v_[0]})):
+        ords = orden(plat)
+        val = lambda x: ((x.get('spotify') or {}).get('total') if plat == 'Spotify' else (x.get('youtube') or {}).get('vistas')) or 0
+        for i, s in enumerate(ords[:40]):
+            o = prev_.get(norm(s['titulo']))
+            if not o:
+                continue
+            for x in ords[i + 1:i + 6]:
+                ox = prev_.get(norm(x['titulo']))
+                if ox and o < ox and val(s) > val(x) and val(s) < o * 1.5 and norm(x['titulo']) != norm(s['titulo']):
+                    L(f'sup:{plat}:{norm(s["titulo"])}:{norm(x["titulo"])}', 2 if i < 10 else 1, 'rival', f'«{s["titulo"]}» supera a «{x["titulo"]}» en {plat}',
+                      f'Ya es su {i + 1}ª canción más {"escuchada" if plat == "Spotify" else "vista"} · {MILES(val(s))} {"streams" if plat == "Spotify" else "views"}',
+                      f'#{i + 1}', f'SUS TEMAS EN {plat.upper()}', 'SUPERA A ' + x['titulo'].upper(), None, s, plat)
     # 3) récords del perfil (máximos de siempre) y cifras redondas
     rec = st.setdefault('records', {})
     def paso(v):  # seguidores: cada 5 M (de 10 a 100 M), cada 10 M (desde 100 M), cada 1 M (de 1 a 10 M)
@@ -1131,7 +1331,7 @@ def logros(data, songs, P, prev_perfil, prev_sp, prev_yt, add):
     for key_, path, label, sub, step in (('oyentes', ('spotify', 'oyentes_mensuales'), 'oyentes mensuales en Spotify', 'OYENTES MENSUALES', 'auto'),
                                          ('sp_seg', ('spotify', 'seguidores'), 'seguidores en Spotify', 'SEGUIDORES EN SPOTIFY', 'auto'),
                                          ('diarios', ('spotify', 'streams_diarios'), 'streams en un día en Spotify', 'STREAMS EN UN DÍA', None),
-                                         ('total_sp', ('spotify', 'streams_totales'), 'streams totales en Spotify', 'STREAMS TOTALES EN SPOTIFY', 500e6),
+                                         ('total_sp', ('spotify', 'streams_totales'), 'streams totales en Spotify', 'STREAMS TOTALES EN SPOTIFY', 1e9),
                                          ('subs', ('youtube', 'suscriptores'), 'suscriptores en YouTube', 'SUSCRIPTORES EN YOUTUBE', 'auto'),
                                          ('yt_vistas', ('youtube', 'vistas'), 'vistas en YouTube', 'VISTAS EN YOUTUBE', 100e6),
                                          ('ig', ('instagram', 'seguidores'), 'seguidores en Instagram', 'SEGUIDORES EN INSTAGRAM', 'auto'),
@@ -1144,7 +1344,9 @@ def logros(data, songs, P, prev_perfil, prev_sp, prev_yt, add):
             step = paso(min(n, o or n))
         if step and o and int(n // step) > int(o // step):
             mark = int(n // step) * step
-            L(f'perfil:{key_}:{int(mark)}', 3 if key_ in ('oyentes', 'total_sp') or mark >= 10e6 else 2, 'cifra', f'{ARTISTA} llega a {corto(mark)} de {label}', f'Ahora {MILES(int(n))}', corto(mark), sub, 'NUEVA CIFRA', None, None, path[0].capitalize())
+            tt_ = (data.get('mundo') or {}).get('total') or {}
+            extra = (f' · #{tt_["rank_latino"]} latino más escuchado de la historia en Spotify' if key_ == 'total_sp' and tt_.get('rank_latino') else '') + (f' · #{tt_["rank"]} de todos los artistas' if key_ == 'total_sp' and tt_.get('rank') else '')
+            L(f'perfil:{key_}:{int(mark)}', 3 if key_ in ('oyentes', 'total_sp') or mark >= 10e6 else 2, 'cifra', f'{ARTISTA} llega a {corto(mark)} de {label}', f'Ahora {MILES(int(n))}' + extra, corto(mark), sub, 'NUEVA CIFRA', None, None, path[0].capitalize())
         if key_ in ('oyentes', 'diarios'):
             r0 = rec.get(key_)
             if r0 and n > r0 * 1.01 and not (P.get(path[0]) or {}).get('oyentes_aprox' if key_ == 'oyentes' else '_'):
@@ -1161,6 +1363,50 @@ def logros(data, songs, P, prev_perfil, prev_sp, prev_yt, add):
                 L(f'dia:{k}:{int(d_)}', 2 if d_ >= 500000 else 1, 'record', f'{s["titulo"]} bate su récord: {MILES(int(d_))} streams en un día', f'Antes su mejor día era {MILES(int(bd[k]))}',
                   corto(d_), 'STREAMS EN UN DÍA', 'MEJOR DÍA', None, s, 'Spotify vía kworb.net')
             bd[k] = max(d_, bd.get(k) or 0)
+    # 6) Billboard: debuts y nuevos picos
+    cur_ref[0] = None
+    for slug_, b in (data.get('billboard') or {}).items():
+        for f in b.get('entradas') or []:
+            s = song_of(f['titulo'])
+            sem = b.get('semana') or HOY
+            if f.get('nuevo') and not f.get('reentrada'):
+                L(f'bb:{slug_}:{sem}:{base(f["titulo"])}', 3 if f['pos'] and f['pos'] <= 10 else 2, 'billboard', f'«{f["titulo"]}» debuta en el Top {f["pos"]} de {b["nombre"]}',
+                  f'{f["artistas"]} · semana del {sem}', f'#{f["pos"]}', b['nombre'].upper(), 'DEBUT EN BILLBOARD', sem, s, 'Billboard', b.get('url'))
+            elif f.get('pico') and f.get('pos') == f.get('pico') and f.get('lw') and f['lw'] > f['pos']:
+                L(f'bbpico:{slug_}:{sem}:{base(f["titulo"])}', 2, 'billboard', f'«{f["titulo"]}» alcanza su mejor puesto en {b["nombre"]}: Top {f["pos"]}',
+                  f'Sube desde el Top {f["lw"]} · {f.get("semanas") or "?"} semanas en la lista', f'#{f["pos"]}', b['nombre'].upper(), 'NUEVO PICO', sem, s, 'Billboard', b.get('url'))
+        nuevos_ = [f for f in b.get('entradas') or [] if f.get('nuevo')]
+        if len(nuevos_) >= 2:
+            L(f'bbn:{slug_}:{b.get("semana")}', 3, 'billboard', f'{ARTISTA} consigue {len(nuevos_)} nuevas entradas en {b["nombre"]}',
+              ' · '.join(f'«{f["titulo"]}» (Top {f["pos"]})' for f in nuevos_), str(len(nuevos_)), b['nombre'].upper(), 'BILLBOARD', b.get('semana'), None, 'Billboard', b.get('url'))
+    # 7) Spotify en el mundo: adelanta a otros artistas, pico de oyentes y puesto en streams del día
+    mu = data.get('mundo') or {}
+    oy, ant = mu.get('oyentes') or {}, mu.get('_antes') or {}
+    abajo_ahora = {a['nombre'] for a in oy.get('abajo') or []}
+    for nom in ant.get('oyentes_arriba') or []:
+        if nom in abajo_ahora:
+            L(f'rival:{nom}:{HOY}', 2, 'rival', f'{ARTISTA} supera a {nom} en oyentes mensuales de Spotify',
+              f'Ahora es el artista #{oy.get("rank")} con más oyentes mensuales ({MILES(oy.get("oyentes") or 0)})', f'#{oy.get("rank")}', 'OYENTES MENSUALES', 'SUPERA A ' + nom.upper(), None, None, 'kworb.net')
+    if oy.get('oyentes') and oy.get('pico_oyentes') and oy['oyentes'] >= oy['pico_oyentes'] and ant.get('oyentes_rank'):
+        L(f'pico_oy:{int(oy["oyentes"] // 100000)}', 3, 'record', f'Nuevo pico de oyentes mensuales en su carrera: {corto(oy["oyentes"])}',
+          f'Es el artista #{oy.get("rank")} con más oyentes en Spotify', corto(oy['oyentes']), 'OYENTES MENSUALES', 'PICO DE SU CARRERA', None, None, 'kworb.net')
+    di = mu.get('diarios') or {}
+    if di.get('rank') and di['rank'] <= 25:
+        L(f'dia_rank:{HOY}', 3 if di['rank'] <= 10 else 2, 'mundial', f'{ARTISTA} fue el artista #{di["rank"]} con más streams en Spotify',
+          f'{MILES(di.get("streams") or 0)} streams en un día', f'#{di["rank"]}', 'STREAMS EN UN DÍA', 'ARTISTAS MÁS ESCUCHADOS', None, None, 'kworb.net')
+    tt = mu.get('total') or {}
+    abajo_t = {a['nombre'] for a in tt.get('abajo') or []}
+    for nom in ant.get('total_arriba') or []:
+        if nom in abajo_t:
+            L(f'rival_total:{nom}', 3, 'rival', f'{ARTISTA} supera a {nom} en streams totales de Spotify',
+              f'Ahora es el artista #{tt.get("rank")} más escuchado de la historia en Spotify ({corto(tt.get("total") or 0)})', f'#{tt.get("rank")}', 'STREAMS TOTALES', 'SUPERA A ' + nom.upper(), None, None, 'kworb.net')
+    if tt.get('rank_latino') and ant.get('latino_rank') and tt['rank_latino'] < ant['latino_rank']:
+        L(f'latino:{tt["rank_latino"]}', 3, 'mundial', f'{ARTISTA} ya es el #{tt["rank_latino"]} latino más escuchado de la historia en Spotify',
+          f'{MILES(int(tt.get("total") or 0))} streams en total', f'#{tt["rank_latino"]}', 'LATINOS MÁS ESCUCHADOS', 'SUBE EN LA HISTORIA', None, None, 'kworb.net')
+    md = mu.get('mejor_dia') or {}
+    if md.get('d') == HOY and (md.get('v') or 0) > 0 and len(mu.get('hist') or []) >= 7:
+        L(f'mejor_dia:{HOY}', 3, 'record', f'Mejor día de streams de {ARTISTA} desde que se registra: {corto(md["v"])}',
+          'Streams en Spotify en un día (todas sus canciones)', corto(md['v']), 'STREAMS EN UN DÍA', 'NUEVO RÉCORD', None, None, 'kworb.net')
     return len(data.get('novedades', [])) - n0
 
 
@@ -1385,6 +1631,45 @@ def main():
             HECHO.append('oyentes Spotify')
         except Exception as e:  # noqa: BLE001
             fallo('Spotify oyentes', e)
+        # --- Spotify en el mundo (ranking de oyentes y de streams diarios frente a otros artistas)
+        try:
+            prev_mundo = copy.deepcopy(data.get('mundo') or {})
+            mundo = spotify_mundo(data.setdefault('latinos_wd', {}))
+            if mundo.get('oyentes') or mundo.get('diarios'):
+                mundo['_antes'] = {'oyentes_arriba': [a['nombre'] for a in ((prev_mundo.get('oyentes') or {}).get('arriba') or [])],
+                                   'total_arriba': [a['nombre'] for a in ((prev_mundo.get('total') or {}).get('arriba') or [])],
+                                   'total_rank': (prev_mundo.get('total') or {}).get('rank'), 'latino_rank': (prev_mundo.get('total') or {}).get('rank_latino'),
+                                   'oyentes_rank': (prev_mundo.get('oyentes') or {}).get('rank'), 'diarios_rank': (prev_mundo.get('diarios') or {}).get('rank')}
+                hist_m = [x for x in (prev_mundo.get('hist') or []) if x.get('d') != HOY]
+                hist_m.append({'d': HOY, 'oy_rank': (mundo.get('oyentes') or {}).get('rank'), 'oy': (mundo.get('oyentes') or {}).get('oyentes'),
+                               'dia_rank': (mundo.get('diarios') or {}).get('rank'), 'dia': (mundo.get('diarios') or {}).get('streams')})
+                mundo['hist'] = hist_m[-120:]
+                mundo['mejor_dia'] = max([prev_mundo.get('mejor_dia') or {}, {'d': HOY, 'v': (mundo.get('diarios') or {}).get('streams') or 0}], key=lambda x: x.get('v') or 0)
+                data['mundo'] = mundo
+                HECHO.append(f"Spotify en el mundo (oyentes #{(mundo.get('oyentes') or {}).get('rank')}, streams diarios #{(mundo.get('diarios') or {}).get('rank')})")
+        except Exception as e:  # noqa: BLE001
+            fallo('Spotify en el mundo', e)
+        # --- Billboard
+        try:
+            bb = data.setdefault('billboard', {})
+            n_bb = 0
+            for slug_, nombre_ in BB_CHARTS:
+                try:
+                    semana, filas = billboard_chart(slug_)
+                    vistos = set((bb.get(slug_) or {}).get('vistos') or [])
+                    for f in filas:
+                        f['primera_vez'] = f['titulo'] not in vistos and bool(vistos)  # entra por primera vez desde que se sigue
+                        vistos.add(f['titulo'])
+                    bb[slug_] = {'nombre': nombre_, 'semana': semana, 'consultado': HOY, 'entradas': filas, 'vistos': sorted(vistos),
+                                 'url': f'https://www.billboard.com/charts/{slug_}/'}
+                    n_bb += 1
+                    time.sleep(1.5)
+                except Exception as e:  # noqa: BLE001
+                    fallo(f'Billboard {nombre_}', e)
+            if n_bb:
+                HECHO.append(f'Billboard ({n_bb} listas)')
+        except Exception as e:  # noqa: BLE001
+            fallo('Billboard', e)
         try:
             spa = spotify_api()
             if spa:
@@ -1506,6 +1791,17 @@ def main():
         HECHO.append(f'Spotify por tema ({n_sp}/{len(sp_todo)})') if n_sp else None
         if not n_sp:
             fallo('Spotify por tema', 'Spotify no mostró el contador ni con navegador (se usa kworb)')
+
+    # --- serie diaria de streams por canción (para «Día 1, Día 2…» de los estrenos)
+    for x in songs:
+        sp_ = x.get('spotify') or {}
+        if sp_.get('fecha') and sp_.get('total'):
+            dd_ = sp_.setdefault('dias', [])
+            if not dd_ or dd_[-1].get('d') != sp_['fecha']:
+                dd_.append({'d': sp_['fecha'], 't': sp_['total'], 'v': sp_.get('diarios')})
+            elif dd_[-1].get('t') != sp_['total']:
+                dd_[-1].update(t=sp_['total'], v=sp_.get('diarios'))
+            sp_['dias'] = dd_[-60:]
 
     # --- YouTube: canal, nuevos videos y vistas por video
     log('YouTube')
@@ -1845,6 +2141,15 @@ def main():
                 hh.append({'d': HOY, 't': NOW.strftime('%Y-%m-%dT%H:%M:%SZ'), 'v': y['vistas']})
                 y['hist'] = hh[-10:]
     _q += limpiar_videos()  # ya con el canal real de cada vídeo: lo infiltrado no llega a publicarse
+    if not RAPIDO:  # vistas día a día de los vídeos recientes (para el debut: primeras 24 h, primera semana)
+        lim60 = (NOW - dt.timedelta(days=60)).strftime('%Y-%m-%d')
+        for x in [x for x in songs if (x.get('youtube') or {}).get('video_id') and (x.get('lanzamiento') or '') >= lim60][:15]:
+            try:
+                dd_ = kworb_video_dias(x['youtube']['video_id'])
+                if dd_:
+                    x['youtube']['dias'] = dd_[-60:]
+            except Exception:  # noqa: BLE001
+                pass
     if _q:
         HECHO.append(f'vídeos de canales no oficiales quitados ({_q})')
 
@@ -2412,9 +2717,10 @@ def main():
         fallo('Logros', e)
     by_id_s = {x.get('id'): x for x in songs}
     def _cifra_vieja(n):
-        if n.get('tipo') != 'logro' or n.get('cat') != 'cifra' or not str(n.get('id', '')).startswith('cifra:'):
+        id_ = re.sub(r'^logro:', '', str(n.get('id', '')))
+        if n.get('tipo') != 'logro' or n.get('cat') != 'cifra' or not id_.startswith('cifra:'):
             return False
-        p_ = str(n['id']).split(':')
+        p_ = id_.split(':')
         try:
             marca = float(p_[-1])
         except ValueError:

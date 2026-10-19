@@ -609,7 +609,8 @@
         h('h1', { class: 'lg-name', text: DATA.artista.nombre }),
         h('p', { class: 'lg-hero-sub', text: [DATA.artista.origen, SONGS.length ? `${SONGS.length} canciones` : '', (DATA.albumes || []).filter(a => a.tracks).length ? `${(DATA.albumes || []).filter(a => a.tracks).length} discos` : ''].filter(Boolean).join(' · ') }),
         h('div', { class: 'lg-links' }, Object.entries(DATA.artista.links || {}).map(([k, u]) => h('a', { href: u, target: '_blank', rel: 'noopener', onclick: (e) => e.stopPropagation(), text: { spotify: 'Spotify', youtube: 'YouTube', apple_music: 'Apple Music', instagram: 'Instagram', tiktok: 'TikTok', deezer: 'Deezer', audiomack: 'Audiomack', shazam: 'Shazam', x: 'X' }[k] || k }))))
-    ]);
+    ], openArtist, 'Ficha de ' + DATA.artista.nombre);
+    hero.append(h('span', { class: 'ax-hint' }, 'Ficha al día', icon('chev')));
     g.append(hero);
     // oyentes y streams con su evolución
     const metric = (cls, label, ic, v, key, sub, color, goTo) => {
@@ -1359,11 +1360,11 @@
   }
 
   // Logros: lo que merece post
-  const LG_CAT = { todo: 'Todo', mundial: 'Mundial', numero1: '#1', top10: 'Top 10', playlist: 'Playlists', aniversario: 'Aniversarios', debut: 'Debuts', pico: 'Picos', record: 'Récords', cifra: 'Cifras' };
+  const LG_CAT = { todo: 'Todo', mundial: 'Mundial', numero1: '#1', top10: 'Top 10', playlist: 'Playlists', aniversario: 'Aniversarios', debut: 'Debuts', pico: 'Picos', record: 'Récords', cifra: 'Cifras', billboard: 'Billboard', rival: 'Supera a' };
   const LG_NIVEL = { 3: ['Bombazo', 'n3'], 2: ['Importante', 'n2'], 1: ['Bueno', 'n1'] };
   // un logro de cifra solo cuenta si es actual: si la canción ya va muy por encima de esa cifra, es antiguo (o vino de cambiar el vídeo)
   function cifraVieja(n) {
-    const p = String(n.id || '').split(':'); if (p[0] !== 'cifra' || p.length < 4) return false;
+    const p = String(n.id || '').replace(/^logro:/, '').split(':'); if (p[0] !== 'cifra' || p.length < 4) return false;
     const marca = Number(p[p.length - 1]); if (!isNum(marca)) return false;
     const s = (n.cancion && songById(n.cancion)) || SONGS.find(x => base(x.titulo) === base(p.slice(2, -1).join(':')));
     if (!s) return false;
@@ -1376,7 +1377,7 @@
       .sort((a, b) => String(b.fecha || '').localeCompare(String(a.fecha || '')) || (b.nivel || 0) - (a.nivel || 0));
   }
   function logroCaption(n) {
-    const em = { aniversario: '🎂', playlist: '📋', mundial: '🌍', numero1: '🥇', top10: '🔟', debut: '🚀', pico: '📈', record: '💥', cifra: '🏆' }[n.cat] || '🏆';
+    const em = { aniversario: '🎂', playlist: '📋', mundial: '🌍', numero1: '🥇', top10: '🔟', debut: '🚀', pico: '📈', record: '💥', cifra: '🏆', billboard: '📊', rival: '⚔️' }[n.cat] || '🏆';
     const topN = (t) => String(t || '').replace(/#(\d+)/g, 'Top $1');
     return `${em} ${topN(n.titulo).toUpperCase()}\n\n${topN(n.texto)}${n.fuente ? `\n\nFuente: ${n.fuente}` : ''}\n\n#${AH()}${mkTag()} #charts #musicaurbana${mkSig()}`;
   }
@@ -1537,6 +1538,7 @@
       h('span', { class: 'mt-hero-k', text: 'Logros y metas' }),
       h('h1', { class: 'yc-h1 mt-h1', text: recientes.length ? `${recientes.length} ${recientes.length === 1 ? 'logro nuevo' : 'logros nuevos'}` : 'Metas y logros' }),
       h('p', { class: 'yc-sub', text: calientes.length ? `${calientes.filter(c => c.m.aPunto).length ? `${calientes.filter(c => c.m.aPunto).length} a punto de caer · ` : ''}${calientes.length} ${calientes.length === 1 ? 'meta' : 'metas'} en los próximos 7 días. Se detecta todo solo, con datos reales.` : 'Todo lo que merece post, detectado solo con datos reales.' })));
+    el.append(fichaLink());
     if (recientes.length) {
       el.append(section('Desbloqueados', 'últimos 3 días'));
       el.append(h('div', { class: 'lgx-grid' }, recientes.map(logroBig)));
@@ -2103,7 +2105,7 @@
       if (st && Math.floor(b / st) > Math.floor(a / st)) for (let m = (Math.floor(a / st) + 1) * st; m <= b; m += st) hechas.set(m, hs[i].fecha);
     }
     for (const n of DATA.novedades || []) {
-      const p = String(n.id || '').split(':');
+      const p = String(n.id || '').replace(/^logro:/, '').split(':');
       if (p[0] === 'perfil' && PERFIL_LOGRO_KEY[p[1]] === key && isNum(Number(p[2]))) { const m = Number(p[2]); if (!hechas.has(m) || (n.fecha || '') < hechas.get(m)) hechas.set(m, n.fecha); }
     }
     const lista = [...hechas.entries()].sort((a, b) => b[0] - a[0]);
@@ -2136,10 +2138,171 @@
     }
     openSheet(`${PLAT[k].name} · ${label}`, body);
   }
+  // ---------- Ficha del artista: su sitio en el mundo, Billboard, clubs de cifras y debuts ----------
+  const ordN = (n) => n + 'º';
+  const bigN = (v) => isNum(v) && v >= 1e9 ? (v / 1e9).toFixed(2).replace(/\.?0+$/, '').replace('.', ',') + ' MIL M' : short(v);
+  function fichaLink() {
+    const mu = DATA.mundo || {}, t = mu.total || {}, oy = mu.oyentes || {};
+    const sub = [t.rank_latino ? `#${t.rank_latino} latino de la historia en Spotify` : '', oy.rank ? `#${oy.rank} en oyentes` : '', Object.values(DATA.billboard || {}).some(b => (b.entradas || []).length) ? 'en Billboard esta semana' : ''].filter(Boolean).join(' · ');
+    return h('button', { class: 'mt-link ax-link reveal', type: 'button', onclick: openArtist },
+      DATA.artista.imagen ? h('img', { class: 'ax-av', src: hd(DATA.artista.imagen, 200), alt: '' }) : h('span', { text: '⭐' }),
+      h('span', null, h('b', { text: 'Ficha de ' + DATA.artista.nombre + ' al día' }), h('small', { text: sub || 'Rankings mundiales, Billboard, récords y debuts' })), icon('chev', 'yc-chev'));
+  }
+  // escalera: quién tiene arriba y abajo
+  function ladder(arriba, abajo, yo, key, unit) {
+    const rows = [...(arriba || []).slice().reverse().map(x => ({ ...x, pos: 'up' })), { nombre: DATA.artista.nombre, rank: yo.rank, [key]: yo.v, yo: true }, ...(abajo || []).map(x => ({ ...x, pos: 'dn' }))];
+    return h('div', { class: 'ax-ladder' }, rows.map(r => h('div', { class: 'ax-step' + (r.yo ? ' me' : '') },
+      h('span', { class: 'ax-rk num', text: r.rank ? '#' + r.rank : '' }),
+      h('b', { class: 'ax-nm', text: r.nombre }),
+      h('span', { class: 'ax-v num', text: short(r[key]) }),
+      h('small', { class: 'ax-gap', text: r.yo ? unit : isNum(r[key]) && isNum(yo.v) ? (r.pos === 'up' ? `le faltan ${short(r[key] - yo.v)}` : `le saca ${short(yo.v - r[key])}`) : '' }))));
+  }
+  function axCard(kicker, big, sub, extra) {
+    return h('div', { class: 'ax-card' }, h('span', { class: 'ax-k', text: kicker }), h('b', { class: 'ax-big num', text: big }), sub ? h('small', { class: 'ax-sub', text: sub }) : null, extra || null);
+  }
+  // cuántas canciones ha llevado a cada cifra (Spotify o YouTube)
+  function clubs(plat) {
+    const val = s => plat === 'sp' ? s.sp.total : s.yt && s.yt.vistas;
+    const rate = s => plat === 'sp' ? (s.sp.diarios || s.spMedia) : (s.yt && (s.ytMedia || null));
+    const conV = SONGS.filter(s => isNum(val(s)));
+    const marks = [2e9, 1.5e9, 1e9, 900e6, 800e6, 700e6, 600e6, 500e6, 400e6, 300e6, 200e6, 100e6];
+    const out = [];
+    for (const m of marks) {
+      const dentro = conV.filter(s => val(s) >= m).sort((a, b) => val(b) - val(a));
+      const cerca = conV.filter(s => val(s) < m && val(s) >= m * 0.85).map(s => ({ s, dias: rate(s) ? Math.ceil((m - val(s)) / rate(s)) : null })).sort((a, b) => (a.dias ?? 1e9) - (b.dias ?? 1e9))[0];
+      if (dentro.length || cerca) out.push({ m, dentro, cerca });
+    }
+    return out;
+  }
+  function clubBlock(plat) {
+    const cl = clubs(plat).filter(c => c.dentro.length || (c.cerca && c.cerca.dias != null && c.cerca.dias <= 90)); if (!cl.length) return null;
+    const unit = plat === 'sp' ? 'streams' : 'views';
+    return h('div', { class: 'ax-clubs' }, cl.slice(0, 8).map(c => h('details', { class: 'ax-club' },
+      h('summary', null, h('b', { class: 'ax-club-m num', text: short(c.m) }), h('span', { class: 'ax-club-n', text: c.dentro.length ? `${c.dentro.length} ${c.dentro.length === 1 ? 'canción' : 'canciones'}` : 'ninguna aún' }),
+        c.cerca ? h('small', { class: 'ax-club-next' + (c.cerca.dias != null && c.cerca.dias <= 7 ? ' hot' : '') }, `Próxima: ${c.cerca.s.titulo}${c.cerca.dias != null ? ` · ≈ ${c.cerca.dias} ${c.cerca.dias === 1 ? 'día' : 'días'}` : ''}${c.cerca.dias != null && c.cerca.dias <= 7 ? ` · sería la ${ordN(c.dentro.length + 1)}` : ''}`) : null),
+      h('div', { class: 'ax-club-list' }, c.dentro.map((s, i) => h('button', { type: 'button', class: 'ax-club-row', onclick: () => openSong(s.id) }, h('span', { class: 'num', text: i + 1 }), h('b', { text: s.titulo }), h('em', { class: 'num', text: short(plat === 'sp' ? s.sp.total : s.yt.vistas) })))))),
+      h('p', { class: 'yc-note', text: `Toca una cifra para ver qué temas la han pasado. Cuando otra llega, sale como logro: «es la canción Nª en lograrlo» (${unit}).` }));
+  }
+  function bbBlock() {
+    const bb = Object.entries(DATA.billboard || {}).filter(([, b]) => (b.entradas || []).length);
+    if (!bb.length) return null;
+    return h('div', { class: 'ax-bb' }, bb.map(([slug, b]) => h('div', { class: 'ax-bb-card' },
+      h('div', { class: 'ax-bb-h' }, h('b', { text: b.nombre }), h('small', { text: b.semana ? `semana del ${dfmt(b.semana)}` : '' }), b.url ? h('a', { href: b.url, target: '_blank', rel: 'noopener', text: '↗' }) : null),
+      (b.entradas || []).slice().sort((x, y) => x.pos - y.pos).map(f => {
+        const s = SONGS.find(x => x.b === base(f.titulo));
+        const mov = f.nuevo ? h('span', { class: 'ax-tag new', text: f.reentrada ? 'RE' : 'NEW' }) : isNum(f.lw) ? h('span', { class: 'ax-tag ' + (f.lw > f.pos ? 'up' : f.lw < f.pos ? 'dn' : ''), text: f.lw > f.pos ? '▲' + (f.lw - f.pos) : f.lw < f.pos ? '▼' + (f.pos - f.lw) : '=' }) : null;
+        return h('div', { class: 'ax-bb-row', onclick: s ? () => openSong(s.id) : null, style: s ? '' : 'cursor:default' },
+          h('b', { class: 'ax-bb-pos num', text: f.pos }), s ? h('div', { class: 'ax-bb-cov' }, art(s)) : null,
+          h('div', { class: 'ax-bb-main' }, h('b', { text: f.titulo }), h('small', { text: [f.artistas, f.pico ? `pico ${f.pico}` : '', f.semanas ? `${f.semanas} sem.` : ''].filter(Boolean).join(' · ') })), mov);
+      }))),
+      h('p', { class: 'yc-note', text: 'Billboard publica las listas cada martes. Las entradas se cuentan desde que la web las lee.' }));
+  }
+  function openArtist() {
+    const mu = DATA.mundo || {}, P = DATA.perfil || {}, sp = P.spotify || {};
+    const t = mu.total || {}, oy = mu.oyentes || {}, di = mu.diarios || {}, hist = mu.hist || [];
+    const body = h('div', { class: 'mt-sheet ax' });
+    body.append(h('div', { class: 'ax-head' },
+      DATA.artista.imagen ? h('img', { class: 'ax-photo', src: hd(DATA.artista.imagen, 400), alt: '' }) : null,
+      h('div', null, h('span', { class: 'mt-hero-k', text: 'Ficha al día' }), h('h2', { class: 'ax-name', text: DATA.artista.nombre }), h('small', { class: 'ax-sub', text: `${mu.fecha ? 'Datos del ' + dfmt(mu.fecha) : ''}${mu.fuente ? ' · ' + mu.fuente : ''}` }))));
+    // un vistazo
+    const chips = [
+      t.rank_latino ? [`#${t.rank_latino}`, 'latino más escuchado de la historia en Spotify'] : null,
+      t.rank ? [`#${t.rank}`, 'artista más escuchado de la historia'] : null,
+      oy.rank ? [`#${oy.rank}`, 'en oyentes mensuales del mundo'] : null,
+      di.rank ? [`#${di.rank}`, 'en streams del día'] : null,
+    ].filter(Boolean);
+    if (chips.length) body.append(h('div', { class: 'ax-glance' }, chips.map(([a, b]) => h('div', { class: 'ax-gl' }, h('b', { class: 'num', text: a }), h('small', { text: b })))));
+    // streams totales
+    const tot = t.total || sp.streams_totales;
+    if (isNum(tot)) {
+      const meta = (Math.floor(tot / 1e9) + 1) * 1e9, ritmo = di.streams || sp.streams_diarios, dias = ritmo ? Math.ceil((meta - tot) / ritmo) : null;
+      body.append(h('h3', { class: 'lg-sh', text: 'Streams totales en Spotify' }));
+      const rb = h('div', { class: 'mt-ringbox big' }, ring((tot % 1e9) / 1e9 * 100, 96), h('span', { class: 'mt-pct', text: Math.floor(tot % 1e9 / 1e7) + '%' }));
+      body.append(h('div', { class: 'ax-card ax-row' }, rb, h('div', null, h('b', { class: 'ax-big num', text: bigN(tot) }),
+        h('small', { class: 'ax-sub', text: `${full(tot)} streams` }),
+        h('small', { class: 'ax-sub' + (dias != null && dias <= 3 ? ' hot' : '') }, `Próxima: ${bigN(meta)} · faltan ${short(meta - tot)}${dias != null ? ` · ≈ ${dias} ${dias === 1 ? 'día' : 'días'}` : ''}${dias != null && dias <= 1 ? ' · ¡A punto!' : ''}`))));
+      if ((t.arriba || []).length || (t.abajo || []).length) body.append(ladder(t.arriba, t.abajo, { rank: t.rank, v: tot }, 'total', 'él'));
+      if (t.rank_latino) {
+        const latR = (x, me) => h('div', { class: 'ax-lat-r' + (me ? ' me' : '') }, h('span', { class: 'num', text: x.rank }), h('div', { class: 'ax-lat-n' }, h('b', { text: x.nombre }), h('small', { text: [x.pais, x.rank_global ? `#${x.rank_global} mundial` : ''].filter(Boolean).join(' · ') })),
+          h('em', { class: 'num', text: bigN(x.total) }), h('small', { text: me ? '' : x.total >= tot ? `+${bigN(x.total - tot)}` : `−${bigN(tot - x.total)}` }));
+        body.append(h('div', { class: 'ax-card' }, h('span', { class: 'ax-k', text: `Latinos más escuchados de la historia en Spotify · es el ${ordN(t.rank_latino)}` }),
+          h('div', { class: 'ax-lat' }, (t.latinos_arriba || []).map(x => latR(x)), latR({ nombre: DATA.artista.nombre, total: tot, rank: t.rank_latino, rank_global: t.rank, pais: 'Puerto Rico' }, true), (t.latinos_abajo || []).map(x => latR(x))),
+          h('small', { class: 'ax-sub', text: `Streams: kworb.net (contadores de Spotify) · ${mu.fecha ? 'actualizado el ' + dfmt(mu.fecha) : 'diario'}. Quién es latino: ${t.latinos_fuente || 'lista manual'} (nacionalidad o país de origen).` })));
+      }
+    }
+    // oyentes mensuales
+    if (oy.rank) {
+      body.append(h('h3', { class: 'lg-sh', text: 'Oyentes mensuales en el mundo' }));
+      body.append(h('div', { class: 'ax-duo' },
+        axCard('Puesto mundial', '#' + oy.rank, `${full(oy.oyentes)} oyentes${isNum(oy.cambio) && oy.cambio ? ` · ${signed(oy.cambio)} hoy` : ''}`),
+        axCard('Su pico', oy.pico_rank ? '#' + oy.pico_rank : '—', oy.pico_oyentes ? `máximo: ${short(oy.pico_oyentes)} oyentes${oy.oyentes >= oy.pico_oyentes ? ' · ¡ahora mismo!' : ''}` : '')));
+      body.append(ladder(oy.arriba, oy.abajo, { rank: oy.rank, v: oy.oyentes }, 'oyentes', 'él'));
+      const hs = hist.filter(x => isNum(x.oy_rank));
+      if (hs.length > 1) { const ch = bigChart(hs.map(x => -x.oy_rank), hs.map(x => x.d), 'var(--green)'); if (ch) body.append(h('small', { class: 'ax-sub', text: 'Evolución de su puesto (arriba = mejor)' }), ch); }
+    }
+    // streams del día
+    if (di.streams) {
+      body.append(h('h3', { class: 'lg-sh', text: 'Streams del día' }));
+      body.append(h('div', { class: 'ax-duo' },
+        axCard('Último día', short(di.streams), `#${di.rank} entre todos los artistas`),
+        axCard('Mejor día registrado', mu.mejor_dia && mu.mejor_dia.v ? short(mu.mejor_dia.v) : '—', mu.mejor_dia && mu.mejor_dia.d ? dfmt(mu.mejor_dia.d) : '')));
+      body.append(ladder(di.arriba, di.abajo, { rank: di.rank, v: di.streams }, 'streams', 'él'));
+      const hs = hist.filter(x => isNum(x.dia));
+      if (hs.length > 1) { const ch = bigChart(hs.map(x => x.dia), hs.map(x => x.d), 'var(--accent)'); if (ch) body.append(ch); }
+    }
+    if (!oy.rank && !di.streams && !isNum(tot)) body.append(h('p', { class: 'yc-note', text: 'Los rankings mundiales aparecerán tras la próxima actualización completa.' }));
+    // Billboard
+    body.append(h('h3', { class: 'lg-sh', text: 'Billboard esta semana' }));
+    body.append(bbBlock() || h('p', { class: 'yc-note', text: Object.keys(DATA.billboard || {}).length ? 'Esta semana no aparece en las listas de Billboard revisadas.' : 'Billboard se leerá en la próxima actualización completa.' }));
+    // clubs de cifras
+    body.append(h('h3', { class: 'lg-sh', text: 'Sus temas por cifra · Spotify' }));
+    const cs = clubBlock('sp'); if (cs) body.append(cs);
+    const cy = clubBlock('yt'); if (cy) { body.append(h('h3', { class: 'lg-sh', text: 'Sus temas por cifra · YouTube' })); body.append(cy); }
+    // debuts recientes
+    const nuevos = SONGS.filter(s => s.diasPublicado != null && s.diasPublicado <= 60 && ((s.sp.dias || []).length || (s.yt && (s.yt.dias || []).length))).sort((a, b) => a.diasPublicado - b.diasPublicado);
+    if (nuevos.length) {
+      body.append(h('h3', { class: 'lg-sh', text: 'Debuts recientes' }));
+      body.append(h('div', { class: 'yc-list' }, nuevos.slice(0, 8).map(s => { const d = debutStats(s); return h('div', { class: 'yc-row', onclick: () => openSong(s.id) }, h('div', { class: 'ax-bb-cov' }, art(s)),
+        h('div', { class: 'yc-row-main' }, h('b', { text: s.titulo }), h('small', { text: [d.yt1 ? `YouTube 24 h: ${short(d.yt1)}` : '', d.sp1 ? `Spotify día 1: ${short(d.sp1)}` : '', `hace ${s.diasPublicado} días`].filter(Boolean).join(' · ') })),
+        h('div', { class: 'yc-row-meta' }, h('b', { class: 'num', text: short(d.spSem || d.ytSem) }), h('small', { text: d.spSem ? (d.spN >= 7 ? '1ª semana SP' : `${d.spN} días SP`) : d.ytSem ? (d.ytN >= 7 ? '1ª semana YT' : `${d.ytN} días YT`) : '' }))); })));
+    }
+    // logros de este tipo
+    const lg = logrosList().filter(n => ['rival', 'billboard', 'mundial', 'record'].includes(n.cat)).slice(0, 8);
+    if (lg.length) { body.append(h('h3', { class: 'lg-sh', text: 'Últimos hitos' })); body.append(h('div', { class: 'yc-list' }, lg.map(n => logroRow(n)))); }
+    body.append(h('p', { class: 'yc-note', text: 'Fuentes: kworb.net (Spotify y YouTube), billboard.com. Se actualiza solo varias veces al día.' }));
+    openSheet('Ficha de ' + DATA.artista.nombre, body);
+  }
+  // primeras horas / días de una canción nueva
+  function debutStats(s) {
+    const prim = (arr) => { const a = (arr || []).filter(x => isNum(x.v) || isNum(x.t)).slice().sort((x, y) => String(x.d).localeCompare(String(y.d))); return a; };
+    const sp = prim(s.sp.dias), yt = prim(s.yt && s.yt.dias);
+    const lan = s.lanzamiento ? s.lanzamiento.slice(0, 10) : null;
+    const dayN = (d) => lan ? Math.round((new Date(d) - new Date(lan)) / 864e5) + 1 : null;
+    const sem = (a) => { const w = a.filter(x => dayN(x.d) != null && dayN(x.d) <= 7); return w.length ? (w[w.length - 1].t || w.reduce((t, x) => t + (x.v || 0), 0)) : null; };
+    const nd = (a) => Math.min(7, Math.max(0, ...a.map(x => dayN(x.d) || 0)));
+    const d1 = (a) => { const x = a.find(x => dayN(x.d) === 1) || (a[0] && dayN(a[0].d) <= 2 ? a[0] : null); return x ? (x.v || x.t) : null; };
+    return { sp, yt, dayN, sp1: d1(sp), yt1: d1(yt), spSem: sem(sp), ytSem: sem(yt), spN: nd(sp), ytN: nd(yt) };
+  }
+  function debutBlock(s) {
+    if (s.diasPublicado == null || s.diasPublicado > 60) return null;
+    const d = debutStats(s); if (!d.sp.length && !d.yt.length) return null;
+    const box = h('div', { class: 'yc-card ax-debut' }, h('span', { class: 'ax-k', text: 'Debut · día a día' }));
+    const kp = [[d.yt1, 'YouTube · primeras 24 h'], [d.sp1, 'Spotify · día 1'], [d.ytN > 1 ? d.ytSem : null, d.ytN >= 7 ? 'YouTube · 1ª semana' : `YouTube · primeros ${d.ytN} días`], [d.spN > 1 ? d.spSem : null, d.spN >= 7 ? 'Spotify · 1ª semana' : `Spotify · primeros ${d.spN} días`]].filter(([v]) => isNum(v));
+    if (kp.length) box.append(h('div', { class: 'ax-glance' }, kp.map(([v, l]) => h('div', { class: 'ax-gl' }, h('b', { class: 'num', text: short(v) }), h('small', { text: l })))));
+    for (const [arr, name, color] of [[d.sp, 'Spotify', 'var(--green)'], [d.yt, 'YouTube', '#ff3b30']]) {
+      const a = arr.map(x => ({ ...x, v: isNum(x.v) ? x.v : d.dayN(x.d) === 1 ? x.t : null })).filter(x => isNum(x.v)).slice(0, 14); if (!a.length) continue;
+      const mx = Math.max(...a.map(x => x.v));
+      box.append(h('small', { class: 'ax-sub', text: name + ' · streams/views por día' }),
+        h('div', { class: 'ax-days' }, a.map(x => h('div', { class: 'ax-day' }, h('em', { class: 'num', text: short(x.v) }), h('i', null, h('i', { style: `height:${Math.max(4, x.v / mx * 100).toFixed(0)}%;background:${color}` })), h('small', { text: d.dayN(x.d) ? 'Día ' + d.dayN(x.d) : dfmt(x.d, { year: undefined }) })))));
+    }
+    box.append(h('small', { class: 'ax-sub', text: 'Fuente: kworb.net. Cada día suma lo contado ese día.' }));
+    return box;
+  }
   function renderRedes() {
     const el = $('#p-redes'); el.replaceChildren();
     const P = DATA.perfil, L = DATA.artista.links;
     el.append(h('h1', { class: 'yc-h1', text: 'Perfiles' }), h('p', { class: 'yc-sub', text: 'Todas sus cuentas con sus cifras, su fuente y su fecha.' }));
+    el.append(fichaLink());
     const blocks = [
       ['spotify', L.spotify, [['Oyentes mensuales', P.spotify.oyentes_mensuales], ['Seguidores', P.spotify.seguidores], ['Streams totales', P.spotify.streams_totales], ['Streams al día', P.spotify.streams_diarios], ['Como principal', P.spotify.como_principal], ['En colaboraciones', P.spotify.como_feat], ['Canciones', P.spotify.canciones]], P.spotify],
       ['youtube', L.youtube, [['Suscriptores', P.youtube.suscriptores], ['Vistas del canal', P.youtube.vistas], ['Videos subidos', P.youtube.videos], ['Vistas de sus canciones', ytSum()], ['Likes de sus canciones', SONGS.reduce((t, s) => t + (s.yt && isNum(s.yt.likes) ? s.yt.likes : 0), 0)]], P.youtube],
@@ -2377,6 +2540,7 @@
           h('div', null, h('span', { class: 'lg-lab', text: 'Próximo hito en Spotify' }), h('b', { class: 'lg-mid', text: nx ? short(nx) : '—' }), h('small', { text: nx ? (daily && nx - s.sp.total <= daily ? `¡A punto! 🔥 faltaban ${full(nx - s.sp.total)} · en Spotify ya lo habría superado` : `faltan ${full(nx - s.sp.total)}${dd ? ` · ≈ ${dd} ${dd === 1 ? 'día' : 'días'}` : ''}`) : '' }))),
         past.length ? h('div', { class: 'lg-chips' }, h('small', { class: 'lg-lab', text: 'Ya superó' }), past.reverse().map(x => h('span', { class: 'lg-chip', text: '✓ ' + short(x) }))) : null));
     }
+    const deb = debutBlock(s); if (deb) body.append(deb);
     body.append(songPostKit(s));
     if (s.yt) { const tt = String(s.yt.titulo || ''); const tipo = /visuali[sz]er/i.test(tt) ? 'Visualizer oficial' : (/audio/i.test(tt) && !/video|v[ií]deo/i.test(tt.replace(/audio/ig, '')) ? 'Audio oficial' : 'Videoclip'); body.append(h('h3', { class: 'lg-sh', text: tipo })); body.append(hero); }
 
