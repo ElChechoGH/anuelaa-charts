@@ -2266,7 +2266,7 @@
     const cs = clubBlock('sp'); if (cs) body.append(cs);
     const cy = clubBlock('yt'); if (cy) { body.append(h('h3', { class: 'lg-sh', text: 'Sus temas por cifra · YouTube' })); body.append(cy); }
     // debuts recientes
-    const nuevos = SONGS.filter(s => s.diasPublicado != null && s.diasPublicado <= 60 && ((s.sp.dias || []).length || (s.yt && (s.yt.dias || []).length))).sort((a, b) => a.diasPublicado - b.diasPublicado);
+    const nuevos = SONGS.filter(s => s.diasPublicado != null && s.diasPublicado <= 60).filter(s => { const d = debutStats(s); return d.h24 || d.yt1 || d.sp1 || d.spSem || d.ytSem; }).sort((a, b) => a.diasPublicado - b.diasPublicado);
     if (nuevos.length) {
       body.append(h('h3', { class: 'lg-sh', text: 'Debuts recientes' }));
       body.append(h('div', { class: 'yc-list' }, nuevos.slice(0, 8).map(s => { const d = debutStats(s); return h('div', { class: 'yc-row', onclick: () => openSong(s.id) }, h('div', { class: 'ax-bb-cov' }, art(s)),
