@@ -502,6 +502,7 @@ def _num_kw(t):
         return None
 
 
+GEN_LATINO = re.compile(r'reggaet|latin|urbano|bachata|salsa|merengue|dembow|cumbia|corrido|regional mexican|ranchera|mariachi|banda|norte[ñn]o|vallenato|tango|bolero|sertanejo|funk carioca|bossa nova|tropical', re.I)
 LATAM_QID = {'Q96': 'México', 'Q1183': 'Puerto Rico', 'Q739': 'Colombia', 'Q414': 'Argentina', 'Q717': 'Venezuela', 'Q786': 'Rep. Dominicana',
              'Q241': 'Cuba', 'Q298': 'Chile', 'Q419': 'Perú', 'Q736': 'Ecuador', 'Q804': 'Panamá', 'Q155': 'Brasil', 'Q77': 'Uruguay', 'Q733': 'Paraguay',
              'Q750': 'Bolivia', 'Q774': 'Guatemala', 'Q783': 'Honduras', 'Q792': 'El Salvador', 'Q811': 'Nicaragua', 'Q800': 'Costa Rica',
@@ -513,24 +514,25 @@ def latinos_wikidata(ids, cache):
     nacionalidad (P27), país de origen del grupo (P495), país de nacimiento (P19→P17), nacido en Puerto Rico, o etnia latina de EE. UU. (P172).
     Se guarda en caché 30 días por artista para no repetir consultas."""
     lim = (NOW - dt.timedelta(days=30)).strftime('%Y-%m-%d')
-    faltan = [i for i in ids if i and (i not in cache or (cache[i].get('f') or '') < lim)]
+    faltan = [i for i in ids if i and (i not in cache or 'gen' not in cache[i] or (cache[i].get('f') or '') < lim)]
     for k in range(0, len(faltan), 60):
         lote = faltan[k:k + 60]
-        q = ('SELECT ?sid (SAMPLE(?lab) AS ?nombre) (GROUP_CONCAT(DISTINCT STRAFTER(STR(?p), "entity/"); separator="|") AS ?ps) WHERE { '
+        q = ('SELECT ?sid (SAMPLE(?lab) AS ?nombre) (GROUP_CONCAT(DISTINCT STRAFTER(STR(?p), "entity/"); separator="|") AS ?ps) (GROUP_CONCAT(DISTINCT ?gl; separator="|") AS ?gs) WHERE { '
              'VALUES ?sid {' + ' '.join(f'"{x}"' for x in lote) + '} ?item wdt:P1902 ?sid . '
              'OPTIONAL { ?item rdfs:label ?lab FILTER(LANG(?lab) = "es") } '
              'OPTIONAL { { ?item wdt:P27 ?p } UNION { ?item wdt:P495 ?p } UNION { ?item wdt:P19/wdt:P17 ?p } UNION { ?item wdt:P172 ?p } '
-             'UNION { ?item wdt:P19/wdt:P131* wd:Q1183 . BIND(wd:Q1183 AS ?p) } } } GROUP BY ?sid')
+             'UNION { ?item wdt:P19/wdt:P131* wd:Q1183 . BIND(wd:Q1183 AS ?p) } } '
+             'OPTIONAL { ?item wdt:P136 ?g . ?g rdfs:label ?gl FILTER(LANG(?gl) = "en") } } GROUP BY ?sid')
         j = get('https://query.wikidata.org/sparql', as_json=True, params={'query': q, 'format': 'json'},
                 headers={'Accept': 'application/sparql-results+json', 'User-Agent': 'anuelaa-charts/1.0 (https://github.com/ElChechoGH/anuelaa-charts)'}, tries=2)
         vistos = set()
         for b in j['results']['bindings']:
             sid = b['sid']['value']; vistos.add(sid)
             ps = [x for x in (b.get('ps', {}).get('value') or '').split('|') if x]
-            cache[sid] = {'ps': ps, 'f': HOY}
+            cache[sid] = {'ps': ps, 'gen': [x for x in (b.get('gs', {}).get('value') or '').split('|') if x], 'f': HOY}
         for sid in lote:
             if sid not in vistos:
-                cache[sid] = {'ps': None, 'f': HOY}  # no está en Wikidata: decide la lista manual
+                cache[sid] = {'ps': None, 'gen': [], 'f': HOY}  # no está en Wikidata: decide la lista manual
     return cache
 
 
@@ -543,7 +545,13 @@ def lat_de(entry):
         paises['Q29'] = 'España'
     hit = [paises[x] for x in entry['ps'] if x in paises]
     hit.sort(key=lambda x: x == 'latino de EE. UU.')
-    return bool(hit), (hit[0] if hit else None)
+    if hit:
+        return True, hit[0]
+    # nacido fuera (p. ej. Arcángel: Nueva York, nacionalidad EE. UU.) pero su género es latino → cuenta como latino
+    espanol = 'Q29' in entry['ps'] and not CFG.get('latinos_incluye_espana')
+    if not espanol and any(GEN_LATINO.search(g) for g in entry.get('gen') or []):
+        return True, 'música latina'
+    return False, None
 
 
 def spotify_mundo(lat_cache=None):
@@ -602,9 +610,7 @@ def spotify_mundo(lat_cache=None):
                     if norm(f['nombre']) in no_lat:
                         return False
                     l_, _ = lat_de((lat_cache or {}).get(f['sid']))
-                    if l_ is not None:  # Wikidata manda; la lista manual solo decide si Wikidata no conoce al artista
-                        return l_ or norm(f['nombre']) in {norm(x) for x in (CFG.get('latinos_forzar') or [])}
-                    return norm(f['nombre']) in lat
+                    return bool(l_) or norm(f['nombre']) in lat or norm(f['nombre']) in {norm(x) for x in (CFG.get('latinos_forzar') or [])}
                 lats = [f for f in por_total if f['yo'] or es_lat(f)]
                 kl = next(i for i, f in enumerate(lats) if f['yo'])
                 out['total'] = dict(rank=kt + 1, total=por_total[kt]['total'], rank_latino=kl + 1 if lat else None,
