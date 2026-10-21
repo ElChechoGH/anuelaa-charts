@@ -114,8 +114,8 @@
     "video_id": "0VR3dfZf9Yg",
     "titulo": "Anuel AA, Daddy Yankee, Karol G, Ozuna & J Balvin - China (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 2380453927,
-    "likes": 9355695,
+    "vistas": 2380469765,
+    "likes": 9355701,
     "publicado": "2019-07-19",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -137,8 +137,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 2380453927
+      "t": "2026-10-21T22:45:50Z",
+      "v": 2380469765
      }
     ],
     "ayer": 368256,
@@ -926,7 +926,7 @@
     "video_id": "xp6706wVdCI",
     "titulo": "Anuel AA & Haze | AMANECE",
     "canal": "Anuel AA",
-    "vistas": 1026173653,
+    "vistas": 1026181336,
     "likes": 4041162,
     "publicado": "2018-12-14",
     "fecha": "2026-10-21",
@@ -949,12 +949,12 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 1026173653
+      "t": "2026-10-21T22:45:50Z",
+      "v": 1026181336
      }
     ],
     "ayer": 189600,
-    "comentarios": 96805,
+    "comentarios": 96806,
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "publicado_ts": "2018-12-14T03:34:24Z"
    },
@@ -2156,8 +2156,8 @@
     "video_id": "M2UEPgulHVA",
     "titulo": "Sola",
     "canal": "Anuel AA - Topic",
-    "vistas": 9080057,
-    "likes": 66525,
+    "vistas": 9080732,
+    "likes": 66530,
     "publicado": "2018-05-11",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -2179,8 +2179,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 9080057
+      "t": "2026-10-21T22:45:50Z",
+      "v": 9080732
      }
     ],
     "comentarios": 124,
@@ -3059,8 +3059,8 @@
     "video_id": "58u-zkDLNPg",
     "titulo": "Tainy, Anuel AA, Ozuna - Adicto (Official Video)",
     "canal": "TainyVEVO",
-    "vistas": 1361829288,
-    "likes": 4142230,
+    "vistas": 1361841943,
+    "likes": 4142245,
     "publicado": "2019-08-22",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -3082,8 +3082,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 1361829288
+      "t": "2026-10-21T22:45:50Z",
+      "v": 1361841943
      }
     ],
     "ayer": 249480,
@@ -5138,9 +5138,9 @@
     "video_id": "nCzwGVKpjpo",
     "titulo": "Anuel AA ❌ Bad Bunny - HASTA QUE DIOS DIGA",
     "canal": "Anuel AA",
-    "vistas": 483911500,
+    "vistas": 483914519,
     "ayer": 74640,
-    "likes": 2035474,
+    "likes": 2035475,
     "publicado": "2020-05-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -5165,8 +5165,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 483911500
+      "t": "2026-10-21T22:45:50Z",
+      "v": 483914519
      }
     ],
     "publicado_ts": "2020-05-29T04:00:26Z"
@@ -5374,15 +5374,15 @@
     "video_id": "0w3XwPVxcsw",
     "titulo": "Anuel AA - Ella Quiere Beber (Remix) ft. Romeo Santos",
     "canal": "AnuelVEVO",
-    "vistas": 873847534,
-    "likes": 2983498,
+    "vistas": 873852231,
+    "likes": 2983500,
     "publicado": "2018-11-01",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
     "fijo": true,
     "origen": "fijo",
     "ayer": 106080,
-    "comentarios": 57047,
+    "comentarios": 57048,
     "canal_id": "UC05eluGxsI8_xf5uRC-J26Q",
     "hist": [
      {
@@ -5402,8 +5402,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 873847534
+      "t": "2026-10-21T22:45:50Z",
+      "v": 873852231
      }
     ],
     "publicado_ts": "2018-11-01T16:00:00Z"
@@ -5691,8 +5691,8 @@
     "video_id": "gFZfwWZV074",
     "titulo": "Anuel AA, KAROL G - Secreto",
     "canal": "AnuelVEVO",
-    "vistas": 1745784992,
-    "likes": 8120595,
+    "vistas": 1745799067,
+    "likes": 8120610,
     "publicado": "2019-01-15",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -5719,8 +5719,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 1745784992
+      "t": "2026-10-21T22:45:50Z",
+      "v": 1745799067
      }
     ],
     "publicado_ts": "2019-01-15T05:00:01Z"
@@ -5735,8 +5735,8 @@
     "video_id": "bEIH0jLkBnM",
     "titulo": "MALA",
     "canal": "6ix9ine - Topic",
-    "vistas": 99839567,
-    "likes": 924183,
+    "vistas": 99842544,
+    "likes": 924202,
     "publicado": "2018-11-27",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -5762,8 +5762,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 99839567
+      "t": "2026-10-21T22:45:50Z",
+      "v": 99842544
      }
     ],
     "publicado_ts": "2018-11-27T22:13:30Z"
@@ -6267,9 +6267,9 @@
     "video_id": "yErttA9tEro",
     "titulo": "Nio Garcia x Brray x Juanka x Anuel AA x Myke Towers - La Jeepeta Remix (Lyric Video)",
     "canal": "Flow La Movie",
-    "vistas": 549351756,
+    "vistas": 549352749,
     "ayer": 28056,
-    "likes": 2323548,
+    "likes": 2323546,
     "publicado": "2020-04-24",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -6294,8 +6294,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 549351756
+      "t": "2026-10-21T22:45:50Z",
+      "v": 549352749
      }
     ],
     "publicado_ts": "2020-04-24T16:01:07Z"
@@ -6798,8 +6798,8 @@
     "video_id": "ycV6cnK3SIs",
     "titulo": "6ix9ine - BEBE ft. Anuel AA",
     "canal": "6ix9ineVEVO",
-    "vistas": 1678639666,
-    "likes": 9206442,
+    "vistas": 1678649306,
+    "likes": 9206452,
     "publicado": "2018-08-31",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -6826,8 +6826,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 1678639666
+      "t": "2026-10-21T22:45:50Z",
+      "v": 1678649306
      }
     ],
     "publicado_ts": "2018-08-31T18:57:10Z"
@@ -6844,8 +6844,8 @@
     "video_id": "-3HjrdC0dAk",
     "titulo": "Rauw Alejandro, Anuel AA - Reloj (Official Video)",
     "canal": "RauwAlejandroVEVO",
-    "vistas": 639217120,
-    "likes": 2999442,
+    "vistas": 639222183,
+    "likes": 2999449,
     "publicado": "2020-10-23",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -6867,8 +6867,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 639217120
+      "t": "2026-10-21T22:45:50Z",
+      "v": 639222183
      }
     ],
     "ayer": 107520,
@@ -7465,9 +7465,9 @@
     "video_id": "CsSgg_iZHz4",
     "titulo": "Ozuna - Baila Baila Baila (Remix) Feat. Daddy Yankee, J Balvin, Farruko, Anuel AA (Audio Oficial)",
     "canal": "Ozuna",
-    "vistas": 320279017,
+    "vistas": 320280334,
     "ayer": 38904,
-    "likes": 1388458,
+    "likes": 1388460,
     "publicado": "2019-04-25",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -7489,8 +7489,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 320279017
+      "t": "2026-10-21T22:45:50Z",
+      "v": 320280334
      }
     ],
     "comentarios": 23331,
@@ -7675,7 +7675,7 @@
     "video_id": "MaCnp-yB-Yc",
     "titulo": "Sech - Otro Trago (Remix) ft. Darell, Nicky Jam, Ozuna, Anuel AA (Audio Oficial)",
     "canal": "Sech",
-    "vistas": 386692849,
+    "vistas": 386693816,
     "ayer": 20904,
     "likes": 2336706,
     "publicado": "2019-07-26",
@@ -7699,8 +7699,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 386692849
+      "t": "2026-10-21T22:45:50Z",
+      "v": 386693816
      }
     ],
     "comentarios": 59268,
@@ -7947,7 +7947,7 @@
     "video_id": "BTtBmo5EbEk",
     "titulo": "Anuel AA - Ella Quiere Beber (Video Oficial)",
     "canal": "AnuelVEVO",
-    "vistas": 622679845,
+    "vistas": 622681054,
     "likes": 3062637,
     "publicado": "2018-08-15",
     "fecha": "2026-10-21",
@@ -7975,8 +7975,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 622679845
+      "t": "2026-10-21T22:45:50Z",
+      "v": 622681054
      }
     ],
     "publicado_ts": "2018-08-15T21:30:00Z"
@@ -7991,8 +7991,8 @@
     "video_id": "xfdG6vwIGGU",
     "titulo": "KAROL G, Anuel AA - Culpables (Official Video)",
     "canal": "KarolGVEVO",
-    "vistas": 1331712073,
-    "likes": 5201477,
+    "vistas": 1331720644,
+    "likes": 5201493,
     "publicado": "2018-09-14",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -8014,8 +8014,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 1331712073
+      "t": "2026-10-21T22:45:50Z",
+      "v": 1331720644
      }
     ],
     "ayer": 197760,
@@ -9280,7 +9280,7 @@
     "video_id": "tXHhgLkBml4",
     "titulo": "Jhay Cortez, Anuel AA - Ley Seca (Official Video)",
     "canal": "JhayCortezVEVO",
-    "vistas": 208857158,
+    "vistas": 208861242,
     "ayer": 82656,
     "likes": 895348,
     "publicado": "2021-09-03",
@@ -9307,8 +9307,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 208857158
+      "t": "2026-10-21T22:45:50Z",
+      "v": 208861242
      }
     ],
     "publicado_ts": "2021-09-03T04:00:18Z"
@@ -9481,8 +9481,8 @@
     "video_id": "GEy_XBp-hLo",
     "titulo": "Chencho Corleone, Chris Jedi, Anuel AA , Ñengo Flow - La Llevo Al Cielo (Official Video)",
     "canal": "ChrisJediVEVO",
-    "vistas": 415794120,
-    "likes": 1780791,
+    "vistas": 415798435,
+    "likes": 1780793,
     "publicado": "2022-05-20",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -9509,8 +9509,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 415794120
+      "t": "2026-10-21T22:45:50Z",
+      "v": 415798435
      }
     ],
     "publicado_ts": "2022-05-20T00:00:03Z"
@@ -9529,14 +9529,14 @@
     "video_id": "XngTiXBPmEE",
     "titulo": "La Ocasión - De La Ghetto, Arcangel, Ozuna, Anuel Aa, Dj Luian, Mambo Kingz [Video Oficial]",
     "canal": "Hear This Music",
-    "vistas": 1038318778,
-    "likes": 4299685,
+    "vistas": 1038324398,
+    "likes": 4299696,
     "publicado": "2016-02-13",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
     "fijo": true,
     "origen": "fijo",
-    "comentarios": 129440,
+    "comentarios": 129441,
     "canal_id": "UCz2SUbUr2k0T3nEmutgsPjg",
     "hist": [
      {
@@ -9556,8 +9556,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 1038318778
+      "t": "2026-10-21T22:45:50Z",
+      "v": 1038324398
      }
     ],
     "publicado_ts": "2016-02-13T16:35:12Z"
@@ -9887,7 +9887,7 @@
     "video_id": "BvFJstCIrpw",
     "titulo": "Daddy Yankee & Anuel AA - Adictiva (Video Oficial)",
     "canal": "Daddy Yankee",
-    "vistas": 578664891,
+    "vistas": 578666380,
     "likes": 2567989,
     "publicado": "2018-11-08",
     "fecha": "2026-10-21",
@@ -9910,8 +9910,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 578664891
+      "t": "2026-10-21T22:45:50Z",
+      "v": 578666380
      }
     ],
     "ayer": 34992,
@@ -10157,8 +10157,8 @@
     "video_id": "Cpgkkmf3KHg",
     "titulo": "Anuel AA feat. Zion - Hipócrita (Video Oficial)",
     "canal": "AnuelVEVO",
-    "vistas": 214620646,
-    "likes": 983128,
+    "vistas": 214621274,
+    "likes": 983129,
     "publicado": "2018-09-19",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -10185,8 +10185,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 214620646
+      "t": "2026-10-21T22:45:50Z",
+      "v": 214621274
      }
     ],
     "publicado_ts": "2018-09-19T23:01:05Z"
@@ -10370,8 +10370,8 @@
     "video_id": "atNGFSCjwuc",
     "titulo": "Bubalu - Anuel AA x Prince Royce x Becky G x Mambo Kingz x Dj Luian",
     "canal": "Hear This Music",
-    "vistas": 618025485,
-    "likes": 3389974,
+    "vistas": 618028263,
+    "likes": 3389970,
     "publicado": "2018-11-06",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -10397,8 +10397,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 618025485
+      "t": "2026-10-21T22:45:50Z",
+      "v": 618028263
      }
     ],
     "publicado_ts": "2018-11-06T05:05:31Z"
@@ -10488,7 +10488,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 30242
      }
     ],
@@ -10507,8 +10507,8 @@
     "video_id": "mf-UJ32PJgU",
     "titulo": "Shakira, Anuel AA - Me Gusta (Official Video)",
     "canal": "shakiraVEVO",
-    "vistas": 326179309,
-    "likes": 2478993,
+    "vistas": 326180819,
+    "likes": 2478994,
     "publicado": "2020-03-06",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -10530,8 +10530,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 326179309
+      "t": "2026-10-21T22:45:50Z",
+      "v": 326180819
      }
     ],
     "ayer": 32928,
@@ -10726,7 +10726,7 @@
     "video_id": "cGSwcGBhpSQ",
     "titulo": "Blessd, Anuel AA, Kris R, Luar La L - YOGURCITO REMIX feat. ROA, Yan Block",
     "canal": "LatinHype",
-    "vistas": 15917962,
+    "vistas": 15918380,
     "likes": 47342,
     "publicado": "2025-08-26",
     "fecha": "2026-10-21",
@@ -10749,8 +10749,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 15917962
+      "t": "2026-10-21T22:45:50Z",
+      "v": 15918380
      }
     ],
     "verificado": false,
@@ -12532,8 +12532,8 @@
     "video_id": "YmThOnFXM0E",
     "titulo": "Anuel AA - Tu No Lo Amas",
     "canal": "AnuelVEVO",
-    "vistas": 384502885,
-    "likes": 1164707,
+    "vistas": 384517050,
+    "likes": 1164719,
     "publicado": "2018-07-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -12560,8 +12560,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 384502885
+      "t": "2026-10-21T22:45:50Z",
+      "v": 384517050
      }
     ],
     "publicado_ts": "2018-07-17T04:00:00Z"
@@ -12576,9 +12576,9 @@
     "video_id": "GXltg6NJoso",
     "titulo": "Anuel AA | ¿ QUE NOS PASO ?",
     "canal": "Anuel AA",
-    "vistas": 234295897,
+    "vistas": 234300006,
     "ayer": 112680,
-    "likes": 1126026,
+    "likes": 1126034,
     "publicado": "2022-05-27",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -12600,11 +12600,11 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 234295897
+      "t": "2026-10-21T22:45:50Z",
+      "v": 234300006
      }
     ],
-    "comentarios": 34002,
+    "comentarios": 34003,
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "publicado_ts": "2022-05-27T00:00:17Z"
    },
@@ -13162,8 +13162,8 @@
     "video_id": "Gtu9V96TM7Y",
     "titulo": "Aventura - Lunay X Anuel AA X Ozuna (Video Oficial)",
     "canal": "Lunay",
-    "vistas": 153776493,
-    "likes": 1117951,
+    "vistas": 153777314,
+    "likes": 1117952,
     "publicado": "2020-01-21",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -13185,8 +13185,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 153776493
+      "t": "2026-10-21T22:45:50Z",
+      "v": 153777314
      }
     ],
     "ayer": 20448,
@@ -13399,8 +13399,8 @@
     "video_id": "1nAUB0HTIQA",
     "titulo": "Whine Up - Nicky Jam x Anuel AA | Video Oficial",
     "canal": "NickyJamTV",
-    "vistas": 140214939,
-    "likes": 948781,
+    "vistas": 140215338,
+    "likes": 948782,
     "publicado": "2019-10-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -13422,8 +13422,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 140214939
+      "t": "2026-10-21T22:45:50Z",
+      "v": 140215338
      }
     ],
     "ayer": 9600,
@@ -13625,8 +13625,8 @@
     "video_id": "bWycnVL6_dE",
     "titulo": "OA -  Anuel AA, Quevedo, Maluma Feat. DJ Luian, Mambo Kingz (Video Oficial)",
     "canal": "Hear This Music",
-    "vistas": 205349851,
-    "likes": 715729,
+    "vistas": 205351499,
+    "likes": 715732,
     "publicado": "2023-10-13",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -13648,8 +13648,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 205349851
+      "t": "2026-10-21T22:45:50Z",
+      "v": 205351499
      }
     ],
     "verificado": false,
@@ -13973,7 +13973,7 @@
     "video_id": "-wgz-PgW8B4",
     "titulo": "Brytiago, Darell, Daddy Yankee, Ozuna & Anuel AA - Asesina Remix (Video Oficial)",
     "canal": "BrytiagoTV",
-    "vistas": 630150434,
+    "vistas": 630152811,
     "ayer": 58392,
     "likes": 2379661,
     "publicado": "2018-11-01",
@@ -13997,8 +13997,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 630150434
+      "t": "2026-10-21T22:45:50Z",
+      "v": 630152811
      }
     ],
     "comentarios": 15334,
@@ -14165,9 +14165,9 @@
     "video_id": "5sLzyEzUbPo",
     "titulo": "Anuel AA ●  Mambo Kingz ●  DJ Luian | MAS RICA QUE AYER",
     "canal": "Anuel AA",
-    "vistas": 330202941,
+    "vistas": 330205552,
     "ayer": 66552,
-    "likes": 1668471,
+    "likes": 1668467,
     "publicado": "2023-03-03",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -14189,8 +14189,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 330202941
+      "t": "2026-10-21T22:45:50Z",
+      "v": 330205552
      }
     ],
     "comentarios": 52971,
@@ -14368,7 +14368,7 @@
     "video_id": "CpJ8PM1kGkA",
     "titulo": "Blessd, Anuel AA - DEPORTIVO",
     "canal": "LatinHype",
-    "vistas": 2819960,
+    "vistas": 2820025,
     "likes": 11472,
     "publicado": "2024-11-16",
     "fecha": "2026-10-21",
@@ -14391,8 +14391,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 2819960
+      "t": "2026-10-21T22:45:50Z",
+      "v": 2820025
      }
     ],
     "verificado": false,
@@ -14602,9 +14602,9 @@
     "video_id": "bQOh1cvMo00",
     "titulo": "Wisin, Jhay Cortez, Anuel - \"Fiel Remix\" (Official Video)  ft. Myke Towers, Los Legendarios",
     "canal": "Wisin",
-    "vistas": 197271488,
+    "vistas": 197272330,
     "ayer": 18288,
-    "likes": 1357234,
+    "likes": 1357232,
     "publicado": "2021-06-15",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -14626,8 +14626,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 197271488
+      "t": "2026-10-21T22:45:50Z",
+      "v": 197272330
      }
     ],
     "comentarios": 48937,
@@ -14806,9 +14806,9 @@
     "video_id": "WuVafx47NBM",
     "titulo": "A Solas Remix - Lunay x Lyanno x Anuel AA x Brytiago x Alex Rose ( Video Oficial )",
     "canal": "Lunay",
-    "vistas": 432791984,
+    "vistas": 432794759,
     "ayer": 73704,
-    "likes": 1780234,
+    "likes": 1780236,
     "publicado": "2018-12-07",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -14830,8 +14830,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 432791984
+      "t": "2026-10-21T22:45:50Z",
+      "v": 432794759
      }
     ],
     "comentarios": 26631,
@@ -14999,9 +14999,9 @@
     "video_id": "1UVrk_D6gLY",
     "titulo": "Farruko, Anuel AA, Kendo Kaponi - Delincuente (Official Video)",
     "canal": "FARRUKOVEVO",
-    "vistas": 419369497,
+    "vistas": 419373040,
     "ayer": 81888,
-    "likes": 2520808,
+    "likes": 2520807,
     "publicado": "2019-07-13",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -15023,8 +15023,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 419369497
+      "t": "2026-10-21T22:45:50Z",
+      "v": 419373040
      }
     ],
     "comentarios": 58084,
@@ -15258,9 +15258,9 @@
     "video_id": "_6PR870zEzM",
     "titulo": "Trap Capos, Noriel - Diablita ft. Anuel AA, Baby Rasta (Official Video)",
     "canal": "NorielVEVO",
-    "vistas": 99312697,
+    "vistas": 99313837,
     "ayer": 25992,
-    "likes": 714492,
+    "likes": 714491,
     "publicado": "2017-04-28",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -15282,8 +15282,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 99312697
+      "t": "2026-10-21T22:45:50Z",
+      "v": 99313837
      }
     ],
     "comentarios": 11232,
@@ -15433,7 +15433,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 591398916
      }
     ]
@@ -15959,9 +15959,9 @@
     "video_id": "DPIv7awI-1A",
     "titulo": "Jhay Cortez, Anuel AA, J. Balvin - Medusa (Official Video)",
     "canal": "JhayCortezVEVO",
-    "vistas": 421950491,
+    "vistas": 421952428,
     "ayer": 41664,
-    "likes": 2395486,
+    "likes": 2395489,
     "publicado": "2020-02-05",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -15983,8 +15983,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 421950491
+      "t": "2026-10-21T22:45:50Z",
+      "v": 421952428
      }
     ],
     "comentarios": 51783,
@@ -16177,9 +16177,9 @@
     "video_id": "jZfPdY7NL-0",
     "titulo": "BAD BUNNY x ANUEL AA - ESTÁ CABRÓN SER YO | YHLQMDLG [Visualizer]",
     "canal": "Bad Bunny",
-    "vistas": 120887928,
+    "vistas": 120888938,
     "ayer": 27312,
-    "likes": 1130517,
+    "likes": 1130519,
     "publicado": "2020-02-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -16201,8 +16201,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 120887928
+      "t": "2026-10-21T22:45:50Z",
+      "v": 120888938
      }
     ],
     "comentarios": 19352,
@@ -16380,9 +16380,9 @@
     "video_id": "FXeDN7sQk30",
     "titulo": "Anuel AA | KEII",
     "canal": "Anuel AA",
-    "vistas": 268054051,
+    "vistas": 268054978,
     "ayer": 22656,
-    "likes": 1690852,
+    "likes": 1690856,
     "publicado": "2020-02-07",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -16404,8 +16404,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 268054051
+      "t": "2026-10-21T22:45:50Z",
+      "v": 268054978
      }
     ],
     "comentarios": 44144,
@@ -16585,9 +16585,9 @@
     "video_id": "E60h4ciy2pM",
     "titulo": "Te Quemaste - MTZ Manuel Turizo X Anuel AA | Video Oficial",
     "canal": "Manuel Turizo",
-    "vistas": 234892907,
+    "vistas": 234893583,
     "ayer": 18000,
-    "likes": 1228110,
+    "likes": 1228108,
     "publicado": "2019-08-23",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -16609,8 +16609,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 234892907
+      "t": "2026-10-21T22:45:50Z",
+      "v": 234893583
      }
     ],
     "comentarios": 19118,
@@ -16785,9 +16785,9 @@
     "video_id": "IFM6kcRNcIs",
     "titulo": "Pepe Quintana - Ella y Yo [Official Video] ft. Farruko , Anuel AA , Tempo , Almighty , Bryant Myers",
     "canal": "MrPepeQuintana",
-    "vistas": 196252411,
+    "vistas": 196252844,
     "ayer": 10176,
-    "likes": 1068640,
+    "likes": 1068635,
     "publicado": "2016-02-15",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -16809,8 +16809,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 196252411
+      "t": "2026-10-21T22:45:50Z",
+      "v": 196252844
      }
     ],
     "comentarios": 29022,
@@ -16860,7 +16860,7 @@
     "video_id": "MKw2FQ2yKEY",
     "titulo": "iZaak, Jhayco, Anuel AA - BBY BOO (Remix) [Official Video]",
     "canal": "iZaak",
-    "vistas": 344493091,
+    "vistas": 344497067,
     "likes": 943853,
     "publicado": "2024-03-28",
     "fecha": "2026-10-21",
@@ -16887,8 +16887,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 344493091
+      "t": "2026-10-21T22:45:50Z",
+      "v": 344497067
      }
     ],
     "publicado_ts": "2024-03-28T00:00:07Z"
@@ -17048,9 +17048,9 @@
     "video_id": "5Bcs0me4u8g",
     "titulo": "Anuel AA |  23 PREGUNTAS",
     "canal": "Anuel AA",
-    "vistas": 374248604,
+    "vistas": 374253395,
     "ayer": 110856,
-    "likes": 1790685,
+    "likes": 1790689,
     "publicado": "2021-08-23",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -17072,11 +17072,11 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 374248604
+      "t": "2026-10-21T22:45:50Z",
+      "v": 374253395
      }
     ],
-    "comentarios": 49679,
+    "comentarios": 49678,
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "publicado_ts": "2021-08-23T16:00:19Z"
    },
@@ -17397,9 +17397,9 @@
     "video_id": "aw_cmzF_uZY",
     "titulo": "KAROL G, Anuel AA, J. Balvin - LOCATION (Official Video)",
     "canal": "KarolGVEVO",
-    "vistas": 531726477,
+    "vistas": 531728332,
     "ayer": 42240,
-    "likes": 2972559,
+    "likes": 2972565,
     "publicado": "2021-02-12",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -17424,8 +17424,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 531726477
+      "t": "2026-10-21T22:45:50Z",
+      "v": 531728332
      }
     ],
     "publicado_ts": "2021-02-12T00:00:01Z"
@@ -17698,8 +17698,8 @@
     "video_id": "kMPW3AvBf_o",
     "titulo": "Anuel AA - Brindemos feat. Ozuna (Video Oficial)",
     "canal": "AnuelVEVO",
-    "vistas": 340065965,
-    "likes": 1710294,
+    "vistas": 340067951,
+    "likes": 1710298,
     "publicado": "2018-08-03",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -17726,8 +17726,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 340065965
+      "t": "2026-10-21T22:45:50Z",
+      "v": 340067951
      }
     ],
     "publicado_ts": "2018-08-03T04:20:02Z"
@@ -17742,9 +17742,9 @@
     "video_id": "J4_W-R3iPJ8",
     "titulo": "Anuel AA ❌  Myke Towers ❌  Jhay Cortez | SÚBELO",
     "canal": "Anuel AA",
-    "vistas": 275206378,
+    "vistas": 275209046,
     "ayer": 65856,
-    "likes": 1183454,
+    "likes": 1183459,
     "publicado": "2021-11-19",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -17766,8 +17766,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 275206378
+      "t": "2026-10-21T22:45:50Z",
+      "v": 275209046
      }
     ],
     "comentarios": 28067,
@@ -18128,8 +18128,8 @@
     "canal": "Ozuna",
     "canal_id": "UCjIA3wwhi0QjSOXAZwOXbPA",
     "verificado": "artista",
-    "vistas": 117209276,
-    "likes": 467166,
+    "vistas": 117211768,
+    "likes": 467169,
     "publicado": "2023-11-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -18153,8 +18153,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 117209276
+      "t": "2026-10-21T22:45:50Z",
+      "v": 117211768
      }
     ],
     "publicado_ts": "2023-11-17T05:00:03Z"
@@ -18170,9 +18170,9 @@
     "video_id": "RMl7Fx-WNy4",
     "titulo": "Anuel AA | REGGAETONERA",
     "canal": "Anuel AA",
-    "vistas": 206643515,
+    "vistas": 206643969,
     "ayer": 10656,
-    "likes": 1130680,
+    "likes": 1130684,
     "publicado": "2020-06-19",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -18194,8 +18194,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 206643515
+      "t": "2026-10-21T22:45:50Z",
+      "v": 206643969
      }
     ],
     "comentarios": 70384,
@@ -18388,8 +18388,8 @@
     "video_id": "TK8M7zsYAFE",
     "titulo": "Brray, Anuel AA, Chencho Corleone, Jhayco, Ryan Castro - Corazón Roto pt.3 ft. JHAYCO, Ryan Castro",
     "canal": "BrrayVEVO",
-    "vistas": 231366155,
-    "likes": 538251,
+    "vistas": 231377378,
+    "likes": 538254,
     "publicado": "2023-10-25",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -18415,8 +18415,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 231366155
+      "t": "2026-10-21T22:45:50Z",
+      "v": 231377378
      }
     ],
     "publicado_ts": "2023-10-25T16:00:31Z"
@@ -18570,9 +18570,9 @@
     "video_id": "w-e5sFmbyHo",
     "titulo": "Rauw Alejandro, Anuel AA, Natti Natasha Ft. Farruko y Lunay - Fantasías Remix (Video Oficial)",
     "canal": "Rauw Alejandro",
-    "vistas": 531997537,
+    "vistas": 532003057,
     "ayer": 117288,
-    "likes": 2332036,
+    "likes": 2332035,
     "publicado": "2020-03-06",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -18594,8 +18594,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 531997537
+      "t": "2026-10-21T22:45:50Z",
+      "v": 532003057
      }
     ],
     "comentarios": 47971,
@@ -18898,8 +18898,8 @@
     "video_id": "cbpLw41gT80",
     "titulo": "Anuel AA - Yeezy feat. Ñengo Flow (Video Oficial)",
     "canal": "AnuelVEVO",
-    "vistas": 298764572,
-    "likes": 1630318,
+    "vistas": 298767381,
+    "likes": 1630323,
     "publicado": "2018-08-28",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -18926,8 +18926,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 298764572
+      "t": "2026-10-21T22:45:50Z",
+      "v": 298767381
      }
     ],
     "publicado_ts": "2018-08-28T16:00:07Z"
@@ -18989,8 +18989,8 @@
     "video_id": "7zbEt8lpsJo",
     "titulo": "Jay Wheeler, Anuel AA, Hades66 - Pacto (Remix) (Official Video) ft. Bryant Myers, Dei V",
     "canal": "JayWheelerVEVO",
-    "vistas": 222241212,
-    "likes": 1169586,
+    "vistas": 222244986,
+    "likes": 1169590,
     "publicado": "2023-07-28",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -19016,8 +19016,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 222241212
+      "t": "2026-10-21T22:45:50Z",
+      "v": 222244986
      }
     ],
     "publicado_ts": "2023-07-28T04:00:08Z"
@@ -19032,8 +19032,8 @@
     "video_id": "6JOaFnhXlv8",
     "titulo": "Lary Over, Anuel AA, Bryant Myers, Brytiago, Almighty - Tu Me Enamoraste [Official Video]",
     "canal": "Young Hollywood",
-    "vistas": 179205339,
-    "likes": 959428,
+    "vistas": 179205521,
+    "likes": 959425,
     "publicado": "2016-04-07",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -19060,8 +19060,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 179205339
+      "t": "2026-10-21T22:45:50Z",
+      "v": 179205521
      }
     ],
     "publicado_ts": "2016-04-07T05:57:50Z"
@@ -19125,9 +19125,9 @@
     "video_id": "t2_PYzXswVY",
     "titulo": "Karol G, Anuel AA - Follow",
     "canal": "KAROL G",
-    "vistas": 320859513,
+    "vistas": 320863913,
     "ayer": 89304,
-    "likes": 2497948,
+    "likes": 2497953,
     "publicado": "2020-04-02",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -19149,8 +19149,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 320859513
+      "t": "2026-10-21T22:45:50Z",
+      "v": 320863913
      }
     ],
     "comentarios": 63763,
@@ -19430,9 +19430,9 @@
     "video_id": "HjjtM3EV0Jk",
     "titulo": "Anuel AA - Bandolera",
     "canal": "AnuelVEVO",
-    "vistas": 118341891,
+    "vistas": 118343799,
     "ayer": 39600,
-    "likes": 494975,
+    "likes": 494980,
     "publicado": "2018-07-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -19457,8 +19457,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 118341891
+      "t": "2026-10-21T22:45:50Z",
+      "v": 118343799
      }
     ],
     "publicado_ts": "2018-07-17T04:00:01Z"
@@ -19561,7 +19561,7 @@
     "video_id": "V2JzyEz4iOs",
     "titulo": "Anuel AA - Nacimos Pa Morir ft. Jory Boy [Official Video]",
     "canal": "Anuel AA",
-    "vistas": 72140148,
+    "vistas": 72140954,
     "ayer": 21480,
     "likes": 353588,
     "publicado": "2017-03-17",
@@ -19588,8 +19588,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 72140148
+      "t": "2026-10-21T22:45:50Z",
+      "v": 72140954
      }
     ],
     "publicado_ts": "2017-03-17T00:54:20Z"
@@ -19604,8 +19604,8 @@
     "video_id": "AbF4n5i6GJs",
     "titulo": "BAD BUNNY x DADDY YANKEE x ANUEL AA x COSCULLUELA - TÚ NO METES CABRA REMIX (Audio Oficial)",
     "canal": "Bad Bunny",
-    "vistas": 366723968,
-    "likes": 2143736,
+    "vistas": 366726898,
+    "likes": 2143741,
     "publicado": "2017-10-27",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -19631,8 +19631,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 366723968
+      "t": "2026-10-21T22:45:50Z",
+      "v": 366726898
      }
     ],
     "publicado_ts": "2017-10-27T17:05:49Z"
@@ -19803,8 +19803,8 @@
     "video_id": "E03Pw3IQQmo",
     "titulo": "Anuel AA - Ayer 2 (Official Lyric Video) ft. J Balvin, Nicky Jam, Cosculluela, DJ Nelson",
     "canal": "AnuelVEVO",
-    "vistas": 225920804,
-    "likes": 1143360,
+    "vistas": 225923484,
+    "likes": 1143364,
     "publicado": "2017-06-15",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -19831,8 +19831,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 225920804
+      "t": "2026-10-21T22:45:50Z",
+      "v": 225923484
      }
     ],
     "publicado_ts": "2017-06-15T18:02:10Z"
@@ -19847,9 +19847,9 @@
     "video_id": "QOcY02xOtMw",
     "titulo": "Anuel AA | NARCOS",
     "canal": "Anuel AA",
-    "vistas": 301451641,
+    "vistas": 301453794,
     "ayer": 45288,
-    "likes": 1489116,
+    "likes": 1489122,
     "publicado": "2020-06-26",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -19871,8 +19871,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 301451641
+      "t": "2026-10-21T22:45:50Z",
+      "v": 301453794
      }
     ],
     "comentarios": 60624,
@@ -20091,9 +20091,9 @@
     "video_id": "IFM6kcRNcIs",
     "titulo": "Pepe Quintana - Ella y Yo [Official Video] ft. Farruko , Anuel AA , Tempo , Almighty , Bryant Myers",
     "canal": "MrPepeQuintana",
-    "vistas": 196252411,
+    "vistas": 196252844,
     "ayer": 10176,
-    "likes": 1068640,
+    "likes": 1068635,
     "publicado": "2016-02-15",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -20115,8 +20115,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 196252411
+      "t": "2026-10-21T22:45:50Z",
+      "v": 196252844
      }
     ],
     "comentarios": 29022,
@@ -20219,8 +20219,8 @@
     "canal": "Anuel AA - Topic",
     "canal_id": "UCbBaYg2UToDaoOwo-R6xi4g",
     "verificado": "artista",
-    "vistas": 110972385,
-    "likes": 507805,
+    "vistas": 110978879,
+    "likes": 507818,
     "publicado": "2020-07-30",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -20244,8 +20244,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 110972385
+      "t": "2026-10-21T22:45:50Z",
+      "v": 110978879
      }
     ],
     "publicado_ts": "2020-07-30T10:02:40Z"
@@ -20323,9 +20323,9 @@
     "video_id": "bZMPz5lzb2U",
     "titulo": "Daddy Yankee, Anuel AA & Kendo Kaponi - Don Don (Video Oficial)",
     "canal": "Daddy Yankee",
-    "vistas": 143800444,
+    "vistas": 143800991,
     "ayer": 13704,
-    "likes": 1012066,
+    "likes": 1012071,
     "publicado": "2020-09-11",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -20347,8 +20347,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 143800444
+      "t": "2026-10-21T22:45:50Z",
+      "v": 143800991
      }
     ],
     "comentarios": 49383,
@@ -20527,7 +20527,7 @@
     "video_id": "70RraHwxgU4",
     "titulo": "Anuel AA - El Manual (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 72541357,
+    "vistas": 72541637,
     "ayer": 6912,
     "likes": 436537,
     "publicado": "2020-05-29",
@@ -20551,8 +20551,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 72541357
+      "t": "2026-10-21T22:45:50Z",
+      "v": 72541637
      }
     ],
     "comentarios": 9806,
@@ -20728,7 +20728,7 @@
     "video_id": "p-9mKK3oy4o",
     "titulo": "Anuel AA |  ESA CRUZ",
     "canal": "Anuel AA",
-    "vistas": 119272661,
+    "vistas": 119274924,
     "ayer": 57864,
     "likes": 564620,
     "publicado": "2021-11-26",
@@ -20752,8 +20752,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 119272661
+      "t": "2026-10-21T22:45:50Z",
+      "v": 119274924
      }
     ],
     "comentarios": 8302,
@@ -20912,8 +20912,8 @@
     "canal": "Nicki Minaj - Topic",
     "canal_id": "UCTTcTeAszDGxALRSMkJH9FQ",
     "verificado": "artista",
-    "vistas": 22090992,
-    "likes": 220188,
+    "vistas": 22091189,
+    "likes": 220189,
     "publicado": "2018-12-13",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -20937,8 +20937,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 22090992
+      "t": "2026-10-21T22:45:50Z",
+      "v": 22091189
      }
     ],
     "publicado_ts": "2018-12-13T10:18:12Z"
@@ -20955,9 +20955,9 @@
     "video_id": "lRnSsiT-fio",
     "titulo": "JANGUEO | Anuel AA ❌ Tego Calderon",
     "canal": "Anuel AA",
-    "vistas": 96032711,
+    "vistas": 96033627,
     "ayer": 20352,
-    "likes": 587802,
+    "likes": 587803,
     "publicado": "2020-05-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -20979,8 +20979,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 96032711
+      "t": "2026-10-21T22:45:50Z",
+      "v": 96033627
      }
     ],
     "comentarios": 11682,
@@ -21167,9 +21167,9 @@
     "video_id": "AnKdQ5p5Ks8",
     "titulo": "Anuel - Ayer ft. Dj Nelson [Official Video]",
     "canal": "DJ Nelson",
-    "vistas": 672690835,
+    "vistas": 672699393,
     "ayer": 194736,
-    "likes": 2540102,
+    "likes": 2540119,
     "publicado": "2016-06-15",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -21191,8 +21191,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 672690835
+      "t": "2026-10-21T22:45:50Z",
+      "v": 672699393
      }
     ],
     "comentarios": 75722,
@@ -21895,8 +21895,8 @@
     "canal": "Omar Courtz",
     "canal_id": "UCNE09tmvAQYCixy5cY_zo9A",
     "verificado": "artista",
-    "vistas": 60936189,
-    "likes": 299476,
+    "vistas": 60938167,
+    "likes": 299478,
     "publicado": "2024-07-25",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -21920,8 +21920,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 60936189
+      "t": "2026-10-21T22:45:50Z",
+      "v": 60938167
      }
     ],
     "publicado_ts": "2024-07-25T04:00:36Z"
@@ -21941,8 +21941,8 @@
     "video_id": "qNIyRL8EOk0",
     "titulo": "@AnuelAA & Ozuna - ANTES (Video Oficial)",
     "canal": "Ozuna",
-    "vistas": 58668284,
-    "likes": 534399,
+    "vistas": 58668398,
+    "likes": 534398,
     "publicado": "2021-01-22",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -21964,8 +21964,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 58668284
+      "t": "2026-10-21T22:45:50Z",
+      "v": 58668398
      }
     ],
     "verificado": false,
@@ -22208,8 +22208,8 @@
     "canal": "Anuel AA - Topic",
     "canal_id": "UCbBaYg2UToDaoOwo-R6xi4g",
     "verificado": "artista",
-    "vistas": 123009604,
-    "likes": 591618,
+    "vistas": 123014544,
+    "likes": 591635,
     "publicado": "2020-07-30",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -22233,8 +22233,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 123009604
+      "t": "2026-10-21T22:45:50Z",
+      "v": 123014544
      }
     ],
     "publicado_ts": "2020-07-30T10:02:41Z"
@@ -22250,8 +22250,8 @@
     "video_id": "ypkE4pQml6o",
     "titulo": "Esta Cabron (Remix) [feat. Anuel AA & Yomo & Pusho & Almighty & D. Ozi & Jamby el Favo]",
     "canal": "Ñejo - Topic",
-    "vistas": 2797771,
-    "likes": 12509,
+    "vistas": 2798143,
+    "likes": 12510,
     "publicado": "2025-11-11",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -22273,8 +22273,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 2797771
+      "t": "2026-10-21T22:45:50Z",
+      "v": 2798143
      }
     ],
     "verificado": false,
@@ -22333,8 +22333,8 @@
     "video_id": "bMAYO5T03ZA",
     "titulo": "Bryant Myers x Anuel AA - Gan-Ga Remix (Official Music Video)",
     "canal": "Bryant Myers",
-    "vistas": 255162798,
-    "likes": 1788291,
+    "vistas": 255164924,
+    "likes": 1788292,
     "publicado": "2019-11-15",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -22356,8 +22356,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 255162798
+      "t": "2026-10-21T22:45:50Z",
+      "v": 255164924
      }
     ],
     "ayer": 52224,
@@ -22419,9 +22419,9 @@
     "video_id": "nJ6cFnkSyYI",
     "titulo": "Anuel AA ❌ Eladio Carrión | North Carolina",
     "canal": "Anuel AA",
-    "vistas": 104095706,
+    "vistas": 104096559,
     "ayer": 20472,
-    "likes": 782563,
+    "likes": 782560,
     "publicado": "2022-01-28",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -22443,8 +22443,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 104095706
+      "t": "2026-10-21T22:45:50Z",
+      "v": 104096559
      }
     ],
     "comentarios": 16751,
@@ -22647,15 +22647,15 @@
     "video_id": "htmUyizijP4",
     "titulo": "Soldado Y Profeta (Remix) [Official Video]",
     "canal": "AnuelVEVO",
-    "vistas": 349705787,
-    "likes": 1979676,
+    "vistas": 349709052,
+    "likes": 1979688,
     "publicado": "2016-01-31",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
     "fijo": true,
     "origen": "fijo",
     "ayer": 96264,
-    "comentarios": 51519,
+    "comentarios": 51521,
     "canal_id": "UC05eluGxsI8_xf5uRC-J26Q",
     "hist": [
      {
@@ -22675,8 +22675,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 349705787
+      "t": "2026-10-21T22:45:50Z",
+      "v": 349709052
      }
     ],
     "publicado_ts": "2016-01-31T08:00:00Z"
@@ -22695,8 +22695,8 @@
     "canal": "Foreign Teck",
     "canal_id": "UCyI9HYIRbp_l8Op6ETkO2xw",
     "verificado": "artista",
-    "vistas": 117213819,
-    "likes": 501850,
+    "vistas": 117215993,
+    "likes": 501854,
     "publicado": "2022-10-28",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -22720,8 +22720,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 117213819
+      "t": "2026-10-21T22:45:50Z",
+      "v": 117215993
      }
     ],
     "publicado_ts": "2022-10-28T18:00:06Z"
@@ -23539,9 +23539,9 @@
     "video_id": "oUNMq7AiYKU",
     "titulo": "Anuel AA - Enrique Iglesias | FÚTBOL Y RUMBA",
     "canal": "Anuel AA",
-    "vistas": 250568836,
+    "vistas": 250569587,
     "ayer": 18960,
-    "likes": 1291483,
+    "likes": 1291482,
     "publicado": "2020-05-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -23566,8 +23566,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 250568836
+      "t": "2026-10-21T22:45:50Z",
+      "v": 250569587
      }
     ],
     "publicado_ts": "2020-05-29T04:59:50Z"
@@ -23699,8 +23699,8 @@
     "video_id": "6qSzbRcORgE",
     "titulo": "Anuel AA - Pensando En Tí feat. Wisin",
     "canal": "AnuelVEVO",
-    "vistas": 102570079,
-    "likes": 531792,
+    "vistas": 102570858,
+    "likes": 531794,
     "publicado": "2018-07-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -23727,8 +23727,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 102570079
+      "t": "2026-10-21T22:45:50Z",
+      "v": 102570858
      }
     ],
     "publicado_ts": "2018-07-17T04:00:00Z"
@@ -23743,9 +23743,9 @@
     "video_id": "L9C62sh07KY",
     "titulo": "KAROL G, Anuel AA - Dices Que Te Vas (Official Video)",
     "canal": "KarolGVEVO",
-    "vistas": 339013207,
+    "vistas": 339017205,
     "ayer": 77808,
-    "likes": 2851065,
+    "likes": 2851070,
     "publicado": "2019-05-31",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -23767,8 +23767,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 339013207
+      "t": "2026-10-21T22:45:50Z",
+      "v": 339017205
      }
     ],
     "comentarios": 61306,
@@ -23918,9 +23918,9 @@
     "video_id": "uf0eq4O0mqg",
     "titulo": "BLESSD ❌ ANUEL AA | MIRAME REMIX (VIDEO OFICIAL)",
     "canal": "Anuel AA",
-    "vistas": 266506455,
+    "vistas": 266514053,
     "ayer": 171336,
-    "likes": 1017860,
+    "likes": 1017868,
     "publicado": "2024-12-11",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -23942,8 +23942,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 266506455
+      "t": "2026-10-21T22:45:50Z",
+      "v": 266514053
      }
     ],
     "comentarios": 54622,
@@ -24120,7 +24120,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 831
      }
     ],
@@ -24218,8 +24218,8 @@
     "video_id": "8mr7CeIabPQ",
     "titulo": "Casper Magico & Anuel AA - No Te Veo (Remix)",
     "canal": "Casper Magico",
-    "vistas": 79912720,
-    "likes": 521772,
+    "vistas": 79913100,
+    "likes": 521773,
     "publicado": "2019-04-30",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -24245,8 +24245,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 79912720
+      "t": "2026-10-21T22:45:50Z",
+      "v": 79913100
      }
     ],
     "publicado_ts": "2019-04-30T16:53:28Z"
@@ -24494,8 +24494,8 @@
     "video_id": "zSbZC4X2Ljw",
     "titulo": "Anuel AA - Naturaleza",
     "canal": "AnuelVEVO",
-    "vistas": 121012198,
-    "likes": 584328,
+    "vistas": 121013466,
+    "likes": 584331,
     "publicado": "2018-07-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -24522,8 +24522,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 121012198
+      "t": "2026-10-21T22:45:50Z",
+      "v": 121013466
      }
     ],
     "publicado_ts": "2018-07-17T04:00:03Z"
@@ -24538,9 +24538,9 @@
     "video_id": "s1r_DQzbUik",
     "titulo": "El Alfa El Jefe Ft. Anuel AA - Con Silenciador (Video Oficial)",
     "canal": "ElAlfaElJefeTV",
-    "vistas": 104248503,
+    "vistas": 104248916,
     "ayer": 10248,
-    "likes": 964811,
+    "likes": 964807,
     "publicado": "2018-10-05",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -24562,8 +24562,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 104248503
+      "t": "2026-10-21T22:45:50Z",
+      "v": 104248916
      }
     ],
     "comentarios": 29241,
@@ -24765,8 +24765,8 @@
     "canal": "BrytiagoTV",
     "canal_id": "UCuVvjHUPjVsJraijv120D_A",
     "verificado": "artista",
-    "vistas": 114527006,
-    "likes": 450654,
+    "vistas": 114528358,
+    "likes": 450655,
     "publicado": "2024-04-19",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -24790,8 +24790,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 114527006
+      "t": "2026-10-21T22:45:50Z",
+      "v": 114528358
      }
     ],
     "publicado_ts": "2024-04-19T04:00:07Z"
@@ -24938,8 +24938,8 @@
     "video_id": "6UVzVdNZFKk",
     "titulo": "Anuel AA - Te Necesito",
     "canal": "AnuelVEVO",
-    "vistas": 135727992,
-    "likes": 710448,
+    "vistas": 135730554,
+    "likes": 710449,
     "publicado": "2018-07-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -24966,8 +24966,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 135727992
+      "t": "2026-10-21T22:45:50Z",
+      "v": 135730554
      }
     ],
     "publicado_ts": "2018-07-17T04:00:01Z"
@@ -24982,9 +24982,9 @@
     "video_id": "vutbVGewIcg",
     "titulo": "Anuel AA - Las Mas Bonitas Son P*tas (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 167773881,
+    "vistas": 167814435,
     "ayer": 1056816,
-    "likes": 852180,
+    "likes": 852257,
     "publicado": "2026-06-26",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -25006,8 +25006,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 167773881
+      "t": "2026-10-21T22:45:50Z",
+      "v": 167814435
      }
     ],
     "comentarios": 30807,
@@ -27583,9 +27583,9 @@
     "video_id": "t6MSaa81kBQ",
     "titulo": "Ozuna - Supuestamente (Feat. Anuel AA) (Audio Oficial)",
     "canal": "Ozuna",
-    "vistas": 143858716,
+    "vistas": 143859385,
     "ayer": 14808,
-    "likes": 681033,
+    "likes": 681032,
     "publicado": "2018-08-24",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -27607,8 +27607,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 143858716
+      "t": "2026-10-21T22:45:50Z",
+      "v": 143859385
      }
     ],
     "comentarios": 10835,
@@ -27765,8 +27765,8 @@
     "video_id": "QKZGsuGOnQQ",
     "titulo": "WYA REMIX BLACK AND YELLOW ⚫️🟡 - (Video Oficial) J Abdiel, Anuel AA, Blessd, Izaak & Pirlo",
     "canal": "J Abdiel",
-    "vistas": 134321749,
-    "likes": 491143,
+    "vistas": 134323825,
+    "likes": 491141,
     "publicado": "2024-06-25",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -27788,8 +27788,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 134321749
+      "t": "2026-10-21T22:45:50Z",
+      "v": 134323825
      }
     ],
     "verificado": false,
@@ -28070,8 +28070,8 @@
     "video_id": "-0hWmeWqZWs",
     "titulo": "Anuel AA - Na' Nuevo (Audio)",
     "canal": "AnuelVEVO",
-    "vistas": 134263163,
-    "likes": 810734,
+    "vistas": 134264062,
+    "likes": 810737,
     "publicado": "2018-07-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -28098,8 +28098,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 134263163
+      "t": "2026-10-21T22:45:50Z",
+      "v": 134264062
      }
     ],
     "publicado_ts": "2018-07-17T04:00:01Z"
@@ -28114,9 +28114,9 @@
     "video_id": "3cE7pYWCZpw",
     "titulo": "Ozuna & Anuel AA - Cambio (Video Oficial)",
     "canal": "Ozuna",
-    "vistas": 364868213,
+    "vistas": 364870090,
     "ayer": 46920,
-    "likes": 2173130,
+    "likes": 2173131,
     "publicado": "2019-06-25",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -28138,8 +28138,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 364868213
+      "t": "2026-10-21T22:45:50Z",
+      "v": 364870090
      }
     ],
     "comentarios": 56140,
@@ -28362,8 +28362,8 @@
     "video_id": "3SYif-3YvC4",
     "titulo": "VVS SWITCH REMIX - Anuel AA, Pressure9x19, Hades66, Luar La L,Young Chimi ,C Dobleta - Video Oficial",
     "canal": "Marcoantonio665",
-    "vistas": 4134678,
-    "likes": 49687,
+    "vistas": 4135628,
+    "likes": 49696,
     "publicado": "2025-01-05",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -28385,8 +28385,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 4134678
+      "t": "2026-10-21T22:45:50Z",
+      "v": 4135628
      }
     ],
     "verificado": false,
@@ -28481,9 +28481,9 @@
     "video_id": "VmRUE1A_Idw",
     "titulo": "Anuel AA ● Dj Luian ● Mambo Kingz | MEJOR QUE YO",
     "canal": "Anuel AA",
-    "vistas": 172028101,
+    "vistas": 172031594,
     "ayer": 93552,
-    "likes": 1130101,
+    "likes": 1130104,
     "publicado": "2023-05-05",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -28505,8 +28505,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 172028101
+      "t": "2026-10-21T22:45:50Z",
+      "v": 172031594
      }
     ],
     "comentarios": 56217,
@@ -28702,7 +28702,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 230
      }
     ],
@@ -28769,9 +28769,9 @@
     "video_id": "f-bHkixKt0g",
     "titulo": "Brytiago & Anuel AA - Controla 🎮(Video Oficial)",
     "canal": "BrytiagoTV",
-    "vistas": 163500679,
+    "vistas": 163501010,
     "ayer": 9504,
-    "likes": 902403,
+    "likes": 902404,
     "publicado": "2019-02-14",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -28793,8 +28793,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 163500679
+      "t": "2026-10-21T22:45:50Z",
+      "v": 163501010
      }
     ],
     "comentarios": 4253,
@@ -29067,7 +29067,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 118583
      }
     ],
@@ -29085,8 +29085,8 @@
     "video_id": "1y1GrWQM0dE",
     "titulo": "Zion & Lennox, Anuel AA, Haze - \"Guayo\" (Video Oficial)",
     "canal": "Zion & Lennox",
-    "vistas": 56399107,
-    "likes": 338092,
+    "vistas": 56399356,
+    "likes": 338095,
     "publicado": "2019-05-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -29108,8 +29108,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 56399107
+      "t": "2026-10-21T22:45:50Z",
+      "v": 56399356
      }
     ],
     "verificado": false,
@@ -29275,8 +29275,8 @@
     "canal": "Lunay",
     "canal_id": "UC6nhvNEOvKzNTHQPlOf2-Rg",
     "verificado": "artista",
-    "vistas": 432791984,
-    "likes": 1780234,
+    "vistas": 432794759,
+    "likes": 1780236,
     "publicado": "2018-12-07",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -29300,8 +29300,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 432791984
+      "t": "2026-10-21T22:45:50Z",
+      "v": 432794759
      }
     ],
     "ayer": 73704,
@@ -29398,9 +29398,9 @@
     "video_id": "_UYf0pyjCw0",
     "titulo": "Anuel AA - 1942 - (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 75046064,
+    "vistas": 75047612,
     "ayer": 33840,
-    "likes": 392173,
+    "likes": 392177,
     "publicado": "2021-11-26",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -29422,8 +29422,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 75046064
+      "t": "2026-10-21T22:45:50Z",
+      "v": 75047612
      }
     ],
     "comentarios": 4967,
@@ -29551,8 +29551,8 @@
     "video_id": "C6OHcPwL9e8",
     "titulo": "Robgz x Anuel AA - LHNA (Official Video)",
     "canal": "ROBGZ",
-    "vistas": 130940400,
-    "likes": 900660,
+    "vistas": 130941501,
+    "likes": 900666,
     "publicado": "2019-06-22",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -29574,8 +29574,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 130940400
+      "t": "2026-10-21T22:45:50Z",
+      "v": 130941501
      }
     ],
     "verificado": false,
@@ -29866,8 +29866,8 @@
     "canal": "Eladio Carrion",
     "canal_id": "UC0_95MpNlRz9x7JmsXBClZA",
     "verificado": "artista",
-    "vistas": 79706464,
-    "likes": 678325,
+    "vistas": 79707188,
+    "likes": 678326,
     "publicado": "2023-04-14",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -29891,8 +29891,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 79706464
+      "t": "2026-10-21T22:45:50Z",
+      "v": 79707188
      }
     ],
     "publicado_ts": "2023-04-14T04:00:09Z"
@@ -29922,9 +29922,9 @@
     "video_id": "hL8JkYK5Ab4",
     "titulo": "Anuel AA - MONSTRUO | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 184277683,
+    "vistas": 184284108,
     "ayer": 126648,
-    "likes": 801771,
+    "likes": 801778,
     "publicado": "2022-12-13",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -29946,8 +29946,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 184277683
+      "t": "2026-10-21T22:45:50Z",
+      "v": 184284108
      }
     ],
     "comentarios": 13438,
@@ -30050,7 +30050,7 @@
     "video_id": "vKBIL2tu4mM",
     "titulo": "Anuel AA | MCGREGOR",
     "canal": "Anuel AA",
-    "vistas": 94665518,
+    "vistas": 94666571,
     "ayer": 21960,
     "likes": 760209,
     "publicado": "2022-03-04",
@@ -30074,8 +30074,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 94665518
+      "t": "2026-10-21T22:45:50Z",
+      "v": 94666571
      }
     ],
     "comentarios": 21345,
@@ -30226,9 +30226,9 @@
     "video_id": "GpZEhFYAG4U",
     "titulo": "Anuel AA, Rvssian, Juice WRLD - No Me Ame (Official Video)",
     "canal": "Anuel AA",
-    "vistas": 68961129,
+    "vistas": 68961254,
     "ayer": 2592,
-    "likes": 711960,
+    "likes": 711961,
     "publicado": "2020-04-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -30250,8 +30250,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 68961129
+      "t": "2026-10-21T22:45:50Z",
+      "v": 68961254
      }
     ],
     "comentarios": 26192,
@@ -30431,7 +30431,7 @@
     "video_id": "8qj5vtEleQ4",
     "titulo": "Anuel AA , Bad Bunny - Así Soy Yo (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 38701014,
+    "vistas": 38701263,
     "ayer": 5088,
     "likes": 441574,
     "publicado": "2020-05-29",
@@ -30455,8 +30455,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 38701014
+      "t": "2026-10-21T22:45:50Z",
+      "v": 38701263
      }
     ],
     "comentarios": 10607,
@@ -30632,9 +30632,9 @@
     "video_id": "zdiLkIvdS0c",
     "titulo": "Anuel AA - Brother (Video Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 82574054,
+    "vistas": 82574791,
     "ayer": 17688,
-    "likes": 517254,
+    "likes": 517257,
     "publicado": "2022-09-16",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -30656,8 +30656,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 82574054
+      "t": "2026-10-21T22:45:50Z",
+      "v": 82574791
      }
     ],
     "comentarios": 18597,
@@ -30798,9 +30798,9 @@
     "video_id": "Y6XBzi19-yc",
     "titulo": "Anuel AA | MERCEDES TINTIA | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 151713748,
+    "vistas": 151714890,
     "ayer": 30264,
-    "likes": 1220141,
+    "likes": 1220140,
     "publicado": "2022-08-26",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -30822,8 +30822,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 151713748
+      "t": "2026-10-21T22:45:50Z",
+      "v": 151714890
      }
     ],
     "comentarios": 62323,
@@ -30994,7 +30994,7 @@
     "video_id": "kZOPglnaHYM",
     "titulo": "Ozuna - Única (Remix) (Feat. Anuel AA, Wisin & Yandel) (Audio Oficial)",
     "canal": "Ozuna",
-    "vistas": 72681411,
+    "vistas": 72681844,
     "ayer": 8472,
     "likes": 433140,
     "publicado": "2018-08-24",
@@ -31018,8 +31018,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 72681411
+      "t": "2026-10-21T22:45:50Z",
+      "v": 72681844
      }
     ],
     "comentarios": 8876,
@@ -31176,8 +31176,8 @@
     "video_id": "hM7dxnLqlSo",
     "titulo": "Casper Magico & Anuel AA - Sola & Vacía (Video Oficial)",
     "canal": "Flow La Movie",
-    "vistas": 100710386,
-    "likes": 482916,
+    "vistas": 100710647,
+    "likes": 482919,
     "publicado": "2020-04-16",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -31199,8 +31199,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 100710386
+      "t": "2026-10-21T22:45:50Z",
+      "v": 100710647
      }
     ],
     "verificado": false,
@@ -31463,7 +31463,7 @@
     "video_id": "qhuSqXl54C4",
     "titulo": "Anuel AA - Espina",
     "canal": "AnuelVEVO",
-    "vistas": 71758583,
+    "vistas": 71759186,
     "likes": 432814,
     "publicado": "2018-07-17",
     "fecha": "2026-10-21",
@@ -31491,8 +31491,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 71758583
+      "t": "2026-10-21T22:45:50Z",
+      "v": 71759186
      }
     ],
     "publicado_ts": "2018-07-17T04:00:01Z"
@@ -31507,8 +31507,8 @@
     "video_id": "fXlJ48FrmQQ",
     "titulo": "Chris Jedi, Gaby Music, Dei V, Anuel, Ozuna - BAD BOY (Official Video) ft. Anuel AA, Ozuna",
     "canal": "GabyMusicVEVO",
-    "vistas": 62654616,
-    "likes": 384015,
+    "vistas": 62655203,
+    "likes": 384013,
     "publicado": "2024-02-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -31530,8 +31530,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 62654616
+      "t": "2026-10-21T22:45:50Z",
+      "v": 62655203
      }
     ],
     "verificado": false,
@@ -31656,8 +31656,8 @@
     "video_id": "4wcbJGoDvqM",
     "titulo": "TE CANTO BAJITO (VIDEO OFICIAL) | BLESSD ❌ ANUEL AA ❌ SOG",
     "canal": "SIEMPRE BLESSD 💙",
-    "vistas": 74178537,
-    "likes": 398665,
+    "vistas": 74181259,
+    "likes": 398669,
     "publicado": "2025-03-18",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -31679,8 +31679,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 74178537
+      "t": "2026-10-21T22:45:50Z",
+      "v": 74181259
      }
     ],
     "comentarios": 14153,
@@ -31819,9 +31819,9 @@
     "video_id": "S5V9Dv6r5Co",
     "titulo": "Anuel AA | DICTADURA",
     "canal": "Anuel AA",
-    "vistas": 95009495,
+    "vistas": 95009827,
     "ayer": 8280,
-    "likes": 771674,
+    "likes": 771672,
     "publicado": "2021-10-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -31843,8 +31843,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 95009495
+      "t": "2026-10-21T22:45:50Z",
+      "v": 95009827
      }
     ],
     "comentarios": 34433,
@@ -32199,8 +32199,8 @@
     "canal": "Benny Benni",
     "canal_id": "UC4H-BAZYRrSs-TjdPGZR9tw",
     "verificado": "artista",
-    "vistas": 76109792,
-    "likes": 316239,
+    "vistas": 76111000,
+    "likes": 316240,
     "publicado": "2016-08-13",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -32224,8 +32224,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 76109792
+      "t": "2026-10-21T22:45:50Z",
+      "v": 76111000
      }
     ],
     "publicado_ts": "2016-08-13T23:32:11Z"
@@ -32241,9 +32241,9 @@
     "video_id": "GmB3WdjdzbE",
     "titulo": "Myke Towers, Anuel AA & Natti Natasha - Diosa Remix (Video Oficial)",
     "canal": "Myke Towers",
-    "vistas": 122001769,
+    "vistas": 122002590,
     "ayer": 17856,
-    "likes": 909010,
+    "likes": 909013,
     "publicado": "2020-10-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -32265,8 +32265,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 122001769
+      "t": "2026-10-21T22:45:50Z",
+      "v": 122002590
      }
     ],
     "comentarios": 33077,
@@ -32421,9 +32421,9 @@
     "video_id": "Zmd_KO2Lric",
     "titulo": "Anuel AA | LITTLE DEMON",
     "canal": "Anuel AA",
-    "vistas": 86294654,
+    "vistas": 86297357,
     "ayer": 62040,
-    "likes": 911193,
+    "likes": 911191,
     "publicado": "2025-06-26",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -32445,11 +32445,11 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 86294654
+      "t": "2026-10-21T22:45:50Z",
+      "v": 86297357
      }
     ],
-    "comentarios": 48157,
+    "comentarios": 48158,
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "publicado_ts": "2025-06-26T23:00:23Z"
    },
@@ -33115,9 +33115,9 @@
     "video_id": "H-qCbwtBliQ",
     "titulo": "Cosculluela, Anuel AA - 23",
     "canal": "Cosculluela El Principe",
-    "vistas": 129531675,
+    "vistas": 129533270,
     "ayer": 36096,
-    "likes": 798641,
+    "likes": 798642,
     "publicado": "2017-07-10",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -33139,8 +33139,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 129531675
+      "t": "2026-10-21T22:45:50Z",
+      "v": 129533270
      }
     ],
     "comentarios": 7167,
@@ -33353,7 +33353,7 @@
     "video_id": "o7G7LDuQJqo",
     "titulo": "Anuel AA - Modo De Avión",
     "canal": "AnuelVEVO",
-    "vistas": 52623603,
+    "vistas": 52624181,
     "likes": 365180,
     "publicado": "2018-07-17",
     "fecha": "2026-10-21",
@@ -33381,8 +33381,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 52623603
+      "t": "2026-10-21T22:45:50Z",
+      "v": 52624181
      }
     ],
     "publicado_ts": "2018-07-17T04:00:02Z"
@@ -33397,9 +33397,9 @@
     "video_id": "A9QH16GPEdw",
     "titulo": "Anuel AA | LEYENDA",
     "canal": "Anuel AA",
-    "vistas": 109681056,
+    "vistas": 109681849,
     "ayer": 15192,
-    "likes": 828136,
+    "likes": 828137,
     "publicado": "2021-11-12",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -33421,8 +33421,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 109681056
+      "t": "2026-10-21T22:45:50Z",
+      "v": 109681849
      }
     ],
     "comentarios": 29942,
@@ -33595,7 +33595,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 1697
      }
     ],
@@ -33700,8 +33700,8 @@
     "video_id": "nME5jukde3s",
     "titulo": "Anuel - Ceniza En Cenicero (Lyric Video)",
     "canal": "AnuelVEVO",
-    "vistas": 18090375,
-    "likes": 182896,
+    "vistas": 18090605,
+    "likes": 182897,
     "publicado": "2017-02-20",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -33728,8 +33728,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 18090375
+      "t": "2026-10-21T22:45:50Z",
+      "v": 18090605
      }
     ],
     "publicado_ts": "2017-02-20T21:54:19Z"
@@ -33744,9 +33744,9 @@
     "video_id": "qaA7HuhH6Ko",
     "titulo": "Anuel AA | 3 DE ABRIL",
     "canal": "Anuel AA",
-    "vistas": 165893808,
+    "vistas": 165895261,
     "ayer": 34056,
-    "likes": 1424838,
+    "likes": 1424842,
     "publicado": "2020-04-03",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -33768,11 +33768,11 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 165893808
+      "t": "2026-10-21T22:45:50Z",
+      "v": 165895261
      }
     ],
-    "comentarios": 52922,
+    "comentarios": 52923,
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "publicado_ts": "2020-04-03T03:41:20Z"
    },
@@ -34059,8 +34059,8 @@
     "canal": "Ozuna",
     "canal_id": "UCjIA3wwhi0QjSOXAZwOXbPA",
     "verificado": "artista",
-    "vistas": 32809258,
-    "likes": 291967,
+    "vistas": 32809352,
+    "likes": 291968,
     "publicado": "2018-08-24",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -34084,8 +34084,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 32809258
+      "t": "2026-10-21T22:45:50Z",
+      "v": 32809352
      }
     ],
     "publicado_ts": "2018-08-24T04:26:36Z"
@@ -34102,8 +34102,8 @@
     "video_id": "9LItMH0LS6w",
     "titulo": "Chris Jedi, Anuel AA, Gaby Music - DURO (Official Video) ft. Jenny \"La Sexy Voz\"",
     "canal": "ChrisJediVEVO",
-    "vistas": 50253469,
-    "likes": 358236,
+    "vistas": 50253913,
+    "likes": 358238,
     "publicado": "2022-11-08",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -34125,8 +34125,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 50253469
+      "t": "2026-10-21T22:45:50Z",
+      "v": 50253913
      }
     ],
     "verificado": false,
@@ -34424,7 +34424,7 @@
     "video_id": "Pu2NABdpihw",
     "titulo": "Anuel AA, Cardi B, Black Jonas Point, Secreto & Liro Shaq - La Bebe Remix (Audio Oficial)",
     "canal": "Flow La Movie",
-    "vistas": 89729191,
+    "vistas": 89729482,
     "likes": 910589,
     "publicado": "2020-05-13",
     "fecha": "2026-10-21",
@@ -34451,8 +34451,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 89729191
+      "t": "2026-10-21T22:45:50Z",
+      "v": 89729482
      }
     ],
     "publicado_ts": "2020-05-13T23:02:17Z"
@@ -34582,8 +34582,8 @@
     "video_id": "OhfWZCVGfr4",
     "titulo": "Anuel x Nengo Flow - 47 (Remix) ft. Bad Bunny, Darell, Farruko, Sinfónico, Casper  (Video Oficial)",
     "canal": "The Drvckkos👺 ",
-    "vistas": 1637822,
-    "likes": 19414,
+    "vistas": 1637877,
+    "likes": 19415,
     "publicado": "2019-05-04",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -34605,8 +34605,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 1637822
+      "t": "2026-10-21T22:45:50Z",
+      "v": 1637877
      }
     ],
     "verificado": false,
@@ -34685,9 +34685,9 @@
     "video_id": "fg4ZY92w0L4",
     "titulo": "ANUEL AA & OZUNA  | LOS DIOSES",
     "canal": "Anuel AA",
-    "vistas": 189648599,
+    "vistas": 189648949,
     "ayer": 8280,
-    "likes": 1357387,
+    "likes": 1357388,
     "publicado": "2021-01-21",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -34709,8 +34709,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 189648599
+      "t": "2026-10-21T22:45:50Z",
+      "v": 189648949
      }
     ],
     "comentarios": 66169,
@@ -34990,8 +34990,8 @@
     "canal": "SIEMPRE BLESSD 💙",
     "canal_id": "UCb164jMdHd94O34bASFbI3Q",
     "verificado": "artista",
-    "vistas": 28293135,
-    "likes": 207241,
+    "vistas": 28295152,
+    "likes": 207243,
     "publicado": "2025-11-07",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -35015,8 +35015,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 28293135
+      "t": "2026-10-21T22:45:50Z",
+      "v": 28295152
      }
     ],
     "publicado_ts": "2025-11-07T00:55:07Z"
@@ -35033,9 +35033,9 @@
     "video_id": "KwKV19UL33A",
     "titulo": "Anuel AA | NOSOTROS | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 122257780,
+    "vistas": 122261358,
     "ayer": 77376,
-    "likes": 663558,
+    "likes": 663563,
     "publicado": "2022-09-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -35057,8 +35057,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 122257780
+      "t": "2026-10-21T22:45:50Z",
+      "v": 122261358
      }
     ],
     "comentarios": 25721,
@@ -35210,7 +35210,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 374
      }
     ],
@@ -35295,7 +35295,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 190533
      }
     ],
@@ -35350,9 +35350,9 @@
     "video_id": "gj5CA-Q7vxA",
     "titulo": "Anuel AA - Tentandome [Official Audio]",
     "canal": "Anuel AA",
-    "vistas": 53365772,
+    "vistas": 53366794,
     "ayer": 26952,
-    "likes": 289250,
+    "likes": 289251,
     "publicado": "2017-03-30",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -35374,8 +35374,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 53365772
+      "t": "2026-10-21T22:45:50Z",
+      "v": 53366794
      }
     ],
     "comentarios": 6662,
@@ -35430,9 +35430,9 @@
     "video_id": "WLU9YCIXCtM",
     "titulo": "Anuel AA , Jowell & Randy, De La Ghetto, Yailin La Más Viral - La Máquina (Video Oficial) LLNM2",
     "canal": "Anuel AA",
-    "vistas": 55405019,
+    "vistas": 55405465,
     "ayer": 8952,
-    "likes": 586063,
+    "likes": 586064,
     "publicado": "2022-12-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -35454,8 +35454,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 55405019
+      "t": "2026-10-21T22:45:50Z",
+      "v": 55405465
      }
     ],
     "comentarios": 31310,
@@ -35618,7 +35618,7 @@
     "video_id": "DArWpUOD7uY",
     "titulo": "Ven Y Hazlo Tú 💰 - Nicky Jam x J Balvin x Anuel AA x Arcángel | Video Oficial",
     "canal": "NickyJamTV",
-    "vistas": 145060169,
+    "vistas": 145060576,
     "ayer": 11688,
     "likes": 1173914,
     "publicado": "2019-05-16",
@@ -35642,8 +35642,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 145060169
+      "t": "2026-10-21T22:45:50Z",
+      "v": 145060576
      }
     ],
     "comentarios": 30030,
@@ -35805,9 +35805,9 @@
     "video_id": "8UfguXHUjv8",
     "titulo": "Anuel AA - Las Jordan (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 83391825,
+    "vistas": 83392944,
     "ayer": 24888,
-    "likes": 413822,
+    "likes": 413823,
     "publicado": "2022-12-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -35829,8 +35829,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 83391825
+      "t": "2026-10-21T22:45:50Z",
+      "v": 83392944
      }
     ],
     "comentarios": 6522,
@@ -35964,7 +35964,7 @@
     "video_id": "lGIGCQB6Mhs",
     "titulo": "Anuel AA - Luces Tenues  (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 61315091,
+    "vistas": 61315971,
     "ayer": 21312,
     "likes": 524600,
     "publicado": "2023-12-22",
@@ -35988,8 +35988,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 61315091
+      "t": "2026-10-21T22:45:50Z",
+      "v": 61315971
      }
     ],
     "comentarios": 25546,
@@ -36775,8 +36775,8 @@
     "video_id": "tTQHVseaH8A",
     "titulo": "DE KILO | Anuel AA ❌ Treintisiete ❌ Yailin La Mas Viral | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 97829618,
-    "likes": 667147,
+    "vistas": 97831046,
+    "likes": 667152,
     "publicado": "2023-01-04",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -36803,8 +36803,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 97829618
+      "t": "2026-10-21T22:45:50Z",
+      "v": 97831046
      }
     ],
     "publicado_ts": "2023-01-04T19:00:16Z"
@@ -36819,9 +36819,9 @@
     "video_id": "4gttn-m_Yqg",
     "titulo": "Anuel AA - BRRR (Video Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 84146061,
+    "vistas": 84148126,
     "ayer": 44688,
-    "likes": 560050,
+    "likes": 560052,
     "publicado": "2022-12-23",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -36843,8 +36843,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 84146061
+      "t": "2026-10-21T22:45:50Z",
+      "v": 84148126
      }
     ],
     "comentarios": 13012,
@@ -37016,7 +37016,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 226541
      }
     ],
@@ -37083,9 +37083,9 @@
     "video_id": "PzdH2YJpJt0",
     "titulo": "TOKI | Anuel AA ◆ Casper Magico ◆ Luar La L ◆ Izaak",
     "canal": "Anuel AA",
-    "vistas": 135268229,
+    "vistas": 135269479,
     "ayer": 31032,
-    "likes": 836098,
+    "likes": 836099,
     "publicado": "2024-05-03",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -37107,8 +37107,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 135268229
+      "t": "2026-10-21T22:45:50Z",
+      "v": 135269479
      }
     ],
     "comentarios": 21875,
@@ -37234,9 +37234,9 @@
     "video_id": "c2QPuPXq_AM",
     "titulo": "Anuel AA, Mariah - Bandido (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 25856378,
+    "vistas": 25856569,
     "ayer": 4152,
-    "likes": 246877,
+    "likes": 246880,
     "publicado": "2020-05-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -37258,8 +37258,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 25856378
+      "t": "2026-10-21T22:45:50Z",
+      "v": 25856569
      }
     ],
     "comentarios": 4613,
@@ -37435,7 +37435,7 @@
     "video_id": "Pc2Hl2w_7qM",
     "titulo": "SI TU ME BUSCAS  | Anuel AA ❌ Yailin la Más Viral",
     "canal": "Anuel AA",
-    "vistas": 161533273,
+    "vistas": 161535151,
     "likes": 1428558,
     "publicado": "2022-04-01",
     "fecha": "2026-10-21",
@@ -37458,8 +37458,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 161533273
+      "t": "2026-10-21T22:45:50Z",
+      "v": 161535151
      }
     ],
     "ayer": 41568,
@@ -37588,8 +37588,8 @@
     "video_id": "ekaIEZHJXd4",
     "titulo": "Rochy RD X Anuel AA  - LOS ILLUMINATY 👁👹| Video Oficial",
     "canal": "Rochy RD",
-    "vistas": 101874031,
-    "likes": 951287,
+    "vistas": 101874661,
+    "likes": 951288,
     "publicado": "2022-01-01",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -37611,8 +37611,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 101874031
+      "t": "2026-10-21T22:45:50Z",
+      "v": 101874661
      }
     ],
     "verificado": false,
@@ -37889,8 +37889,8 @@
     "video_id": "MSSdmVe16mo",
     "titulo": "Maluma, Anuel AA - Diablo, Qué Chimba (Official Video)",
     "canal": "MalumaVEVO",
-    "vistas": 27867240,
-    "likes": 449654,
+    "vistas": 27867361,
+    "likes": 449655,
     "publicado": "2023-03-23",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -37916,8 +37916,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 27867240
+      "t": "2026-10-21T22:45:50Z",
+      "v": 27867361
      }
     ],
     "publicado_ts": "2023-03-23T22:00:09Z"
@@ -37938,8 +37938,8 @@
     "canal": "Anuel AA",
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "verificado": "artista",
-    "vistas": 77828745,
-    "likes": 493467,
+    "vistas": 77830738,
+    "likes": 493465,
     "publicado": "2024-07-12",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -37963,8 +37963,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 77828745
+      "t": "2026-10-21T22:45:50Z",
+      "v": 77830738
      }
     ],
     "ayer": 46032,
@@ -38255,9 +38255,9 @@
     "video_id": "tbA0H-Mu3sw",
     "titulo": "Anuel AA, Ozuna,  DJ Luian, Mambo Kingz - Razones (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 69132949,
+    "vistas": 69133772,
     "ayer": 20064,
-    "likes": 564832,
+    "likes": 564831,
     "publicado": "2024-06-28",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -38279,8 +38279,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 69132949
+      "t": "2026-10-21T22:45:50Z",
+      "v": 69133772
      }
     ],
     "comentarios": 21892,
@@ -38436,9 +38436,9 @@
     "video_id": "Z84HXuea-Ko",
     "titulo": "SI YO ME MUERO | Anuel AA & Mvsis | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 124033195,
+    "vistas": 124035055,
     "ayer": 43080,
-    "likes": 713728,
+    "likes": 713735,
     "publicado": "2022-11-24",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -38460,8 +38460,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 124033195
+      "t": "2026-10-21T22:45:50Z",
+      "v": 124035055
      }
     ],
     "comentarios": 18006,
@@ -38769,7 +38769,7 @@
     "canal": "Anuel AA",
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "verificado": "artista",
-    "vistas": 21956870,
+    "vistas": 21957160,
     "likes": 199772,
     "publicado": "2021-11-26",
     "fecha": "2026-10-21",
@@ -38794,8 +38794,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 21956870
+      "t": "2026-10-21T22:45:50Z",
+      "v": 21957160
      }
     ],
     "ayer": 5712,
@@ -38874,7 +38874,7 @@
     "video_id": "3cSPooMsfOA",
     "titulo": "Anuel AA - Coronamos ft. Lito Kirino [Official Video]",
     "canal": "Anuel AA",
-    "vistas": 9537757,
+    "vistas": 9537761,
     "ayer": 96,
     "likes": 72834,
     "publicado": "2017-03-17",
@@ -38901,8 +38901,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 9537757
+      "t": "2026-10-21T22:45:50Z",
+      "v": 9537761
      }
     ],
     "publicado_ts": "2017-03-17T00:56:10Z"
@@ -38917,8 +38917,8 @@
     "video_id": "PKtGHyZiQac",
     "titulo": "Seduceme",
     "canal": "Anuel AA - Topic",
-    "vistas": 1607538,
-    "likes": 17837,
+    "vistas": 1607572,
+    "likes": 17838,
     "publicado": "2018-05-10",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -38940,8 +38940,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 1607538
+      "t": "2026-10-21T22:45:50Z",
+      "v": 1607572
      }
     ],
     "comentarios": 111,
@@ -39002,8 +39002,8 @@
     "video_id": "w8fTEnJmhJI",
     "titulo": "Mike Duran - Culpable Remix [Feat Anuel AA, Noriel, Darkiel, Bryant Myers, Kevin Roldan]",
     "canal": "Noriel",
-    "vistas": 60995201,
-    "likes": 277605,
+    "vistas": 60996448,
+    "likes": 277603,
     "publicado": "2016-09-30",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -39025,8 +39025,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 60995201
+      "t": "2026-10-21T22:45:50Z",
+      "v": 60996448
      }
     ],
     "comentarios": 4740,
@@ -39078,7 +39078,7 @@
     "video_id": "sqB84knTPXw",
     "titulo": "Anuel AA, Farruko, Zion - Que Se Joda (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 7528204,
+    "vistas": 7528231,
     "ayer": 120,
     "likes": 151326,
     "publicado": "2020-05-29",
@@ -39102,8 +39102,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 7528204
+      "t": "2026-10-21T22:45:50Z",
+      "v": 7528231
      }
     ],
     "comentarios": 3850,
@@ -39306,7 +39306,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 1535324
      }
     ],
@@ -39528,8 +39528,8 @@
     "video_id": "aOnbRMIa5SE",
     "titulo": "Anuel AA - El Problema (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 29776005,
-    "likes": 263449,
+    "vistas": 29776371,
+    "likes": 263451,
     "publicado": "2020-05-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -39556,8 +39556,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 29776005
+      "t": "2026-10-21T22:45:50Z",
+      "v": 29776371
      }
     ],
     "publicado_ts": "2020-05-29T04:00:01Z"
@@ -39635,9 +39635,9 @@
     "video_id": "UPIYkJGUByY",
     "titulo": "ANUEL AA ❌ OZUNA  | DIME TÚ",
     "canal": "Anuel AA",
-    "vistas": 89396494,
+    "vistas": 89396813,
     "ayer": 7296,
-    "likes": 459116,
+    "likes": 459117,
     "publicado": "2021-02-26",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -39659,8 +39659,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 89396494
+      "t": "2026-10-21T22:45:50Z",
+      "v": 89396813
      }
     ],
     "comentarios": 14030,
@@ -39789,7 +39789,7 @@
     "video_id": "jATm_B7cVMY",
     "titulo": "Ozuna x Anuel AA x Pusho - Si Tu Quieres",
     "canal": "Trap Cartel",
-    "vistas": 31791454,
+    "vistas": 31791815,
     "likes": 294261,
     "publicado": "2017-06-16",
     "fecha": "2026-10-21",
@@ -39812,8 +39812,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 31791454
+      "t": "2026-10-21T22:45:50Z",
+      "v": 31791815
      }
     ],
     "verificado": false,
@@ -39865,9 +39865,9 @@
     "video_id": "WFvpLGjv9ig",
     "titulo": "Anuel AA, Kodak Black & Ñengo Flow - Sufro (Video Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 59353928,
+    "vistas": 59355260,
     "ayer": 31800,
-    "likes": 495014,
+    "likes": 495018,
     "publicado": "2022-12-27",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -39889,8 +39889,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 59353928
+      "t": "2026-10-21T22:45:50Z",
+      "v": 59355260
      }
     ],
     "comentarios": 12788,
@@ -40029,9 +40029,9 @@
     "video_id": "8ovrNCZKbT4",
     "titulo": "Anuel AA, Zion, Randy - Malo | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 47332871,
+    "vistas": 47333282,
     "ayer": 9432,
-    "likes": 517928,
+    "likes": 517930,
     "publicado": "2022-07-15",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -40053,8 +40053,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 47332871
+      "t": "2026-10-21T22:45:50Z",
+      "v": 47333282
      }
     ],
     "comentarios": 20580,
@@ -40219,9 +40219,9 @@
     "video_id": "H4gEO57S29A",
     "titulo": "Anuel AA, Kendo Kaponi, Yandel - Antes y Después ( Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 75036146,
+    "vistas": 75036764,
     "ayer": 15768,
-    "likes": 505093,
+    "likes": 505094,
     "publicado": "2020-05-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -40243,8 +40243,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 75036146
+      "t": "2026-10-21T22:45:50Z",
+      "v": 75036764
      }
     ],
     "comentarios": 16246,
@@ -40414,7 +40414,7 @@
     "video_id": "cD77aKOOP5Q",
     "titulo": "Yandel x Anuel AA - Por Mi Reggae Muero 2020 (Video Oficial)",
     "canal": "Yandel",
-    "vistas": 57937831,
+    "vistas": 57938028,
     "likes": 509580,
     "publicado": "2020-08-06",
     "fecha": "2026-10-21",
@@ -40437,8 +40437,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 57937831
+      "t": "2026-10-21T22:45:50Z",
+      "v": 57938028
      }
     ],
     "verificado": false,
@@ -40582,9 +40582,9 @@
     "video_id": "mwwvOwhNF6M",
     "titulo": "Fat Joe, Cardi B, Anuel AA - YES (Official Video) ft. Dre",
     "canal": "FatJoeVEVO",
-    "vistas": 96482470,
+    "vistas": 96482620,
     "ayer": 3384,
-    "likes": 747241,
+    "likes": 747242,
     "publicado": "2019-10-07",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -40606,8 +40606,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 96482470
+      "t": "2026-10-21T22:45:50Z",
+      "v": 96482620
      }
     ],
     "comentarios": 27334,
@@ -40679,7 +40679,7 @@
     "video_id": "5XDrbEtfOpo",
     "titulo": "Anuel AA | LA 2BLEA  | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 83294341,
+    "vistas": 83295118,
     "ayer": 16320,
     "likes": 814677,
     "publicado": "2022-09-30",
@@ -40703,8 +40703,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 83294341
+      "t": "2026-10-21T22:45:50Z",
+      "v": 83295118
      }
     ],
     "comentarios": 40392,
@@ -40827,9 +40827,9 @@
     "video_id": "iiBdHTpbJ68",
     "titulo": "Anuel AA | TACOS GUCCI",
     "canal": "Anuel AA",
-    "vistas": 83556773,
+    "vistas": 83557312,
     "ayer": 10920,
-    "likes": 468887,
+    "likes": 468886,
     "publicado": "2024-02-16",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -40851,8 +40851,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 83556773
+      "t": "2026-10-21T22:45:50Z",
+      "v": 83557312
      }
     ],
     "comentarios": 21111,
@@ -41095,8 +41095,8 @@
     "canal": "Anuel AA",
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "verificado": "artista",
-    "vistas": 28034962,
-    "likes": 358335,
+    "vistas": 28035154,
+    "likes": 358337,
     "publicado": "2023-02-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -41120,8 +41120,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 28034962
+      "t": "2026-10-21T22:45:50Z",
+      "v": 28035154
      }
     ],
     "ayer": 5064,
@@ -41140,8 +41140,8 @@
     "canal": "Anuel AA",
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "verificado": "artista",
-    "vistas": 48079781,
-    "likes": 461940,
+    "vistas": 48079923,
+    "likes": 461939,
     "publicado": "2021-12-03",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -41165,8 +41165,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 48079781
+      "t": "2026-10-21T22:45:50Z",
+      "v": 48079923
      }
     ],
     "ayer": 3288,
@@ -41354,7 +41354,7 @@
     "video_id": "4RJE0FZOz-o",
     "titulo": "Anuel AA - Nubes Negras (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 22912749,
+    "vistas": 22913083,
     "ayer": 7728,
     "likes": 225886,
     "publicado": "2020-05-29",
@@ -41378,8 +41378,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 22912749
+      "t": "2026-10-21T22:45:50Z",
+      "v": 22913083
      }
     ],
     "comentarios": 4858,
@@ -41562,7 +41562,7 @@
     "canal": "Alexio “La Bestia”",
     "canal_id": "UCA5wx2hljwbZThWS_CPgp_w",
     "verificado": "artista",
-    "vistas": 8355148,
+    "vistas": 8355317,
     "likes": 80475,
     "publicado": "2017-02-03",
     "fecha": "2026-10-21",
@@ -41587,8 +41587,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 8355148
+      "t": "2026-10-21T22:45:50Z",
+      "v": 8355317
      }
     ],
     "publicado_ts": "2017-02-03T16:53:35Z"
@@ -41605,7 +41605,7 @@
     "video_id": "jr8O80E0dOU",
     "titulo": "@Anuel AA & Ozuna - 100",
     "canal": "Ozuna",
-    "vistas": 22790115,
+    "vistas": 22790240,
     "likes": 273582,
     "publicado": "2021-01-22",
     "fecha": "2026-10-21",
@@ -41628,8 +41628,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 22790115
+      "t": "2026-10-21T22:45:50Z",
+      "v": 22790240
      }
     ],
     "verificado": false,
@@ -41790,7 +41790,7 @@
     "video_id": "e4UWnPdqGIQ",
     "titulo": "Anuel AA - Nena Buena (Solo Version) [Video Oficial]",
     "canal": "Cbahz",
-    "vistas": 23262,
+    "vistas": 23270,
     "likes": 608,
     "publicado": "2022-05-07",
     "fecha": "2026-10-21",
@@ -41813,8 +41813,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 23262
+      "t": "2026-10-21T22:45:50Z",
+      "v": 23270
      }
     ],
     "verificado": false,
@@ -41945,8 +41945,8 @@
     "video_id": "ekaIEZHJXd4",
     "titulo": "Rochy RD X Anuel AA  - LOS ILLUMINATY 👁👹| Video Oficial",
     "canal": "Rochy RD",
-    "vistas": 101874031,
-    "likes": 951287,
+    "vistas": 101874661,
+    "likes": 951288,
     "publicado": "2022-01-01",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -41968,8 +41968,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 101874031
+      "t": "2026-10-21T22:45:50Z",
+      "v": 101874661
      }
     ],
     "verificado": false,
@@ -42196,8 +42196,8 @@
     "canal": "Anuel AA",
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "verificado": "artista",
-    "vistas": 24676516,
-    "likes": 307233,
+    "vistas": 24676633,
+    "likes": 307234,
     "publicado": "2020-05-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -42221,8 +42221,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 24676516
+      "t": "2026-10-21T22:45:50Z",
+      "v": 24676633
      }
     ],
     "ayer": 2136,
@@ -42284,7 +42284,7 @@
     "canal": "Arcangel",
     "canal_id": "UCu4bj03KW4CwAsYtHSwMEsQ",
     "verificado": "artista",
-    "vistas": 30362172,
+    "vistas": 30362253,
     "likes": 347177,
     "publicado": "2017-12-22",
     "fecha": "2026-10-21",
@@ -42309,8 +42309,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 30362172
+      "t": "2026-10-21T22:45:50Z",
+      "v": 30362253
      }
     ],
     "publicado_ts": "2017-12-22T15:26:24Z"
@@ -42326,7 +42326,7 @@
     "video_id": "wpzhKTziTcA",
     "titulo": "Anuel AA Ft Farruko - Liberace (Video Clip HD)",
     "canal": "Kevin De Jesus",
-    "vistas": 8319153,
+    "vistas": 8319157,
     "likes": 42109,
     "publicado": "2016-07-06",
     "fecha": "2026-10-21",
@@ -42349,8 +42349,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 8319153
+      "t": "2026-10-21T22:45:50Z",
+      "v": 8319157
      }
     ],
     "verificado": false,
@@ -42411,9 +42411,9 @@
     "video_id": "QwGO-mQKulM",
     "titulo": "Anuel AA- Llorando En Un Ferrari (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 48079781,
+    "vistas": 48079923,
     "ayer": 3288,
-    "likes": 461940,
+    "likes": 461939,
     "publicado": "2021-12-03",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -42435,8 +42435,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 48079781
+      "t": "2026-10-21T22:45:50Z",
+      "v": 48079923
      }
     ],
     "comentarios": 10693,
@@ -42587,8 +42587,8 @@
     "video_id": "n8qBlFUJJgU",
     "titulo": "​@AnuelAA & Ozuna - LA MARIA",
     "canal": "Ozuna",
-    "vistas": 60592727,
-    "likes": 581537,
+    "vistas": 60592943,
+    "likes": 581538,
     "publicado": "2021-01-22",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -42610,8 +42610,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 60592727
+      "t": "2026-10-21T22:45:50Z",
+      "v": 60592943
      }
     ],
     "verificado": false,
@@ -42742,9 +42742,9 @@
     "video_id": "WRKYfRPTcy0",
     "titulo": "Anuel AA - Estrés Postraumático (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 36878203,
+    "vistas": 36878504,
     "ayer": 7056,
-    "likes": 321900,
+    "likes": 321901,
     "publicado": "2020-05-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -42766,8 +42766,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 36878203
+      "t": "2026-10-21T22:45:50Z",
+      "v": 36878504
      }
     ],
     "comentarios": 7097,
@@ -42934,9 +42934,9 @@
     "video_id": "s6XVzDSO7Lg",
     "titulo": "Anuel AA - Última Canción (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 26576863,
+    "vistas": 26577088,
     "ayer": 5544,
-    "likes": 299513,
+    "likes": 299516,
     "publicado": "2021-11-26",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -42958,8 +42958,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 26576863
+      "t": "2026-10-21T22:45:50Z",
+      "v": 26577088
      }
     ],
     "comentarios": 4981,
@@ -43128,8 +43128,8 @@
     "canal": "Spiff Tv",
     "canal_id": "UCkVzb2IboTDXAk2X9EOv6lA",
     "verificado": "artista",
-    "vistas": 42716486,
-    "likes": 298799,
+    "vistas": 42717093,
+    "likes": 298803,
     "publicado": "2021-06-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -43153,8 +43153,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 42716486
+      "t": "2026-10-21T22:45:50Z",
+      "v": 42717093
      }
     ],
     "publicado_ts": "2021-06-09T05:12:05Z"
@@ -43317,8 +43317,8 @@
     "video_id": "XzLCFyw2w5o",
     "titulo": "Anuel AA - Que Seria (Video Oficial)",
     "canal": "AnuelVEVO",
-    "vistas": 92966008,
-    "likes": 1114197,
+    "vistas": 92966614,
+    "likes": 1114201,
     "publicado": "2018-10-12",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -43345,8 +43345,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 92966008
+      "t": "2026-10-21T22:45:50Z",
+      "v": 92966614
      }
     ],
     "publicado_ts": "2018-10-12T13:39:21Z"
@@ -43361,7 +43361,7 @@
     "video_id": "eRGA2DrL89s",
     "titulo": "Anuel AA - ¿Los Hombres No Lloran? (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 19384005,
+    "vistas": 19384253,
     "ayer": 5328,
     "likes": 280513,
     "publicado": "2020-05-29",
@@ -43385,8 +43385,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 19384005
+      "t": "2026-10-21T22:45:50Z",
+      "v": 19384253
      }
     ],
     "comentarios": 5712,
@@ -43532,8 +43532,8 @@
     "video_id": "icuTFvt0vOY",
     "titulo": "ANUEL AA ❌ BLESSD | PORTATE BONITO",
     "canal": "Anuel AA",
-    "vistas": 52988412,
-    "likes": 573393,
+    "vistas": 52989166,
+    "likes": 573392,
     "publicado": "2025-08-22",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -43555,8 +43555,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 52988412
+      "t": "2026-10-21T22:45:50Z",
+      "v": 52989166
      }
     ],
     "ayer": 16752,
@@ -43805,9 +43805,9 @@
     "video_id": "64UYVtCI06I",
     "titulo": "Anuel AA & David Guetta - Vibra (Video Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 13902607,
+    "vistas": 13902741,
     "ayer": 3000,
-    "likes": 208958,
+    "likes": 208959,
     "publicado": "2022-12-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -43829,8 +43829,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 13902607
+      "t": "2026-10-21T22:45:50Z",
+      "v": 13902741
      }
     ],
     "comentarios": 4899,
@@ -43969,9 +43969,9 @@
     "video_id": "kUAu8PWjFPA",
     "titulo": "Anuel AA , Yovng Chimi- Diamantes En Mis Dientes (Video Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 55270929,
+    "vistas": 55271348,
     "ayer": 10128,
-    "likes": 587921,
+    "likes": 587924,
     "publicado": "2022-11-01",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -43993,8 +43993,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 55270929
+      "t": "2026-10-21T22:45:50Z",
+      "v": 55271348
      }
     ],
     "comentarios": 24528,
@@ -44117,7 +44117,7 @@
     "video_id": "7a5A2ZXcD2A",
     "titulo": "Check",
     "canal": "Anuel AA - Topic",
-    "vistas": 5707524,
+    "vistas": 5707717,
     "likes": 50617,
     "publicado": "2020-05-22",
     "fecha": "2026-10-21",
@@ -44140,8 +44140,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 5707524
+      "t": "2026-10-21T22:45:50Z",
+      "v": 5707717
      }
     ],
     "comentarios": 1047,
@@ -44201,7 +44201,7 @@
     "video_id": "OcBk8Lv0XK8",
     "titulo": "Anuel AA - Real Hasta La Muerte (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 26999952,
+    "vistas": 27000151,
     "ayer": 4128,
     "likes": 486670,
     "publicado": "2021-11-26",
@@ -44225,8 +44225,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 26999952
+      "t": "2026-10-21T22:45:50Z",
+      "v": 27000151
      }
     ],
     "comentarios": 20617,
@@ -44485,8 +44485,8 @@
     "video_id": "-skTF3iHTZQ",
     "titulo": "Anuel AA - Por Ley",
     "canal": "AnuelVEVO",
-    "vistas": 77650770,
-    "likes": 781545,
+    "vistas": 77650916,
+    "likes": 781544,
     "publicado": "2019-05-24",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -44513,8 +44513,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 77650770
+      "t": "2026-10-21T22:45:50Z",
+      "v": 77650916
      }
     ],
     "publicado_ts": "2019-05-24T04:00:00Z"
@@ -44597,9 +44597,9 @@
     "video_id": "D1EgFz_xbTo",
     "titulo": "ANUEL AA, YOVNGCHIMI - Baby Demon (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 77828745,
+    "vistas": 77830738,
     "ayer": 46032,
-    "likes": 493467,
+    "likes": 493465,
     "publicado": "2024-07-12",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -44621,8 +44621,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 77828745
+      "t": "2026-10-21T22:45:50Z",
+      "v": 77830738
      }
     ],
     "comentarios": 11316,
@@ -44744,9 +44744,9 @@
     "video_id": "yD52MrNVwGc",
     "titulo": "Anuel AA - Teteo (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 30045971,
+    "vistas": 30046458,
     "ayer": 11448,
-    "likes": 171477,
+    "likes": 171478,
     "publicado": "2022-12-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -44768,8 +44768,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 30045971
+      "t": "2026-10-21T22:45:50Z",
+      "v": 30046458
      }
     ],
     "comentarios": 4098,
@@ -44867,8 +44867,8 @@
     "video_id": "onC5Ts8B_m0",
     "titulo": "Casper feat Anuel - Cuentale",
     "canal": "Casper Magico",
-    "vistas": 61363453,
-    "likes": 301034,
+    "vistas": 61367931,
+    "likes": 301035,
     "publicado": "2017-06-18",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -44890,8 +44890,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 61363453
+      "t": "2026-10-21T22:45:50Z",
+      "v": 61367931
      }
     ],
     "verificado": false,
@@ -44943,7 +44943,7 @@
     "video_id": "VEGw6OZnAtA",
     "titulo": "Anuel AA, Tego Calderon - Rifles Rusos (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 13807750,
+    "vistas": 13807845,
     "ayer": 2232,
     "likes": 206987,
     "publicado": "2020-05-29",
@@ -44967,8 +44967,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 13807750
+      "t": "2026-10-21T22:45:50Z",
+      "v": 13807845
      }
     ],
     "comentarios": 8690,
@@ -45143,7 +45143,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 404039
      }
     ],
@@ -45304,8 +45304,8 @@
     "video_id": "EKN4141Tgo4",
     "titulo": "CJ – Whoopty Latin Mix (ft. Anuel AA & Ozuna) [Official Video]",
     "canal": "Real CJ",
-    "vistas": 36144474,
-    "likes": 535750,
+    "vistas": 36144569,
+    "likes": 535749,
     "publicado": "2021-03-26",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -45327,8 +45327,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 36144474
+      "t": "2026-10-21T22:45:50Z",
+      "v": 36144569
      }
     ],
     "verificado": false,
@@ -45405,9 +45405,9 @@
     "video_id": "HCE8EKmoBIg",
     "titulo": "Anuel AA - Nunca Sapo [Official Video]",
     "canal": "Anuel AA",
-    "vistas": 80589049,
+    "vistas": 80589709,
     "ayer": 15432,
-    "likes": 501683,
+    "likes": 501686,
     "publicado": "2017-03-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -45429,8 +45429,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 80589049
+      "t": "2026-10-21T22:45:50Z",
+      "v": 80589709
      }
     ],
     "comentarios": 13194,
@@ -45559,7 +45559,7 @@
     "video_id": "EqmOiyvA9d8",
     "titulo": "Anuel AA - Tocándote (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 12304060,
+    "vistas": 12304113,
     "ayer": 1992,
     "likes": 138817,
     "publicado": "2020-05-29",
@@ -45583,8 +45583,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 12304060
+      "t": "2026-10-21T22:45:50Z",
+      "v": 12304113
      }
     ],
     "comentarios": 2685,
@@ -45762,7 +45762,7 @@
     "canal": "KendoKaponiTV",
     "canal_id": "UCiAvxpgrAnSVB_wwIO3d1ew",
     "verificado": false,
-    "vistas": 123443,
+    "vistas": 123452,
     "likes": 1075,
     "publicado": "2016-09-29",
     "fecha": "2026-10-21",
@@ -45787,8 +45787,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 123443
+      "t": "2026-10-21T22:45:50Z",
+      "v": 123452
      }
     ],
     "publicado_ts": "2016-09-29T19:32:28Z"
@@ -45989,8 +45989,8 @@
     "canal": "Spiff Tv",
     "canal_id": "UCkVzb2IboTDXAk2X9EOv6lA",
     "verificado": "artista",
-    "vistas": 20818958,
-    "likes": 119261,
+    "vistas": 20819983,
+    "likes": 119266,
     "publicado": "2021-05-27",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -46014,8 +46014,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 20818958
+      "t": "2026-10-21T22:45:50Z",
+      "v": 20819983
      }
     ],
     "publicado_ts": "2021-05-27T19:31:44Z"
@@ -46033,7 +46033,7 @@
     "canal": "Chris Jedi",
     "canal_id": "UCrM9nTFI3xCUQ3vP8tTlcHg",
     "verificado": "artista",
-    "vistas": 18927291,
+    "vistas": 18928789,
     "likes": 183084,
     "publicado": "2025-12-31",
     "fecha": "2026-10-21",
@@ -46058,8 +46058,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 18927291
+      "t": "2026-10-21T22:45:50Z",
+      "v": 18928789
      }
     ],
     "publicado_ts": "2025-12-31T20:00:05Z"
@@ -46160,9 +46160,9 @@
     "video_id": "keP4pC-mIbA",
     "titulo": "Anuel AA - Rick Flair (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 17213116,
+    "vistas": 17213300,
     "ayer": 3384,
-    "likes": 225006,
+    "likes": 225008,
     "publicado": "2021-11-26",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -46184,8 +46184,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 17213116
+      "t": "2026-10-21T22:45:50Z",
+      "v": 17213300
      }
     ],
     "comentarios": 6018,
@@ -46313,9 +46313,9 @@
     "video_id": "EuQYOk1pYwI",
     "titulo": "ANUEL AA & @Ozuna - MUNICIONES",
     "canal": "Anuel AA",
-    "vistas": 65526372,
+    "vistas": 65526766,
     "ayer": 8160,
-    "likes": 528231,
+    "likes": 528228,
     "publicado": "2021-01-22",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -46337,8 +46337,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 65526372
+      "t": "2026-10-21T22:45:50Z",
+      "v": 65526766
      }
     ],
     "comentarios": 24597,
@@ -46562,8 +46562,8 @@
     "canal": "Ozuna",
     "canal_id": "UCjIA3wwhi0QjSOXAZwOXbPA",
     "verificado": "artista",
-    "vistas": 17765527,
-    "likes": 253382,
+    "vistas": 17765579,
+    "likes": 253381,
     "publicado": "2019-11-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -46587,8 +46587,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 17765527
+      "t": "2026-10-21T22:45:50Z",
+      "v": 17765579
      }
     ],
     "publicado_ts": "2019-11-29T05:58:20Z"
@@ -46606,8 +46606,8 @@
     "canal": "ChrisJediVEVO",
     "canal_id": "UCju1vMbirSfO9d-j6kYFZBg",
     "verificado": "artista",
-    "vistas": 35490487,
-    "likes": 431609,
+    "vistas": 35490659,
+    "likes": 431608,
     "publicado": "2021-08-06",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -46631,8 +46631,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 35490487
+      "t": "2026-10-21T22:45:50Z",
+      "v": 35490659
      }
     ],
     "publicado_ts": "2021-08-06T00:00:11Z"
@@ -46781,7 +46781,7 @@
     "video_id": "gXoNw5twDIk",
     "titulo": "Anuel AA , Lil Durk - 1ro (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 29861966,
+    "vistas": 29862578,
     "ayer": 15576,
     "likes": 187734,
     "publicado": "2022-12-09",
@@ -46805,8 +46805,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 29861966
+      "t": "2026-10-21T22:45:50Z",
+      "v": 29862578
      }
     ],
     "comentarios": 4255,
@@ -46918,8 +46918,8 @@
     "canal": "Anuel AA",
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "verificado": "artista",
-    "vistas": 19853924,
-    "likes": 207112,
+    "vistas": 19854178,
+    "likes": 207111,
     "publicado": "2021-11-26",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -46943,8 +46943,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 19853924
+      "t": "2026-10-21T22:45:50Z",
+      "v": 19854178
      }
     ],
     "ayer": 4680,
@@ -47072,7 +47072,7 @@
     "video_id": "8xO8kl002BU",
     "titulo": "Anuel AA, Bryant Myers - Hoodie (Video Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 40368044,
+    "vistas": 40368403,
     "ayer": 8472,
     "likes": 454381,
     "publicado": "2022-12-02",
@@ -47096,8 +47096,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 40368044
+      "t": "2026-10-21T22:45:50Z",
+      "v": 40368403
      }
     ],
     "comentarios": 13123,
@@ -47230,9 +47230,9 @@
     "video_id": "TslxkNMCdUk",
     "titulo": "Casper Magico & Anuel AA & Bryant Myers ft. Yovng Chimi - Presidentes Muertos (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 27251763,
+    "vistas": 27251910,
     "ayer": 3552,
-    "likes": 395699,
+    "likes": 395703,
     "publicado": "2022-11-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -47254,8 +47254,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 27251763
+      "t": "2026-10-21T22:45:50Z",
+      "v": 27251910
      }
     ],
     "comentarios": 11771,
@@ -47358,8 +47358,8 @@
     "canal": "ConepMusicPR",
     "canal_id": "UCnT2QS7_SzqP3_xOJ3ptknQ",
     "verificado": "artista",
-    "vistas": 22961791,
-    "likes": 193589,
+    "vistas": 22962427,
+    "likes": 193591,
     "publicado": "2024-05-14",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -47383,8 +47383,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 22961791
+      "t": "2026-10-21T22:45:50Z",
+      "v": 22962427
      }
     ],
     "publicado_ts": "2024-05-14T16:00:07Z"
@@ -47466,9 +47466,9 @@
     "video_id": "HCE8EKmoBIg",
     "titulo": "Anuel AA - Nunca Sapo [Official Video]",
     "canal": "Anuel AA",
-    "vistas": 80589049,
+    "vistas": 80589709,
     "ayer": 15432,
-    "likes": 501683,
+    "likes": 501686,
     "publicado": "2017-03-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -47490,8 +47490,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 80589049
+      "t": "2026-10-21T22:45:50Z",
+      "v": 80589709
      }
     ],
     "comentarios": 13194,
@@ -47557,8 +47557,8 @@
     "video_id": "ivX_Bule86Q",
     "titulo": "ROA, Anuel AA - Vamo a Vel (Official Video)",
     "canal": "ROAVEVO",
-    "vistas": 14825056,
-    "likes": 241779,
+    "vistas": 14834814,
+    "likes": 241817,
     "publicado": "2026-09-18",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -47580,8 +47580,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 14825056
+      "t": "2026-10-21T22:45:50Z",
+      "v": 14834814
      }
     ],
     "comentarios": 10360,
@@ -47589,7 +47589,7 @@
     "tendencias": {
      "paises": {},
      "fecha": "2026-10-21",
-     "hora": "22:15",
+     "hora": "22:45",
      "revisados": 35
     },
     "dias": [
@@ -49196,7 +49196,7 @@
     "canal": "iZaak",
     "canal_id": "UCQoJDcgPuMOfrZmPsZXVIuw",
     "verificado": "artista",
-    "vistas": 17251133,
+    "vistas": 17251422,
     "likes": 183228,
     "publicado": "2024-06-07",
     "fecha": "2026-10-21",
@@ -49221,8 +49221,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 17251133
+      "t": "2026-10-21T22:45:50Z",
+      "v": 17251422
      }
     ],
     "publicado_ts": "2024-06-07T00:00:08Z"
@@ -49317,9 +49317,9 @@
     "video_id": "WKgN_m-qvCY",
     "titulo": "Anuel AA - Mi Vieja (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 19815401,
+    "vistas": 19815579,
     "ayer": 4080,
-    "likes": 298307,
+    "likes": 298306,
     "publicado": "2020-05-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -49341,8 +49341,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 19815401
+      "t": "2026-10-21T22:45:50Z",
+      "v": 19815579
      }
     ],
     "comentarios": 7314,
@@ -49608,7 +49608,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 2908593
      }
     ],
@@ -49625,9 +49625,9 @@
     "video_id": "CVt4nCsJnzg",
     "titulo": "Anuel AA - BUGATTI (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 37868883,
+    "vistas": 37869518,
     "ayer": 18144,
-    "likes": 441593,
+    "likes": 441591,
     "publicado": "2025-05-02",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -49649,8 +49649,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 37868883
+      "t": "2026-10-21T22:45:50Z",
+      "v": 37869518
      }
     ],
     "comentarios": 23019,
@@ -49824,8 +49824,8 @@
     "canal": "Zion & Lennox",
     "canal_id": "UCyInsLK0iu7xYvKmOKIZe8w",
     "verificado": "artista",
-    "vistas": 17198845,
-    "likes": 215571,
+    "vistas": 17199060,
+    "likes": 215570,
     "publicado": "2023-08-31",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -49849,8 +49849,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 17198845
+      "t": "2026-10-21T22:45:50Z",
+      "v": 17199060
      }
     ],
     "publicado_ts": "2023-08-31T23:59:06Z"
@@ -49996,8 +49996,8 @@
     "canal": "Luis R Conriquez",
     "canal_id": "UCFwuPQIpFbDlcQmwAc-jW8g",
     "verificado": "artista",
-    "vistas": 23899557,
-    "likes": 140940,
+    "vistas": 23900241,
+    "likes": 140944,
     "publicado": "2025-08-28",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -50021,8 +50021,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 23899557
+      "t": "2026-10-21T22:45:50Z",
+      "v": 23900241
      }
     ],
     "publicado_ts": "2025-08-28T22:00:07Z"
@@ -50085,8 +50085,8 @@
     "video_id": "FboTyBsFZQs",
     "titulo": "Anuel AA | Donde Hubo Fuego Cenizas Quedan (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 66065485,
-    "likes": 377308,
+    "vistas": 66079516,
+    "likes": 377347,
     "publicado": "2026-08-14",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -50108,8 +50108,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 66065485
+      "t": "2026-10-21T22:45:50Z",
+      "v": 66079516
      }
     ],
     "ayer": 311400,
@@ -50810,8 +50810,8 @@
     "canal": "Ozuna",
     "canal_id": "UCjIA3wwhi0QjSOXAZwOXbPA",
     "verificado": "artista",
-    "vistas": 32247661,
-    "likes": 439401,
+    "vistas": 32247829,
+    "likes": 439402,
     "publicado": "2021-01-22",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -50835,8 +50835,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 32247661
+      "t": "2026-10-21T22:45:50Z",
+      "v": 32247829
      }
     ],
     "publicado_ts": "2021-01-22T05:12:12Z"
@@ -50986,7 +50986,7 @@
     "canal": "Anonimus TV",
     "canal_id": "UCPHa-ODrqB8jbVwje6wUsHA",
     "verificado": "artista",
-    "vistas": 19078900,
+    "vistas": 19079598,
     "likes": 129585,
     "publicado": "2016-08-06",
     "fecha": "2026-10-21",
@@ -51011,8 +51011,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 19078900
+      "t": "2026-10-21T22:45:50Z",
+      "v": 19079598
      }
     ],
     "publicado_ts": "2016-08-06T19:45:04Z"
@@ -51034,7 +51034,7 @@
     "canal": "Anuel AA",
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "verificado": "artista",
-    "vistas": 9005660,
+    "vistas": 9005729,
     "likes": 144953,
     "publicado": "2021-11-26",
     "fecha": "2026-10-21",
@@ -51059,8 +51059,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 9005660
+      "t": "2026-10-21T22:45:50Z",
+      "v": 9005729
      }
     ],
     "ayer": 1296,
@@ -51176,8 +51176,8 @@
     "video_id": "rHpAXvqDzYY",
     "titulo": "BLESSD ❌ ANUEL AA | CAPCANA COCOA (Video Oficial)",
     "canal": "SIEMPRE BLESSD 💙",
-    "vistas": 20658333,
-    "likes": 250100,
+    "vistas": 20669758,
+    "likes": 250134,
     "publicado": "2026-09-04",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -51199,8 +51199,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 20658333
+      "t": "2026-10-21T22:45:50Z",
+      "v": 20669758
      }
     ],
     "comentarios": 21761,
@@ -52423,7 +52423,7 @@
     "video_id": "k3pyjw9_FqA",
     "titulo": "Anuel AA, Travis Barker - No Llores Mujer  (Audio Oficial)",
     "canal": "Anuel AA",
-    "vistas": 14300022,
+    "vistas": 14300049,
     "likes": 218691,
     "publicado": "2020-05-29",
     "fecha": "2026-10-21",
@@ -52451,8 +52451,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 14300022
+      "t": "2026-10-21T22:45:50Z",
+      "v": 14300049
      }
     ],
     "publicado_ts": "2020-05-29T04:00:13Z"
@@ -52469,8 +52469,8 @@
     "canal": "Luar La L ",
     "canal_id": "UCsv1miBT9JfqAbdBuBfbnJg",
     "verificado": "artista",
-    "vistas": 28781752,
-    "likes": 283696,
+    "vistas": 28782371,
+    "likes": 283699,
     "publicado": "2025-02-14",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -52494,8 +52494,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 28781752
+      "t": "2026-10-21T22:45:50Z",
+      "v": 28782371
      }
     ],
     "publicado_ts": "2025-02-14T00:00:07Z"
@@ -52590,7 +52590,7 @@
     "video_id": "AH2WGo3nep8",
     "titulo": "Anuel AA - Shampoo de Coco (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 27202796,
+    "vistas": 27203298,
     "ayer": 12960,
     "likes": 349378,
     "publicado": "2024-08-29",
@@ -52614,8 +52614,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 27202796
+      "t": "2026-10-21T22:45:50Z",
+      "v": 27203298
      }
     ],
     "comentarios": 14250,
@@ -52742,8 +52742,8 @@
     "canal": "Rochy RD",
     "canal_id": "UCAruFBYLugQOEkhy-Kh6ZiQ",
     "verificado": "artista",
-    "vistas": 27328932,
-    "likes": 378296,
+    "vistas": 27329281,
+    "likes": 378294,
     "publicado": "2023-07-03",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -52767,8 +52767,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 27328932
+      "t": "2026-10-21T22:45:50Z",
+      "v": 27329281
      }
     ],
     "publicado_ts": "2023-07-03T17:59:23Z"
@@ -52836,8 +52836,8 @@
     "canal": "JORY BOY",
     "canal_id": "UC-8k7L_8TtDhR-xPNHo9FXA",
     "verificado": "artista",
-    "vistas": 4300816,
-    "likes": 37094,
+    "vistas": 4300857,
+    "likes": 37095,
     "publicado": "2016-12-02",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -52861,8 +52861,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 4300816
+      "t": "2026-10-21T22:45:50Z",
+      "v": 4300857
      }
     ],
     "publicado_ts": "2016-12-02T05:00:02Z"
@@ -52914,7 +52914,7 @@
     "canal": "Producto Sin Corte",
     "canal_id": "UCrGtW8_NU0m5xr3iwl6w-Dw",
     "verificado": "artista",
-    "vistas": 14896343,
+    "vistas": 14896515,
     "likes": 144091,
     "publicado": "2024-06-14",
     "fecha": "2026-10-21",
@@ -52939,8 +52939,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 14896343
+      "t": "2026-10-21T22:45:50Z",
+      "v": 14896515
      }
     ],
     "publicado_ts": "2024-06-14T00:00:06Z"
@@ -53007,7 +53007,7 @@
     "canal": "Darell",
     "canal_id": "UC7i1scMCtNTreXnYs2Sr9Wg",
     "verificado": "artista",
-    "vistas": 16971604,
+    "vistas": 16971768,
     "likes": 153972,
     "publicado": "2016-08-13",
     "fecha": "2026-10-21",
@@ -53032,8 +53032,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 16971604
+      "t": "2026-10-21T22:45:50Z",
+      "v": 16971768
      }
     ],
     "publicado_ts": "2016-08-13T22:48:50Z"
@@ -53080,7 +53080,7 @@
     "video_id": "hc11-RQXzEg",
     "titulo": "Anuel AA - Tu Lo Sabes (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 18770277,
+    "vistas": 18770796,
     "ayer": 11976,
     "likes": 159344,
     "publicado": "2022-12-09",
@@ -53104,8 +53104,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 18770277
+      "t": "2026-10-21T22:45:50Z",
+      "v": 18770796
      }
     ],
     "comentarios": 3677,
@@ -53187,7 +53187,7 @@
     "canal": "FARRUKOVEVO",
     "canal_id": "UC46TVKqBkiTT85ddkJDdK3w",
     "verificado": "artista",
-    "vistas": 14738869,
+    "vistas": 14738949,
     "likes": 184885,
     "publicado": "2017-09-01",
     "fecha": "2026-10-21",
@@ -53212,8 +53212,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 14738869
+      "t": "2026-10-21T22:45:50Z",
+      "v": 14738949
      }
     ],
     "publicado_ts": "2017-09-01T04:00:01Z"
@@ -53317,9 +53317,9 @@
     "video_id": "7hbyiEP6c2s",
     "titulo": "Anuel AA - Mintiendo (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 19226158,
+    "vistas": 19226504,
     "ayer": 8256,
-    "likes": 140745,
+    "likes": 140746,
     "publicado": "2022-12-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -53341,8 +53341,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 19226158
+      "t": "2026-10-21T22:45:50Z",
+      "v": 19226504
      }
     ],
     "comentarios": 2933,
@@ -53452,9 +53452,9 @@
     "video_id": "9Nq0SyQZa2Y",
     "titulo": "Anuel AA - Contra La Corriente (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 11079161,
+    "vistas": 11079348,
     "ayer": 4080,
-    "likes": 155711,
+    "likes": 155712,
     "publicado": "2022-12-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -53476,8 +53476,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 11079161
+      "t": "2026-10-21T22:45:50Z",
+      "v": 11079348
      }
     ],
     "comentarios": 3586,
@@ -53599,9 +53599,9 @@
     "video_id": "ml6bNDLYOIA",
     "titulo": "Anuel AA - Headshot (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 30859299,
+    "vistas": 30859568,
     "ayer": 7128,
-    "likes": 511492,
+    "likes": 511494,
     "publicado": "2024-09-20",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -53623,8 +53623,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 30859299
+      "t": "2026-10-21T22:45:50Z",
+      "v": 30859568
      }
     ],
     "comentarios": 33655,
@@ -53757,7 +53757,7 @@
     "canal": "Lil Pump",
     "canal_id": "UC6pjHMC4QXMi4llCCjtDXWg",
     "verificado": "artista",
-    "vistas": 54809017,
+    "vistas": 54809131,
     "likes": 1086105,
     "publicado": "2020-04-24",
     "fecha": "2026-10-21",
@@ -53782,8 +53782,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 54809017
+      "t": "2026-10-21T22:45:50Z",
+      "v": 54809131
      }
     ],
     "publicado_ts": "2020-04-24T04:00:01Z"
@@ -53905,7 +53905,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 1585765
      }
     ],
@@ -53953,7 +53953,7 @@
     "video_id": "OYAxM1uCRng",
     "titulo": "Anuel AA, Nicky Jam - Mientes (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 12053675,
+    "vistas": 12053862,
     "ayer": 4080,
     "likes": 159102,
     "publicado": "2022-12-09",
@@ -53977,8 +53977,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 12053675
+      "t": "2026-10-21T22:45:50Z",
+      "v": 12053862
      }
     ],
     "comentarios": 4432,
@@ -54088,9 +54088,9 @@
     "video_id": "16KKOWDNDXY",
     "titulo": "Anuel AA - Coroné (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 16023815,
+    "vistas": 16024120,
     "ayer": 7104,
-    "likes": 148832,
+    "likes": 148834,
     "publicado": "2022-12-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -54112,8 +54112,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 16023815
+      "t": "2026-10-21T22:45:50Z",
+      "v": 16024120
      }
     ],
     "comentarios": 3307,
@@ -54257,8 +54257,8 @@
     "canal": "KendoKaponiTV",
     "canal_id": "UCbEDzVAR8g6wZLnbx1gCc9Q",
     "verificado": "artista",
-    "vistas": 86005500,
-    "likes": 493551,
+    "vistas": 86013109,
+    "likes": 493567,
     "publicado": "2016-08-24",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -54282,8 +54282,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 86005500
+      "t": "2026-10-21T22:45:50Z",
+      "v": 86013109
      }
     ],
     "publicado_ts": "2016-08-24T02:44:08Z"
@@ -54360,9 +54360,9 @@
     "video_id": "4xaKmr_-f5k",
     "titulo": "Anuel AA - Me Siento HP (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 23695840,
+    "vistas": 23696301,
     "ayer": 10944,
-    "likes": 205685,
+    "likes": 205687,
     "publicado": "2023-01-05",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -54384,8 +54384,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 23695840
+      "t": "2026-10-21T22:45:50Z",
+      "v": 23696301
      }
     ],
     "comentarios": 4259,
@@ -54503,7 +54503,7 @@
     "canal": "POP SMOKE",
     "canal_id": "UCSaPKJpNd-Mkm6hhelIYSlQ",
     "verificado": "artista",
-    "vistas": 11101675,
+    "vistas": 11101734,
     "likes": 269605,
     "publicado": "2021-07-16",
     "fecha": "2026-10-21",
@@ -54528,8 +54528,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 11101675
+      "t": "2026-10-21T22:45:50Z",
+      "v": 11101734
      }
     ],
     "publicado_ts": "2021-07-16T16:00:11Z"
@@ -54616,7 +54616,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 15960876
      }
     ],
@@ -54739,8 +54739,8 @@
     "canal": "AkonVEVO",
     "canal_id": "UCX2v47KsDKqajrEYFV7GbBg",
     "verificado": "artista",
-    "vistas": 15581416,
-    "likes": 349081,
+    "vistas": 15581500,
+    "likes": 349080,
     "publicado": "2019-05-25",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -54764,8 +54764,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 15581416
+      "t": "2026-10-21T22:45:50Z",
+      "v": 15581500
      }
     ],
     "publicado_ts": "2019-05-25T00:26:14Z"
@@ -54819,8 +54819,8 @@
     "canal": "SpiffTVVEVO",
     "canal_id": "UCqOTOAQw46oWvBBhnCFQGqQ",
     "verificado": "artista",
-    "vistas": 12827912,
-    "likes": 250498,
+    "vistas": 12827940,
+    "likes": 250499,
     "publicado": "2018-04-13",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -54844,8 +54844,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 12827912
+      "t": "2026-10-21T22:45:50Z",
+      "v": 12827940
      }
     ],
     "publicado_ts": "2018-04-13T15:35:37Z"
@@ -54973,7 +54973,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 7904962
      }
     ],
@@ -55027,7 +55027,7 @@
     "canal": "BlackEyedPeasVEVO",
     "canal_id": "UCrwmu-gceGOmtZeuTsn7DlQ",
     "verificado": "artista",
-    "vistas": 3510433,
+    "vistas": 3510414,
     "likes": 39176,
     "publicado": "2022-11-12",
     "fecha": "2026-10-21",
@@ -55052,8 +55052,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 3510433
+      "t": "2026-10-21T22:45:50Z",
+      "v": 3510414
      }
     ],
     "publicado_ts": "2022-11-12T00:43:03Z"
@@ -55113,9 +55113,9 @@
     "video_id": "cxeSriAzzb0",
     "titulo": "Anuel AA & ​Nio García - Oh Na Na (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 30444271,
+    "vistas": 30444484,
     "ayer": 4368,
-    "likes": 410425,
+    "likes": 410422,
     "publicado": "2023-09-29",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -55137,11 +55137,11 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 30444271
+      "t": "2026-10-21T22:45:50Z",
+      "v": 30444484
      }
     ],
-    "comentarios": 22575,
+    "comentarios": 22576,
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "publicado_ts": "2023-09-29T00:00:04Z"
    },
@@ -55246,7 +55246,7 @@
     "video_id": "cE1OO7e3zFE",
     "titulo": "Anuel AA & DaBaby - Wakanda (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 5768914,
+    "vistas": 5768982,
     "ayer": 1248,
     "likes": 103726,
     "publicado": "2022-12-09",
@@ -55270,8 +55270,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 5768914
+      "t": "2026-10-21T22:45:50Z",
+      "v": 5768982
      }
     ],
     "comentarios": 2723,
@@ -55460,7 +55460,7 @@
     "video_id": "vVwIhYLVVuo",
     "titulo": "Anuel AA x Spiff TV - Fulete [Official Audio]",
     "canal": "Spiff Tv",
-    "vistas": 8531776,
+    "vistas": 8531890,
     "likes": 119059,
     "publicado": "2021-05-13",
     "fecha": "2026-10-21",
@@ -55487,8 +55487,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 8531776
+      "t": "2026-10-21T22:45:50Z",
+      "v": 8531890
      }
     ],
     "publicado_ts": "2021-05-13T17:29:23Z"
@@ -55530,7 +55530,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 11190319
      }
     ],
@@ -55650,8 +55650,8 @@
     "canal": "Casper Magico",
     "canal_id": "UCCeYzJwJh8R3dAGyZHyFhjw",
     "verificado": "artista",
-    "vistas": 16104191,
-    "likes": 207345,
+    "vistas": 16104878,
+    "likes": 207348,
     "publicado": "2025-10-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -55675,8 +55675,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 16104191
+      "t": "2026-10-21T22:45:50Z",
+      "v": 16104878
      }
     ],
     "publicado_ts": "2025-10-17T00:00:59Z"
@@ -55866,9 +55866,9 @@
     "video_id": "k8_JToSSN1U",
     "titulo": "Anuel AA - Tiene Novio (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 11962862,
+    "vistas": 11963007,
     "ayer": 3120,
-    "likes": 144335,
+    "likes": 144336,
     "publicado": "2022-12-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -55890,8 +55890,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 11962862
+      "t": "2026-10-21T22:45:50Z",
+      "v": 11963007
      }
     ],
     "comentarios": 2646,
@@ -55977,9 +55977,9 @@
     "video_id": "VT4hY7s5IR4",
     "titulo": "Anuel AA, Omega - Borracha & Loca  (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 7108922,
+    "vistas": 7109001,
     "ayer": 1080,
-    "likes": 133126,
+    "likes": 133124,
     "publicado": "2022-12-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -56001,8 +56001,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 7108922
+      "t": "2026-10-21T22:45:50Z",
+      "v": 7109001
      }
     ],
     "comentarios": 3365,
@@ -56136,9 +56136,9 @@
     "video_id": "i9NgiuSPN_k",
     "titulo": "Anuel AA - Anuel & Emmanuel (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 10663947,
+    "vistas": 10664171,
     "ayer": 4368,
-    "likes": 167466,
+    "likes": 167467,
     "publicado": "2022-12-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -56160,8 +56160,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 10663947
+      "t": "2026-10-21T22:45:50Z",
+      "v": 10664171
      }
     ],
     "comentarios": 4675,
@@ -56268,8 +56268,8 @@
     "canal": "Alex Torres",
     "canal_id": "UCJAmG46RSrp_R-RqSiA0Vig",
     "verificado": "artista",
-    "vistas": 9216781,
-    "likes": 108349,
+    "vistas": 9217099,
+    "likes": 108351,
     "publicado": "2025-12-05",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -56293,8 +56293,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 9216781
+      "t": "2026-10-21T22:45:50Z",
+      "v": 9217099
      }
     ],
     "publicado_ts": "2025-12-05T06:00:06Z"
@@ -56346,7 +56346,7 @@
     "video_id": "eTRttObShD0",
     "titulo": "Anuel AA - Sin Ti (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 4693732,
+    "vistas": 4693792,
     "ayer": 1296,
     "likes": 102707,
     "publicado": "2022-12-09",
@@ -56370,8 +56370,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 4693732
+      "t": "2026-10-21T22:45:50Z",
+      "v": 4693792
      }
     ],
     "comentarios": 2461,
@@ -56465,7 +56465,7 @@
     "canal": "Pacho El Antifeka",
     "canal_id": "UCOzuXzbZgZLJGQ7JMlzgzAA",
     "verificado": "artista",
-    "vistas": 15422140,
+    "vistas": 15422242,
     "likes": 181505,
     "publicado": "2019-02-13",
     "fecha": "2026-10-21",
@@ -56490,8 +56490,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 15422140
+      "t": "2026-10-21T22:45:50Z",
+      "v": 15422242
      }
     ],
     "publicado_ts": "2019-02-13T22:00:06Z"
@@ -56543,9 +56543,9 @@
     "video_id": "LPiJgXR2Z74",
     "titulo": "Anuel AA, Messiah - Drippin (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 28034962,
+    "vistas": 28035154,
     "ayer": 5064,
-    "likes": 358335,
+    "likes": 358337,
     "publicado": "2023-02-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -56567,8 +56567,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 28034962
+      "t": "2026-10-21T22:45:50Z",
+      "v": 28035154
      }
     ],
     "comentarios": 19585,
@@ -56692,7 +56692,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 4222477
      }
     ],
@@ -56799,9 +56799,9 @@
     "video_id": "4nbBTmGOusA",
     "titulo": "Anuel AA & RobGz - Airbnb (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 5501397,
+    "vistas": 5501466,
     "ayer": 1776,
-    "likes": 105696,
+    "likes": 105695,
     "publicado": "2022-12-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -56823,8 +56823,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 5501397
+      "t": "2026-10-21T22:45:50Z",
+      "v": 5501466
      }
     ],
     "comentarios": 2557,
@@ -56928,7 +56928,7 @@
     "video_id": "lP408N9t2Go",
     "titulo": "Anuel AA - Ascensor (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 6567105,
+    "vistas": 6567224,
     "ayer": 2184,
     "likes": 87451,
     "publicado": "2022-12-09",
@@ -56952,8 +56952,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 6567105
+      "t": "2026-10-21T22:45:50Z",
+      "v": 6567224
      }
     ],
     "comentarios": 1835,
@@ -57105,7 +57105,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 2925762
      }
     ],
@@ -57125,9 +57125,9 @@
     "video_id": "nTkVdS6Z07k",
     "titulo": "Anuel AA - 40 (Visualizer Oficial) | LLNM2",
     "canal": "Anuel AA",
-    "vistas": 6152899,
+    "vistas": 6153009,
     "ayer": 1896,
-    "likes": 99490,
+    "likes": 99493,
     "publicado": "2022-12-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -57149,8 +57149,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 6152899
+      "t": "2026-10-21T22:45:50Z",
+      "v": 6153009
      }
     ],
     "comentarios": 2253,
@@ -57323,8 +57323,8 @@
     "canal": "Benny Benni",
     "canal_id": "UC4H-BAZYRrSs-TjdPGZR9tw",
     "verificado": "artista",
-    "vistas": 5069576,
-    "likes": 54734,
+    "vistas": 5069623,
+    "likes": 54735,
     "publicado": "2016-02-28",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -57348,8 +57348,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 5069576
+      "t": "2026-10-21T22:45:50Z",
+      "v": 5069623
      }
     ],
     "publicado_ts": "2016-02-28T04:29:39Z"
@@ -57371,7 +57371,7 @@
     "canal": "Daddy Yankee",
     "canal_id": "UC9TO_oo4c_LrOiKNaY6aysA",
     "verificado": "artista",
-    "vistas": 2837522,
+    "vistas": 2837525,
     "likes": 80844,
     "publicado": "2020-11-05",
     "fecha": "2026-10-21",
@@ -57396,8 +57396,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 2837522
+      "t": "2026-10-21T22:45:50Z",
+      "v": 2837525
      }
     ],
     "publicado_ts": "2020-11-05T17:30:04Z"
@@ -57451,8 +57451,8 @@
     "canal": "Luis R Conriquez",
     "canal_id": "UCFwuPQIpFbDlcQmwAc-jW8g",
     "verificado": "artista",
-    "vistas": 2116405,
-    "likes": 42170,
+    "vistas": 2116807,
+    "likes": 42172,
     "publicado": "2026-07-10",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -57476,8 +57476,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 2116405
+      "t": "2026-10-21T22:45:50Z",
+      "v": 2116807
      }
     ],
     "tendencias": {
@@ -57545,8 +57545,8 @@
     "canal": "Anuel AA - Topic",
     "canal_id": "UCbBaYg2UToDaoOwo-R6xi4g",
     "verificado": "artista",
-    "vistas": 7347422,
-    "likes": 78375,
+    "vistas": 7347698,
+    "likes": 78379,
     "publicado": "2021-10-26",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -57570,8 +57570,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 7347422
+      "t": "2026-10-21T22:45:50Z",
+      "v": 7347698
      }
     ],
     "publicado_ts": "2021-10-26T15:11:21Z"
@@ -57623,9 +57623,9 @@
     "video_id": "p9JAt53TSWE",
     "titulo": "Anuel AA - Arcangel Es Chota (Audio)",
     "canal": "Anuel AA",
-    "vistas": 26483180,
+    "vistas": 26483336,
     "ayer": 3672,
-    "likes": 707826,
+    "likes": 707824,
     "publicado": "2023-12-20",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -57647,8 +57647,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 26483180
+      "t": "2026-10-21T22:45:50Z",
+      "v": 26483336
      }
     ],
     "comentarios": 120038,
@@ -57727,7 +57727,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 1261204
      }
     ],
@@ -57787,9 +57787,9 @@
     "video_id": "Y0j9vrWeHNo",
     "titulo": "Anuel AA - Glock, Glock, Glock (Audio)",
     "canal": "Anuel AA",
-    "vistas": 13050732,
+    "vistas": 13050902,
     "ayer": 2160,
-    "likes": 549754,
+    "likes": 549752,
     "publicado": "2023-12-17",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -57811,8 +57811,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 13050732
+      "t": "2026-10-21T22:45:50Z",
+      "v": 13050902
      }
     ],
     "comentarios": 107616,
@@ -57930,7 +57930,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 54722
      }
     ],
@@ -58018,7 +58018,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 5077808
      }
     ],
@@ -58076,8 +58076,8 @@
     "video_id": "3juuih0WdH8",
     "titulo": "Anuel AA - Vuelve (Video Oficial)",
     "canal": "Anuel AA",
-    "vistas": 23439231,
-    "likes": 329635,
+    "vistas": 23464861,
+    "likes": 329760,
     "publicado": "2026-10-09",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
@@ -58099,8 +58099,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 23439231
+      "t": "2026-10-21T22:45:50Z",
+      "v": 23464861
      }
     ],
     "ayer": 1802520,
@@ -58109,7 +58109,7 @@
     "tendencias": {
      "paises": {},
      "fecha": "2026-10-21",
-     "hora": "22:15",
+     "hora": "22:45",
      "revisados": 35
     },
     "dias": [
@@ -60955,7 +60955,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 602613
      }
     ],
@@ -61084,7 +61084,7 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
+      "t": "2026-10-21T22:45:50Z",
       "v": 616773
      }
     ],
@@ -61147,7 +61147,7 @@
     "canal": "Anuel AA - Topic",
     "canal_id": "UCbBaYg2UToDaoOwo-R6xi4g",
     "verificado": "artista",
-    "vistas": 127330,
+    "vistas": 127331,
     "likes": 3968,
     "publicado": "2020-04-20",
     "fecha": "2026-10-21",
@@ -61172,8 +61172,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 127330
+      "t": "2026-10-21T22:45:50Z",
+      "v": 127331
      }
     ],
     "publicado_ts": "2020-04-20T10:51:41Z"
@@ -61285,7 +61285,7 @@
     "canal": "Anuel AA - Topic",
     "canal_id": "UCbBaYg2UToDaoOwo-R6xi4g",
     "verificado": "artista",
-    "vistas": 573430,
+    "vistas": 573434,
     "likes": 13445,
     "publicado": "2020-04-20",
     "fecha": "2026-10-21",
@@ -61310,8 +61310,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 573430
+      "t": "2026-10-21T22:45:50Z",
+      "v": 573434
      }
     ],
     "publicado_ts": "2020-04-20T07:27:43Z"
@@ -61372,7 +61372,7 @@
     "canal": "Anuel AA - Topic",
     "canal_id": "UCbBaYg2UToDaoOwo-R6xi4g",
     "verificado": "artista",
-    "vistas": 314980,
+    "vistas": 314972,
     "likes": 7163,
     "publicado": "2020-04-20",
     "fecha": "2026-10-21",
@@ -61397,8 +61397,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 314980
+      "t": "2026-10-21T22:45:50Z",
+      "v": 314972
      }
     ],
     "publicado_ts": "2020-04-20T06:35:20Z"
@@ -61561,13 +61561,13 @@
     "canal": "Anuel AA",
     "canal_id": "UCRI7hheejBbWS6etTNwMT0g",
     "verificado": "artista",
-    "vistas": 1026173653,
+    "vistas": 1026181336,
     "likes": 4041162,
     "publicado": "2018-12-14",
     "fecha": "2026-10-21",
     "fuente": "YouTube Data API",
     "origen": "busqueda",
-    "comentarios": 96805,
+    "comentarios": 96806,
     "hist": [
      {
       "d": "2026-10-18",
@@ -61586,8 +61586,8 @@
      },
      {
       "d": "2026-10-21",
-      "t": "2026-10-21T22:15:45Z",
-      "v": 1026173653
+      "t": "2026-10-21T22:45:50Z",
+      "v": 1026181336
      }
     ],
     "ayer": 189600,
@@ -65554,7 +65554,7 @@
    "revisado_hasta": 200,
    "consultado": "2026-10-21",
    "cancion": "Las mas bonitas son p#tas (Anuel AA)",
-   "posicion": 166,
+   "posicion": 170,
    "cambio": null,
    "estado": "Dentro"
   },
@@ -65567,7 +65567,7 @@
    "revisado_hasta": 200,
    "consultado": "2026-10-21",
    "cancion": "Vuelve (Anuel AA)",
-   "posicion": 177,
+   "posicion": 181,
    "cambio": null,
    "estado": "Dentro"
   },
@@ -65593,7 +65593,7 @@
    "revisado_hasta": 200,
    "consultado": "2026-10-21",
    "cancion": "Tú Me Enamoraste (feat. Almighty, Anuel AA, Bryant Myers & Brytiago) [Remix]",
-   "posicion": 129,
+   "posicion": 133,
    "cambio": null,
    "estado": "Dentro"
   },
@@ -70500,6 +70500,78 @@
    "etiqueta": "NUEVO PICO"
   },
   {
+   "id": "ytm:DOiWr2-wXQk",
+   "tipo": "mencion",
+   "titulo": "LISA ( BLACKPINK) MALA ( FEAT . ANUEL Aa ) 6ix9ine ( Trend Edit)",
+   "texto": "Canal: Redlaree",
+   "fecha": "2026-10-21",
+   "url": "https://www.youtube.com/watch?v=DOiWr2-wXQk",
+   "fuente": "YouTube",
+   "imagen": "https://i.ytimg.com/vi/DOiWr2-wXQk/hqdefault.jpg",
+   "cancion": null,
+   "detectado": "2026-10-21T22:45:50Z"
+  },
+  {
+   "id": "ytm:Ioo4C6y4L_U",
+   "tipo": "mencion",
+   "titulo": "ANUEL AA DICE QUÉ NO TIENE NADA CON LAURY",
+   "texto": "Canal: Picante TV",
+   "fecha": "2026-10-21",
+   "url": "https://www.youtube.com/watch?v=Ioo4C6y4L_U",
+   "fuente": "YouTube",
+   "imagen": "https://i.ytimg.com/vi/Ioo4C6y4L_U/hqdefault.jpg",
+   "cancion": null,
+   "detectado": "2026-10-21T22:45:50Z"
+  },
+  {
+   "id": "ytm:uSTQWaBY0-s",
+   "tipo": "mencion",
+   "titulo": "😬ANUEL AA estaba en PELIGRO por sus ENEMIGOS‼️💀😨 #anuelaa",
+   "texto": "Canal: SCAPPA TV",
+   "fecha": "2026-10-21",
+   "url": "https://www.youtube.com/watch?v=uSTQWaBY0-s",
+   "fuente": "YouTube",
+   "imagen": "https://i.ytimg.com/vi/uSTQWaBY0-s/hqdefault.jpg",
+   "cancion": null,
+   "detectado": "2026-10-21T22:45:50Z"
+  },
+  {
+   "id": "ytm:wPCLic2-VUo",
+   "tipo": "mencion",
+   "titulo": "Alofoke Corfima Entrada De Anuel AA Para La Casa 3 El 18 De Noviembre",
+   "texto": "Canal: Once Resumen ",
+   "fecha": "2026-10-21",
+   "url": "https://www.youtube.com/watch?v=wPCLic2-VUo",
+   "fuente": "YouTube",
+   "imagen": "https://i.ytimg.com/vi/wPCLic2-VUo/hqdefault.jpg",
+   "cancion": null,
+   "detectado": "2026-10-21T22:45:50Z"
+  },
+  {
+   "id": "ytm:E_r42odcIDk",
+   "tipo": "mencion",
+   "titulo": "Anuel AA - 4 AM (Versión Solo)",
+   "texto": "Canal: Yael Yañez",
+   "fecha": "2026-10-21",
+   "url": "https://www.youtube.com/watch?v=E_r42odcIDk",
+   "fuente": "YouTube",
+   "imagen": "https://i.ytimg.com/vi/E_r42odcIDk/hqdefault.jpg",
+   "cancion": null,
+   "detectado": "2026-10-21T22:45:50Z"
+  },
+  {
+   "id": "ytm:rWfo5o42D5I",
+   "tipo": "mencion",
+   "titulo": "Tekashi69 Vuelve Hacerlo De Nuevo Con Anuel AA En Pleno Contrato",
+   "texto": "Canal: Once Resumen ",
+   "fecha": "2026-10-21",
+   "url": "https://www.youtube.com/watch?v=rWfo5o42D5I",
+   "fuente": "YouTube",
+   "imagen": "https://i.ytimg.com/vi/rWfo5o42D5I/hqdefault.jpg",
+   "cancion": null,
+   "detectado": "2026-10-21T22:45:50Z"
+  },
+  {
    "id": "logro:top10:iTunes:Paraguay:cuando no era cantante",
    "tipo": "logro",
    "titulo": "Cuando No Era Cantante entra al top 10 de iTunes Paraguay",
@@ -73664,78 +73736,6 @@
    "imagen": null,
    "cancion": null,
    "detectado": "2026-10-21T13:15:47Z"
-  },
-  {
-   "id": "ytm:3VxIMFPPs3g",
-   "tipo": "mencion",
-   "titulo": "Mala – 6ix9ine,Anuel AA | Lyrics | Aesthetic Edit | English Song | Slowed | WhatsApp Status  #shorts",
-   "texto": "Canal: Aura Music official ",
-   "fecha": "2026-10-21",
-   "url": "https://www.youtube.com/watch?v=3VxIMFPPs3g",
-   "fuente": "YouTube",
-   "imagen": "https://i.ytimg.com/vi/3VxIMFPPs3g/hqdefault.jpg",
-   "cancion": null,
-   "detectado": "2026-10-21T12:45:46Z"
-  },
-  {
-   "id": "ytm:AEzAI1mguKg",
-   "tipo": "mencion",
-   "titulo": "Anuel AA’s birth name and album timeline 🎤",
-   "texto": "Canal: Quickplay Daily",
-   "fecha": "2026-10-21",
-   "url": "https://www.youtube.com/watch?v=AEzAI1mguKg",
-   "fuente": "YouTube",
-   "imagen": "https://i.ytimg.com/vi/AEzAI1mguKg/hqdefault.jpg",
-   "cancion": null,
-   "detectado": "2026-10-21T12:15:44Z"
-  },
-  {
-   "id": "ytm:3ctVr1RhjD8",
-   "tipo": "mencion",
-   "titulo": "Anuel confirma: RHLM 2 es la secuela del primer disco 🔥 #Shorts",
-   "texto": "Canal: RankeoMusic",
-   "fecha": "2026-10-21",
-   "url": "https://www.youtube.com/watch?v=3ctVr1RhjD8",
-   "fuente": "YouTube",
-   "imagen": "https://i.ytimg.com/vi/3ctVr1RhjD8/hqdefault.jpg",
-   "cancion": null,
-   "detectado": "2026-10-21T12:15:44Z"
-  },
-  {
-   "id": "ytm:xLKSWXQTrbw",
-   "tipo": "mencion",
-   "titulo": "[FREE] Anuel AA x Bad Bunny type beat - \"Traicionar\"",
-   "texto": "Canal: RVBeats3",
-   "fecha": "2026-10-21",
-   "url": "https://www.youtube.com/watch?v=xLKSWXQTrbw",
-   "fuente": "YouTube",
-   "imagen": "https://i.ytimg.com/vi/xLKSWXQTrbw/hqdefault.jpg",
-   "cancion": null,
-   "detectado": "2026-10-21T12:15:44Z"
-  },
-  {
-   "id": "ytm:y8sQgChv1FM",
-   "tipo": "mencion",
-   "titulo": "@ROAPR Y @AnuelAA en su ultimo junte vamo a vel",
-   "texto": "Canal: roapr.clipper.cl44",
-   "fecha": "2026-10-21",
-   "url": "https://www.youtube.com/watch?v=y8sQgChv1FM",
-   "fuente": "YouTube",
-   "imagen": "https://i.ytimg.com/vi/y8sQgChv1FM/hqdefault.jpg",
-   "cancion": null,
-   "detectado": "2026-10-21T12:15:44Z"
-  },
-  {
-   "id": "ytm:A9paSYSgRLM",
-   "tipo": "mencion",
-   "titulo": "Anuel sacará un corrido #anuelaa #anuel #corrido #musica #alexgootz",
-   "texto": "Canal: Alex Gootz",
-   "fecha": "2026-10-21",
-   "url": "https://www.youtube.com/watch?v=A9paSYSgRLM",
-   "fuente": "YouTube",
-   "imagen": "https://i.ytimg.com/vi/A9paSYSgRLM/hqdefault.jpg",
-   "cancion": null,
-   "detectado": "2026-10-21T12:15:44Z"
   },
   {
    "id": "up:Shazam:Costa Rica:las mas bonitas son p#tas:136",
@@ -77325,7 +77325,7 @@
    "audiomack_reproducciones": null,
    "x_seguidores": 2600000,
    "facebook_seguidores": 7800000,
-   "youtube_vistas_canciones": 41209925817,
+   "youtube_vistas_canciones": 41210404616,
    "notas": "Actualización automática. Fallos: ninguno"
   }
  ],
@@ -78294,7 +78294,7 @@
    "vuelve": 753122
   }
  },
- "generado": "2026-10-21T22:15:45Z",
+ "generado": "2026-10-21T22:45:50Z",
  "completa": "2026-10-21T21:09:01Z",
  "estado": {
   "hecho": [
@@ -78308,10 +78308,10 @@
    "listas (610)",
    "menciones en YouTube (30 revisadas)",
    "noticias (100)",
-   "logros (42 nuevos)"
+   "logros (41 nuevos)"
   ],
   "fallos": [],
-  "en": "2026-10-21T22:15:45Z",
+  "en": "2026-10-21T22:45:50Z",
   "modo": "rapido",
   "completa": "2026-10-21T21:09:01Z"
  },
@@ -78320,73 +78320,73 @@
    "video_id": "dTsROVQjwG8",
    "titulo": "Mami, vuelve, ¿o se acabó mi suerte?",
    "publicado": "2026-10-19",
-   "vistas": 47890
+   "vistas": 48182
   },
   {
    "video_id": "TtVta3WqxzE",
    "titulo": "YO Aún la EXTRAÑO !!!",
    "publicado": "2026-10-09",
-   "vistas": 151685
+   "vistas": 151769
   },
   {
    "video_id": "3juuih0WdH8",
    "titulo": "Anuel AA - Vuelve (Video Oficial)",
    "publicado": "2026-10-09",
-   "vistas": 23439231
+   "vistas": 23464861
   },
   {
    "video_id": "66nW3edHWuA",
    "titulo": "Real Hasta la Muerte, ¿Oiste, Cabrón?",
    "publicado": "2026-08-28",
-   "vistas": 166980
+   "vistas": 167036
   },
   {
    "video_id": "2HT3Og1pq_g",
    "titulo": "No Se Peleen Por Mi .... #RealHastaLaMuerte",
    "publicado": "2026-08-15",
-   "vistas": 198833
+   "vistas": 198864
   },
   {
    "video_id": "beiZP9Rsys0",
    "titulo": "Donde hubo fuego...🔥",
    "publicado": "2026-08-14",
-   "vistas": 251690
+   "vistas": 251761
   },
   {
    "video_id": "FboTyBsFZQs",
    "titulo": "Anuel AA | Donde Hubo Fuego Cenizas Quedan (Video Oficial)",
    "publicado": "2026-08-14",
-   "vistas": 66065485
+   "vistas": 66079516
   },
   {
    "video_id": "ilPH3cR5DYU",
    "titulo": "Donde Hubo Fuego... 🔥",
    "publicado": "2026-08-14",
-   "vistas": 242529
+   "vistas": 242551
   },
   {
    "video_id": "Lggfupgh5q8",
    "titulo": "Las Más Bonitas Son... 👀",
    "publicado": "2026-06-29",
-   "vistas": 229204
+   "vistas": 229227
   },
   {
    "video_id": "G-z49E9x_Is",
    "titulo": "NO me ENAMORO de NINGUNA",
    "publicado": "2026-06-28",
-   "vistas": 358680
+   "vistas": 358710
   },
   {
    "video_id": "ELAfwIOH8Pw",
    "titulo": "No Me Sé el Nombre De NINGUNA",
    "publicado": "2026-06-28",
-   "vistas": 582499
+   "vistas": 582551
   },
   {
    "video_id": "vutbVGewIcg",
    "titulo": "Anuel AA - Las Mas Bonitas Son P*tas (Video Oficial)",
    "publicado": "2026-06-26",
-   "vistas": 167773881
+   "vistas": 167814435
   },
   {
    "video_id": "GsRReKMgVQI",
