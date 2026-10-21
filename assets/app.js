@@ -1464,7 +1464,24 @@
     if (d === t) return 'Hoy'; if (d === y) return 'Ayer';
     return d ? parseD(d).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }) : 'Sin fecha';
   }
-  let lgF = 'todo';
+  let lgF = 'todo', lgAll = false;
+  const DIAS_COMPLETADA = 7;  // una meta conseguida se muestra como «Completada» esta cantidad de días y luego se quita
+  function metasCompletadas() {
+    const lim = new Date(today() - DIAS_COMPLETADA * 864e5).toISOString().slice(0, 10);
+    return logrosList().filter(n => /^(perfil|cifra):/.test(String(n.id || '').replace(/^logro:/, '')) && (n.fecha || '') >= lim)
+      .sort((a, b) => String(b.fecha).localeCompare(String(a.fecha)));
+  }
+  function doneCard(n) {
+    const s = n.cancion ? songById(n.cancion) : null;
+    const quedan = Math.max(1, DIAS_COMPLETADA - Math.floor((today() - new Date(n.fecha)) / 864e5));
+    return h('div', { class: 'mt-card mt-done reveal' + (s ? ' mt-song' : ''), role: 'button', tabindex: '0', onclick: () => openLogro(n) },
+      s ? h('div', { class: 'mt-cov' }, art(s)) : h('div', { class: 'mt-ringbox' }, ring(100, 64), h('span', { class: 'mt-pct', text: '✓' })),
+      h('div', { class: 'mt-main' },
+        h('div', { class: 'mt-top' }, h('span', { class: 'mt-plat', text: n.sub ? String(n.sub).toLowerCase().replace(/^./, c => c.toUpperCase()) : 'Meta' }), h('span', { class: 'mt-badge done', text: '✓ Completada' })),
+        h('b', { class: 'mt-title', text: n.titulo }),
+        h('small', { class: 'mt-sub', text: `${lgDay(n.fecha)}${n.texto ? ' · ' + n.texto : ''} · se archiva en ${quedan} ${quedan === 1 ? 'día' : 'días'}` }),
+        h('div', { class: 'mt-line' }, h('i', { style: '--w:100%' }))));
+  }
   // ---------- METAS Y LOGROS (nueva sección) ----------
   // siguiente número redondo: 28,3 M → 30 M · 1,2 M → 1,5 M · 840 mil → 900 mil
   function metaRedonda(v) {
@@ -1546,6 +1563,11 @@
       el.append(section('Desbloqueados', 'últimos 3 días'));
       el.append(h('div', { class: 'lgx-grid' }, recientes.map(logroBig)));
     }
+    const hechas = metasCompletadas();
+    if (hechas.length) {
+      el.append(section('Metas completadas', `se archivan a los ${DIAS_COMPLETADA} días`));
+      el.append(h('div', { class: 'mt-grid' }, hechas.slice(0, 9).map(doneCard)));
+    }
     if (calientes.length) {
       el.append(section('A punto de caer', 'próximos 7 días'));
       el.append(h('div', { class: 'mt-grid' }, calientes.slice(0, 9).map(c => c.t === 'p' ? metaCard(c.m) : songMetaCard(c.m))));
@@ -1559,13 +1581,16 @@
     el.append(section('Todos los logros', `${all.length}`));
     const cats = Object.keys(LG_CAT).filter(k => k === 'todo' || all.some(n => n.cat === k));
     el.append(h('div', { class: 'yc-seg yc-lg-seg' }, cats.map(k => h('button', { type: 'button', 'aria-pressed': String(lgF === k), onclick: () => { lgF = k; renderLogros(); }, text: LG_CAT[k] }))));
-    const rows = all.filter(n => lgF === 'todo' || n.cat === lgF);
+    const lim30 = new Date(today() - 30 * 864e5).toISOString().slice(0, 10);
+    const rowsAll = all.filter(n => lgF === 'todo' || n.cat === lgF);
+    const rows = lgAll ? rowsAll : rowsAll.filter(n => (n.fecha || '') >= lim30);
     if (!rows.length) { el.append(h('div', { class: 'yc-lg-empty' }, h('span', { class: 'yc-moreic' }, icon('trophy')), h('b', { text: 'Aún no hay logros' }))); }
     let day = null, list = null;
     for (const n of rows.slice(0, 150)) {
       if (n.fecha !== day) { day = n.fecha; el.append(h('div', { class: 'yc-group-h', text: lgDay(day) })); list = h('div', { class: 'yc-list' }); el.append(list); }
       list.append(logroRow(n));
     }
+    if (!lgAll && rowsAll.length > rows.length) el.append(h('button', { class: 'mt-link', type: 'button', onclick: () => { lgAll = true; renderLogros(); } }, h('span', { text: '🗂' }), h('span', null, h('b', { text: `Ver archivo (${rowsAll.length - rows.length} logros de hace más de 30 días)` }), h('small', { text: 'Los logros antiguos se guardan aquí' })), icon('chev', 'yc-chev')));
     $$('.reveal', el).forEach(x => typeof reveal === 'function' ? reveal(x) : x.classList.add('in'));
   }
   // ---------- celebración: aviso a pantalla completa con confeti cuando hay un logro nuevo ----------

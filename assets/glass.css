@@ -615,3 +615,7 @@ img.yc-logo-in { object-fit: cover; display: block; border-radius: 50%; }
 .ax-hrs { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; }
 .ax-hr { border-radius: 12px; padding: 8px 6px; text-align: center; background: color-mix(in srgb, var(--text) 6%, transparent); }
 .ax-hr b { display: block; font-size: 15px; font-weight: 700; letter-spacing: -.02em; } .ax-hr small { color: var(--text3); font-size: 11px; }
+.mt-badge.done { color: #30d158; background: color-mix(in srgb, #30d158 16%, transparent); }
+.mt-done .mt-line i { background: #30d158; }
+.mt-done .mt-ringbox .lg-ring-fg { stroke: #30d158; }
+.mt-done .mt-pct { color: #30d158; font-size: 22px; }
